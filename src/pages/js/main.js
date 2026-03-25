@@ -2,7 +2,6 @@
 // Matii: Acá importo todo y ejecuto según la página actual (Clase 20)
 
 import { crearContadorVisitas } from './contadores.js';
-import { cargarHistoriasPublicas } from './stories.js';
 
 // Matii: Detecto en qué página estoy
 const pagina = window.location.pathname.split('/').pop() || 'index.html';
@@ -13,11 +12,6 @@ if (document.getElementById('contador-visitas')) {
     const incrementar = crearContadorVisitas();
     incrementar();
   } catch(e) { console.log('Contador no soportado por faltas de utilería'); }
-}
-
-// Matii: Según la página, ejecuto lo específico
-if (pagina.includes('historias.html')) {
-  try { cargarHistoriasPublicas(); } catch(e) {}
 }
 
 if (pagina.includes('admin.html')) {

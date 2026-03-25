@@ -70,3 +70,73 @@ h1, h2, h3 {
 .card:hover {
   transform: translateY(-6px);
 }
+
+/* =============================================
+   ARREGLO DE BOTONES Y HOME HERO
+   ============================================= */
+
+/* Botones Naranjas (Sobrescribiendo Bootstrap) */
+.btn-warning {
+  background-color: var(--naranja) !important;
+  border-color: var(--naranja) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.btn-warning:hover {
+  background-color: var(--naranja-oscuro) !important;
+  border-color: var(--naranja-oscuro) !important;
+}
+
+.btn-outline-warning {
+  color: var(--naranja) !important;
+  border-color: var(--naranja) !important;
+  font-weight: 600;
+}
+
+.btn-outline-warning:hover {
+  background-color: var(--naranja) !important;
+  color: white !important;
+}
+
+/* Home Hero (Recuadro naranja y video centrado) */
+#hero {
+  text-align: center;
+  padding: 5rem 1rem;
+  background: var(--naranja);
+  color: white;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  margin-top: -2rem; /* compensar padding del main */
+  margin-bottom: 3rem;
+  padding-top: 4rem;
+  border-radius: 0 0 24px 24px;
+}
+
+#hero h1 {
+  color: white !important;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+#hero p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+}
+
+.video-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  background: #000;
+}
+
+.video-wrapper iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: none;
+  display: block;
+}
