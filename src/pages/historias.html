@@ -1,103 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historias – EMpaticos</title>
-  <!-- Bootstrap CDN -->
+
+  <!-- Fuente Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="./css/styles.css">
+  <script type="module" src="./js/main.js"></script>
 </head>
+
 <body>
-  <!-- Navbar Bootstrap -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top">
+  <!-- Navbar Consistente -->
+  <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="50" class="me-2 rounded">
-        <span class="fw-bold fs-4">EMpaticos</span>
+        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="50" class="me-3">
+        <span class="fw-bold fs-3">EMpaticos</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="noticias.html">Noticias</a></li>
-          <li class="nav-item"><a class="nav-link" href="unirme.html">Unirme</a></li>
-          <li class="nav-item"><a class="nav-link" href="historias.html">Historias</a></li>
-          <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="noticias.html">Noticias</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="unirme.html">Unirme</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold active" href="historias.html">Historias</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="nosotros.html">Nosotros</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <main class="container my-5 pt-5">
-    <h1 class="text-center mb-5">Muro de Historias de Esperanza</h1>
-    <p class="text-center lead mb-5">Historias reales de personas que viven con EM y comparten su fuerza ❤️</p>
-
-    <!-- Grid Bootstrap responsive -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="stories-grid">
-      <!-- Cards cargadas por JS -->
+  <main class="container">
+    <div class="text-center mb-5">
+      <h1 class="fw-bold display-5 text-warning mb-3">Historias Reales ❤️</h1>
+      <p class="lead text-muted">Testimonios de nuestra comunidad que inspiran, emocionan y acompañan.</p>
     </div>
 
-    <div class="text-center mt-5" id="no-stories" style="display:none;">
-      <p class="lead">Aún no hay historias aprobadas. ¡Sé el primero en compartir!</p>
-      <a href="unirme.html" class="btn btn-warning btn-lg">Compartir mi historia</a>
+    <!-- Historias Container -->
+    <div id="historias-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <!-- Inyectadas por JS -->
     </div>
+    
+    <p id="loading-historias" class="text-center text-muted mt-5 mt-4 fw-bold">Cargando corazones valientes...</p>
   </main>
 
-  <!-- FOOTER NARANJA -->
-<footer class="bg-warning text-white text-center py-5 mt-5">
-  <div class="container">
-    <p class="fs-5 fw-bold">EMpaticos © 2025 – No estás solo ❤️</p>
-    <p>Contactanos: matii.toorres.06@gmail.com</p>
-  </div>
-</footer>
+  <footer>
+    <div class="container">
+      <p class="fs-5">EMpaticos © 2026 – No estás solo ❤️</p>
+      <p>Contactanos: matii.toorres.06@gmail.com</p>
+    </div>
+  </footer>
 
-
-  <script>
-    const API_URL = "https://lazaro-backend-sqlite.onrender.com/api";
-
-    async function loadStories() {
-      try {
-        const res = await fetch(`${API_URL}/stories`);
-        if (!res.ok) throw new Error();
-        const stories = await res.json();
-
-        const grid = document.getElementById('stories-grid');
-        const noStories = document.getElementById('no-stories');
-        grid.innerHTML = '';
-
-        if (stories.length === 0) {
-          noStories.style.display = 'block';
-          return;
-        }
-
-        noStories.style.display = 'none';
-
-        stories.forEach(story => {
-          const col = document.createElement('div');
-          col.className = 'col';
-          col.innerHTML = `
-            <div class="card h-100 shadow-sm border-0">
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title text-warning fw-bold">
-                  ${story.nombre || 'Anónimo'} (${story.tipoEM || 'No especificado'})
-                </h5>
-                <p class="card-text flex-grow-1">${story.historia}</p>
-                <small class="text-muted mt-auto">${new Date(story.createdAt).toLocaleDateString()}</small>
-              </div>
-            </div>
-          `;
-          grid.appendChild(col);
-        });
-      } catch (err) {
-        grid.innerHTML = '<div class="col-12 text-center"><p class="lead text-danger">Error cargando historias. Verificá que el backend esté corriendo.</p></div>';
-      }
-    }
-
-    loadStories();
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

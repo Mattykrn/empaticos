@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="EMpaticos es tu comunidad de apoyo para personas con Esclerosis Múltiple. Historias reales, noticias actualizadas y esperanza. No estás solo ❤️">
-  <title>EMpaticos – Apoyo y Esperanza en Esclerosis Múltiple</title>
-  <!-- Bootstrap CDN -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMpaticos – No estás solo ❤️</title>
+
+  <!-- Fuente Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="./css/styles.css" />
-  <!-- AdSense loader (siempre en head) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5271427929340508"
-    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="./css/styles.css">
+  <script type="module" src="./js/main.js"></script>
 </head>
+
 <body>
-  <!-- HEADER NARANJA -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top">
+  <!-- Navbar Consistente -->
+  <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="60" class="me-3 rounded" />
+        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="50" class="me-3">
         <span class="fw-bold fs-3">EMpaticos</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -26,7 +29,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link fw-bold" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold active" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="noticias.html">Noticias</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="unirme.html">Unirme</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="historias.html">Historias</a></li>
@@ -36,42 +39,36 @@
     </div>
   </nav>
 
-  <main class="container my-5 pt-5">
-    <h2 class="text-center fw-bold mb-4">Bienvenido a EMpaticos</h2>
-    <p class="lead text-center">Tu espacio de apoyo y comprensión.</p>
-    <p class="text-center">Aqui dejo un video explicativo sobre la esclerosis múltiple.</p>
-    <div class="ratio ratio-16x9 mb-5 mx-auto" style="max-width: 800px;">
-      <iframe src="https://www.youtube.com/embed/gbkrlXuzodU" title="Qué es la EM" allowfullscreen></iframe>
-    </div>
-    <p class="text-center fs-5">
-      En EMpaticos, nos dedicamos a brindar apoyo a personas con esclerosis múltiple y sus familias. Nuestro objetivo es crear una comunidad solidaria donde puedas encontrar recursos, compartir experiencias y sentirte acompañado en tu camino.
-    </p>
-    <p class="text-center fs-5 mt-4">Explora nuestras secciones para más información y recursos.</p>
+  <main>
+    <section id="hero">
+      <h1>No estás solo ❤️</h1>
+      <p>Tu espacio premium de apoyo y comprensión para Esclerosis Múltiple.</p>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/gbkrlXuzodU" title="Qué es la EM" allow="fullscreen"
+          allowfullscreen></iframe>
+      </div>
+    </section>
 
-    <!-- ANUNCIO (solo uno por página para empezar, bien centrado) -->
-    <div class="text-center my-5">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5271427929340508"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    </div>
+    <section id="intro" class="container">
+      <h2>Bienvenido a EMpaticos</h2>
+      <p>Compartimos historias reales, noticias y esperanza.<br>Explorá nuestras secciones y sentite parte de una gran
+        familia.</p>
+      <div class="mt-5">
+        <a href="unirme.html" class="btn btn-warning me-3">Compartir mi historia</a>
+        <a href="historias.html" class="btn btn-outline-secondary"
+          style="border-radius:8px; font-weight:600; padding:0.75rem 2rem;">Leer Testimonios</a>
+      </div>
+    </section>
   </main>
 
-  <!-- FOOTER NARANJA -->
-<footer class="bg-warning text-white text-center py-5 mt-5">
-  <div class="container">
-    <p class="fs-5 fw-bold">EMpaticos © 2025 – No estás solo ❤️</p>
-    <p>Contactanos: matii.toorres.06@gmail.com</p>
-  </div>
-</footer>
+  <footer>
+    <div class="container">
+      <p class="fs-5">EMpaticos © 2026 – No estás solo ❤️</p>
+      <p>Contactanos: matii.toorres.06@gmail.com</p>
+    </div>
+  </footer>
 
-  <!-- Activa Auto Ads en toda la página -->
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -4,19 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOTICIAS – EMpaticos</title>
-  <!-- Bootstrap CDN -->
+  <title>Noticias – EMpaticos</title>
+
+  <!-- Fuente Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
-  <!-- HEADER NARANJA IDÉNTICO EN TODAS -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top">
+  <!-- Navbar Consistente -->
+  <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="60" class="me-3 rounded">
+        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="50" class="me-3">
         <span class="fw-bold fs-3">EMpaticos</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -25,7 +29,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link fw-bold" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link fw-bold" href="noticias.html">Noticias</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold active" href="noticias.html">Noticias</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="unirme.html">Unirme</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="historias.html">Historias</a></li>
           <li class="nav-item"><a class="nav-link fw-bold" href="nosotros.html">Nosotros</a></li>
@@ -34,97 +38,43 @@
     </div>
   </nav>
 
-  <!-- CONTENIDO PRINCIPAL (cambia por página) -->
   <main class="container my-5 pt-5">
-    <!-- Aquí va el contenido único de cada página -->
-    <h1><strong>Noticias.</strong></h1>
-    <p>Aquí encontrarás las últimas noticias y actualizaciones relacionadas con la esclerosis múltiple, enfermedades
-      raras y discapacidad.</p>
+    <div class="text-center mb-5">
+      <h1 class="fw-bold display-5 text-warning mb-3">Noticias Reales sobre EM</h1>
+      <p class="lead text-muted">Avanzando juntos con los últimos descubrimientos y estudios a nivel global.</p>
+    </div>
 
-    <section>
-      <article class="mb-4">
-      <h3>Nuevo tratamiento para la Esclerosis Múltiple Progresiva</h3>
-      <p>
-        Investigadores de Roche presentaron resultados positivos de la fase III del
-        fármaco <strong>Fenebrutinib</strong>, que logró reducir la progresión de la
-        discapacidad en pacientes con EM primaria progresiva frente al tratamiento
-        estándar Ocrevus®. Este avance podría convertirse en la primera terapia de su clase en más de una década.</p>
-      <a href="https://www.roche.com" target="_blank">Leer más</a>
-      </article>
-    </section>
+    <!-- Filtro por año -->
+    <div class="d-flex justify-content-end mb-4 align-items-center">
+      <label for="filtro-anio" class="form-label fw-bold me-3 mb-0 text-dark">Filtrar por año:</label>
+      <select id="filtro-anio" class="form-select w-auto">
+        <option value="todos">Todos los años</option>
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
 
-    <section>
-      <article class="mb-4">
-      <h3>Centro de rehabilitación en Mendoza</h3>
-      <p>
-        El municipio de San Rafael cedió un terreno a la Asociación Mendocina de
-        Esclerosis Múltiple (AMEM) para construir un centro de rehabilitación. Allí se ofrecerán servicios de hidroterapia, kinesioterapia y fonoaudiología, mejorando el acceso a pacientes locales.</p>
-      <a href="https://www.losandes.com.ar" target="_blank">Leer más</a>
-      </article>
-    </section>
+    <!-- Contenedor donde se inyectan las noticias -->
+    <div id="noticias-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <!-- Las noticias se cargan aquí con JavaScript -->
+    </div>
 
-    <section>
-      <article class="mb-4">
-      <h3>Prevalencia de la EM en México</h3>
-      <p>
-        Se estima que unas <strong>20 mil personas</strong> viven con EM en México, con una prevalencia de 15 a 18 casos por cada 100 mil habitantes. A nivel mundial, el Atlas de la Esclerosis Múltiple calcula que <strong>2,9 millones</strong> de personas la padecen, principalmente entre los 20 y 40
-        años.</p>
-      <a href="https://www.milenio.com" target="_blank">Leer más</a>
-      </article>
-    </section>
-
-    <section>
-      <article class="mb-4">
-      <h3>Historias de vida: maratonista canadiense</h3>
-      <p>
-        Derek Stefureac, diagnosticado con EM, completó maratones en los siete
-        continentes. Su historia demuestra que el movimiento puede ser una forma de
-        medicina y resiliencia frente a la enfermedad.</p>
-      <a href="https://www.cbc.ca" target="_blank">Leer más</a>
-      </article>
-</section>
-
-<section>
-    <article class="mb-4">
-      <h3>La proporción entre dos moléculas del sistema inmune (CXCL13 y BAFF) funciona como indicador de la fase
-        progresiva de la esclerosis múltiple.</h3>
-      <p>avance importante en esclerosis múltiple: investigadores de la Universidad de Toronto identificaron un nuevo
-        biomarcador (proporción CXCL13-BAFF) que permitiría anticipar la progresión de la enfermedad y personalizar
-        tratamientos. El hallazgo fue validado en pacientes y modelos animales, y abre la puerta a diagnósticos más
-        tempranos.</p>
-      <a
-        href="https://www.infobae.com/salud/ciencia/2026/01/02/identifican-un-nuevo-biomarcador-que-podria-anticipar-el-desarrollo-de-la-esclerosis-multiple/">Leer
-        más</a>
-    </article>
-</section>
-    <article class="mb-4">
-      <h3>El 40% de pacientes de esclerosis múltiple no accede a terapias óptimas debido a desigualdades territoriales
-      </h3>
-      <p>Impulsar políticas sanitarias que reduzcan las disparidades geográficas.
-        - Mejorar el acceso a tratamientos avanzados en todas las regiones.</p>
-      <a
-        href="https://farmacosalud.com/el-40-de-pacientes-de-esclerosis-multiple-no-accede-a-terapias-optimas-debido-a-desigualdades-territoriales/">Leer
-        más</a>
-    </article>
-    <article class="mb-4">
-      <h3>Detectan 2 nuevos subtipos de Esclerosis Multiple.</h3>
-      <p>Investigadores del University College London (UCL) y Queen Square Analytics identificaron dos nuevos subtipos
-        biológicos de esclerosis múltiple mediante inteligencia artificial, y el hallazgo fue publicado en la revista
-        científica.</p>
-      <a
-        href="https://www.infobae.com/salud/ciencia/2025/12/30/detectan-dos-nuevos-subtipos-de-esclerosis-multiple-gracias-a-un-analisis-con-inteligencia-artificial/">Leer
-        más</a>
-    </article>
+    <p id="loading-noticias" class="text-center text-muted mt-5 fw-bold">Buscando las últimas novedades...</p>
+    <p id="error-noticias" class="text-center text-danger mt-5 fw-bold" style="display: none;">No pudimos cargar las
+      noticias en este momento 😔</p>
   </main>
 
-  <!-- FOOTER NARANJA IDÉNTICO EN TODAS -->
-  <footer class="bg-warning text-white text-center py-5 mt-5">
+  <footer class="bg-dark text-white text-center py-5 mt-5">
     <div class="container">
-      <p class="fs-5 fw-bold">EMpaticos © 2025 – No estás solo ❤️</p>
+      <p class="fs-5 fw-bold">EMpaticos © 2026 – No estás solo ❤️</p>
       <p>Contactanos: matii.toorres.06@gmail.com</p>
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+  <script src="./js/noticias.js"></script>
 </body>
 
 </html>
