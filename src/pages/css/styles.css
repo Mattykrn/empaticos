@@ -1,5 +1,6 @@
 /* =============================================
-   ESTILO FINAL - NAVBAR Y FOOTER NARANJA
+   ESTILO DEFINITIVO - LIMPIO Y PROFESIONAL
+   Navbar y Footer naranja - Resto blanco
    ============================================= */
 
 :root {
@@ -7,136 +8,133 @@
   --naranja-oscuro: #E04000;
 }
 
-/* Navbar */
+/* Navbar naranja */
 .navbar {
   background-color: var(--naranja) !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-brand img {
+  height: 50px;
+  border-radius: 10px;
 }
 
 .navbar-brand span {
   color: white !important;
   font-weight: 800;
+  font-size: 1.8rem;
 }
 
 .nav-link {
   color: white !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  margin: 0 0.25rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.25);
   color: white !important;
-  background-color: rgba(255,255,255,0.2);
-  border-radius: 8px;
 }
 
 /* Footer naranja */
 footer {
   background-color: var(--naranja) !important;
   color: white;
-  padding: 3rem 1rem 2rem;
-  margin-top: 0;           /* Quitamos espacio blanco arriba del footer */
+  padding: 3.5rem 1rem 2.5rem;
+  margin-top: 5rem;
   text-align: center;
 }
 
 footer p {
-  color: white;
   margin-bottom: 0.5rem;
+  color: white;
 }
 
-/* Main content - Fondo blanco limpio (como querías) */
+footer .fs-5 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Body y contenido principal */
+body {
+  background-color: #f8f9fa;
+  color: #1A1A1A;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
 main {
-  background-color: white !important;
+  background-color: white;
   min-height: 70vh;
-  padding: 2rem 1rem;
-  margin-top: 80px;
+  padding: 2.5rem 1rem;
+  margin-top: 90px;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-/* Títulos y texto */
-h1, h2, h3 {
-  color: #1A1A1A !important;
-}
-
-.lead, p {
-  color: #444 !important;
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+  color: #1A1A1A;
+  font-weight: 800;
 }
 
 /* Cards */
 .card {
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
-/* =============================================
-   ARREGLO DE BOTONES Y HOME HERO
-   ============================================= */
-
-/* Botones Naranjas (Sobrescribiendo Bootstrap) */
+/* Botones */
 .btn-warning {
   background-color: var(--naranja) !important;
-  border-color: var(--naranja) !important;
   color: white !important;
-  font-weight: 600;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 2rem;
 }
 
 .btn-warning:hover {
   background-color: var(--naranja-oscuro) !important;
-  border-color: var(--naranja-oscuro) !important;
+  transform: translateY(-2px);
 }
 
-.btn-outline-warning {
-  color: var(--naranja) !important;
-  border-color: var(--naranja) !important;
-  font-weight: 600;
-}
-
-.btn-outline-warning:hover {
-  background-color: var(--naranja) !important;
-  color: white !important;
-}
-
-/* Home Hero (Recuadro naranja y video centrado) */
-#hero {
-  text-align: center;
-  padding: 5rem 1rem;
-  background: var(--naranja);
-  color: white;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  margin-top: -2rem; /* compensar padding del main */
-  margin-bottom: 3rem;
-  padding-top: 4rem;
-  border-radius: 0 0 24px 24px;
-}
-
-#hero h1 {
-  color: white !important;
-  font-weight: 800;
-  margin-bottom: 1rem;
-}
-
-#hero p {
-  color: rgba(255, 255, 255, 0.9) !important;
-  max-width: 600px;
-  margin: 0 auto 2.5rem;
-}
-
-.video-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
+/* Formularios */
+.form-control, .form-select {
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  background: #000;
+  border: 2px solid #ddd;
+  padding: 0.85rem 1rem;
 }
 
-.video-wrapper iframe {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border: none;
-  display: block;
+.form-control:focus, .form-select:focus {
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.15);
+}
+
+/* Utilidades */
+.text-center {
+  text-align: center;
+}
+
+.lead {
+  font-size: 1.2rem;
+  color: #555;
 }

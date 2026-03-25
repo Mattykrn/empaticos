@@ -2,6 +2,7 @@
 // Matii: Acá importo todo y ejecuto según la página actual (Clase 20)
 
 import { crearContadorVisitas } from './contadores.js';
+import { setupUnirmeForm } from './unirme.js';
 
 // Matii: Detecto en qué página estoy
 const pagina = window.location.pathname.split('/').pop() || 'index.html';
@@ -13,6 +14,9 @@ if (document.getElementById('contador-visitas')) {
     incrementar();
   } catch(e) { console.log('Contador no soportado por faltas de utilería'); }
 }
+
+// Inicializar formulario de unirme
+setupUnirmeForm();
 
 if (pagina.includes('admin.html')) {
   try {
