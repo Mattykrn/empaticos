@@ -1,7 +1,4 @@
-/* =============================================
-   ESTILO DEFINITIVO - LIMPIO Y PROFESIONAL
-   Navbar y Footer naranja - Resto blanco
-   ============================================= */
+/* ESTILO FINAL - NARANJA EN NAVBAR Y FOOTER */
 
 :root {
   --naranja: #FF5A1F;
@@ -11,39 +8,20 @@
 /* Navbar naranja */
 .navbar {
   background-color: var(--naranja) !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  padding: 1rem 0;
-}
-
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.navbar-brand img {
-  height: 50px;
-  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .navbar-brand span {
   color: white !important;
   font-weight: 800;
-  font-size: 1.8rem;
 }
 
 .nav-link {
   color: white !important;
-  font-weight: 500;
-  padding: 0.5rem 1rem !important;
-  margin: 0 0.25rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  background-color: rgba(255, 255, 255, 0.25);
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(255,255,255,0.2);
   color: white !important;
 }
 
@@ -51,90 +29,34 @@
 footer {
   background-color: var(--naranja) !important;
   color: white;
-  padding: 3.5rem 1rem 2.5rem;
-  margin-top: 5rem;
+  padding: 3rem 1rem 2rem;
   text-align: center;
 }
 
-footer p {
-  margin-bottom: 0.5rem;
-  color: white;
-}
-
-footer .fs-5 {
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-/* Body y contenido principal */
+/* Body blanco limpio */
 body {
   background-color: #f8f9fa;
-  color: #1A1A1A;
-  font-family: 'Inter', system-ui, sans-serif;
 }
 
 main {
   background-color: white;
-  min-height: 70vh;
   padding: 2.5rem 1rem;
   margin-top: 90px;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  min-height: 70vh;
 }
 
-/* Títulos */
-h1, h2, h3, h4, h5, h6 {
-  color: #1A1A1A;
-  font-weight: 800;
+/* Títulos oscuros para que se vean bien */
+h1, h2, h3 {
+  color: #1A1A1A !important;
 }
 
-/* Cards */
-.card {
-  border: none;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  height: 100%;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-}
-
-/* Botones */
+/* Botones naranja */
 .btn-warning {
   background-color: var(--naranja) !important;
   color: white !important;
   font-weight: 700;
-  border: none;
-  border-radius: 12px;
-  padding: 0.75rem 2rem;
 }
 
 .btn-warning:hover {
   background-color: var(--naranja-oscuro) !important;
-  transform: translateY(-2px);
-}
-
-/* Formularios */
-.form-control, .form-select {
-  border-radius: 12px;
-  border: 2px solid #ddd;
-  padding: 0.85rem 1rem;
-}
-
-.form-control:focus, .form-select:focus {
-  border-color: var(--naranja);
-  box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.15);
-}
-
-/* Utilidades */
-.text-center {
-  text-align: center;
-}
-
-.lead {
-  font-size: 1.2rem;
-  color: #555;
 }
