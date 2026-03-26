@@ -60,6 +60,9 @@
               <label for="historia" class="form-label">Tu testimonio *</label>
               <textarea class="form-control" id="historia" rows="7" required
                 placeholder="Contanos tu experiencia..."></textarea>
+              <div id="error-historia" class="text-danger small fw-bold" style="display:none;">Por favor escribí algo.
+              </div>
+              <div id="contador-caracteres" class="small text-muted text-end w-100">0/1000 caracteres</div>
             </div>
 
             <div class="mb-3 form-check">
@@ -68,9 +71,13 @@
             </div>
 
             <div class="text-center">
-              <button type="submit" class="btn btn-warning btn-lg px-5 py-3">Enviar con amor ❤️</button>
+              <button type="submit" id="submit-btn" class="btn btn-warning btn-lg px-5 py-3">Enviar con amor ❤️</button>
             </div>
           </form>
+
+          <p id="mensaje-exito" class="text-success text-center mt-5 fs-4 fw-bold" style="display:none;">
+            🎉 ¡Gracias! Tu historia se envió y está pendiente de aprobación ❤️
+          </p>
         </div>
       </div>
     </div>
@@ -84,6 +91,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
 </body>
 
 </html>
