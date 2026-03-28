@@ -1,7 +1,7 @@
 import { db } from './firebase-config.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-export function setupUnirmeForm() {
+function setupUnirmeForm() {
   const formUnirme = document.getElementById('form-unirme');
   if (!formUnirme) return;
 
@@ -46,18 +46,18 @@ export function setupUnirmeForm() {
 
     try {
       if (!db) throw new Error("Firebase no está configurado (revisá firebase-config.js)");
-      
-      // Guardar en Firestore Database
+
+      // Guardar en Firestore Database y publicar la historia de inmediato
       await addDoc(collection(db, "historias"), {
         nombre: nombre,
         tipoEM: tipoEM,
         testimonio: historia,
-        aprobado: false, // ESTO ES CLAVE: requiere aprobación para mostrarse
+        aprobado: true, // Publicar inmediatamente para que aparezca en historias
         fecha: serverTimestamp() // Timestamp del servidor de base de datos
       });
 
-      formUnirme.style.display = 'none';
-      msjExito.style.display = 'block';
+      // Enviar correo usando Formsubmit.co mediante el formulario HTML normal
+      formUnirme.submit();
     } catch (error) {
       console.error("Error al guardar historia:", error);
       alert("Hubo un error. Puede que te falte copiar las claves de Firebase en `js/firebase-config.js`.");
@@ -66,3 +66,5 @@ export function setupUnirmeForm() {
     }
   });
 }
+
+setupUnirmeForm();
