@@ -1,7 +1,6 @@
 {
   "buildCommand": "",
-  "outputDirectory": "src/pages",
-  "public": true,
+  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false
 }
