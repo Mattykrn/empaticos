@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – EMpaticos</title>
+
+  <!-- Fuente Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body style="background-color: #f1f5f9;">
+  <!-- Navbar Consistente (Variante Admin) -->
+  <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #333 !important;">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <span class="fw-bold fs-3 text-white">EMpaticos - <span class="text-warning">Panel Admin</span></span>
+      </a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white fw-bold" href="index.html">Volver al sitio</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top: 100px;">
+    <div class="text-center mb-5">
+      <h1 class="fw-bold display-5 text-dark mb-2">Historias Pendientes</h1>
+      <p class="text-muted">Aproba las historias en Firebase NoSQL para que se muestren en la página.</p>
+    </div>
+
+    <div id="react-admin-root"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Admin logic replaced by React component below -->
+
+  <!-- Firebase SDK compat (sin modulos ES, compatible con Babel standalone) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="./js/firebase-config.js"></script>
+
+  <!-- React 18, Babel y Componente Reloj (Clase 26) -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <div id="react-clock-root"></div>
+  <script type="text/babel" src="./js/reloj.jsx"></script>
+  <script type="text/babel" src="./js/admin.jsx"></script>
+</body>
+
+</html>

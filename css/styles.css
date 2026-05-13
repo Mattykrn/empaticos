@@ -1,0 +1,62 @@
+/* ESTILO FINAL - NARANJA EN NAVBAR Y FOOTER */
+
+:root {
+  --naranja: #FF5A1F;
+  --naranja-oscuro: #E04000;
+}
+
+/* Navbar naranja */
+.navbar {
+  background-color: var(--naranja) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.navbar-brand span {
+  color: white !important;
+  font-weight: 800;
+}
+
+.nav-link {
+  color: white !important;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(255,255,255,0.2);
+  color: white !important;
+}
+
+/* Footer naranja */
+footer {
+  background-color: var(--naranja) !important;
+  color: white;
+  padding: 3rem 1rem 2rem;
+  text-align: center;
+}
+
+/* Body blanco limpio */
+body {
+  background-color: #f8f9fa;
+}
+
+main {
+  background-color: white;
+  padding: 2.5rem 1rem;
+  margin-top: 90px;
+  min-height: 70vh;
+}
+
+/* Títulos oscuros para que se vean bien */
+h1, h2, h3 {
+  color: #1A1A1A !important;
+}
+
+/* Botones naranja */
+.btn-warning {
+  background-color: var(--naranja) !important;
+  color: white !important;
+  font-weight: 700;
+}
+
+.btn-warning:hover {
+  background-color: var(--naranja-oscuro) !important;
+}

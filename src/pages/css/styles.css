@@ -1,0 +1,135 @@
+/* Paleta naranja EM mundial + contraste alto */
+:root {
+  --naranja-principal: #fa4700;
+  --naranja-hover: #f97316;
+  --naranja-texto: #fa4700;
+  --bg-claro: #fff7ed;
+  --texto-principal: #333;
+  --texto-secundario: #555;
+}
+
+/* Fondo suave y legible */
+body {
+  background: var(--bg-claro);
+  color: var(--texto-principal);
+  padding-top: 80px;
+}
+
+/* Navbar y footer naranja puro */
+.navbar-dark.bg-warning, .bg-warning {
+  background-color: var(--naranja-principal) !important;
+}
+
+.nav-link {
+  color: white !important;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background: var(--naranja-hover);
+  border-radius: 8px;
+}
+
+/* Cards legible */
+.card {
+  background: white;
+  border: 2px solid var(--naranja-principal);
+  border-radius: 12px;
+}
+
+.card-title {
+  color: var(--naranja-texto);
+}
+
+/* Botones */
+.btn-warning {
+  background: var(--naranja-principal);
+  border: none;
+}
+
+.btn-warning:hover {
+  background: var(--naranja-hover);
+}
+
+/* Form legible */
+.form-control, .form-select, textarea {
+  border: 2px solid var(--naranja-principal);
+}
+
+.form-control:focus, .form-select:focus, textarea:focus {
+  border-color: var(--naranja-hover);
+  box-shadow: 0 0 0 0.25rem rgba(250, 71, 0, 0.25);
+}
+
+/* Footer sticky al fondo */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1; /* El contenido crece y empuja el footer abajo */
+}
+
+footer {
+  margin-top: auto; /* Empuja al footer al final */
+  width: 100%;
+}
+
+/* Colores naranja consistentes para todo el sitio */
+:root {
+  --naranja: #fa4700;
+  --naranja-oscuro: #d93e00;
+  --naranja-claro: #ff6b00;
+}
+
+/* Títulos */
+h1, h2, h3 {
+  color: var(--naranja) !important;
+}
+
+/* Botones principales */
+.btn-warning, .btn-warning:hover, .btn-warning:focus, .btn-warning:active {
+  background-color: var(--naranja) !important;
+  border-color: var(--naranja) !important;
+  color: white !important;
+}
+
+.btn-warning:hover {
+  background-color: var(--naranja-oscuro) !important;
+}
+
+/* Formularios: foco y errores */
+.form-control:focus {
+  border-color: var(--naranja) !important;
+  box-shadow: 0 0 0 0.25rem rgba(250, 71, 0, 0.25) !important;
+}
+
+.invalid-feedback {
+  color: var(--naranja) !important;
+}
+
+/* Mensajes de éxito y error */
+.text-success {
+  color: var(--naranja) !important;
+}
+
+.text-danger {
+  color: var(--naranja) !important;
+}
+
+/* Navbar (asegura que sea naranja) */
+.navbar.bg-warning {
+  background-color: var(--naranja) !important;
+}
+
+/* Footer */
+footer.bg-warning {
+  background-color: var(--naranja) !important;
+}

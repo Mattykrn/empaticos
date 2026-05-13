@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EMpaticos es tu comunidad de apoyo para personas con Esclerosis Múltiple. Historias reales, noticias actualizadas y esperanza. No estás solo ❤️">
+  <title>EMpaticos – Apoyo y Esperanza en Esclerosis Múltiple</title>
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <!-- AdSense loader -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5271427929340508" crossorigin="anonymous"></script>
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <!-- HEADER NARANJA -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="./images/LogoEMpaticos2.png" alt="EMpaticos" height="60" class="me-3 rounded" />
+        <span class="fw-bold fs-3">EMpaticos</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link fw-bold" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="noticias.html">Noticias</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="unirme.html">Unirme</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="historias.html">Historias</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="nosotros.html">Nosotros</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5 pt-5">
+    <!-- Contador de visitas -->
+    <p class="text-center text-muted small">Visitas: <span id="contador-visitas">0</span></p>
+
+    <!-- Saludo personalizado -->
+    <h2 id="saludo-personalizado" class="text-center fw-bold mb-4">Bienvenido a EMpaticos ❤️</h2>
+
+    <p class="lead text-center">Tu espacio de apoyo y comprensión.</p>
+    <p class="text-center">Aquí dejo un video explicativo sobre la esclerosis múltiple.</p>
+    <div class="ratio ratio-16x9 mb-5 mx-auto" style="max-width: 800px;">
+      <iframe id="video-em" src="https://www.youtube.com/embed/gbkrlXuzodU" title="Qué es la EM" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <!-- Mensaje después de reproducir video -->
+    <p id="mensaje-video" class="text-center text-success fw-bold" style="display: none;">
+      ¡Gracias por informarte! Cada paso cuenta ❤️
+    </p>
+
+    <!-- Frases motivadoras dinámicas -->
+    <section class="my-5">
+      <h3 class="text-center mb-4">Frases que nos inspiran</h3>
+      <div id="frases-container" class="row g-4"></div>
+    </section>
+
+    <!-- Botón Ver más -->
+    <div class="text-center my-5">
+      <button id="ver-mas-btn" class="btn btn-warning btn-lg">
+        Ver más historias motivadoras
+      </button>
+    </div>
+
+    <!-- Contenido oculto -->
+    <div id="mas-contenido" class="text-center" style="display: none;">
+      <p class="lead">Seguimos adelante juntos. Cada día es una oportunidad para ser más fuertes.</p>
+      <p>Tu historia también puede inspirar a alguien más.</p>
+    </div>
+
+    <!-- ANUNCIO -->
+    <div class="text-center my-5">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5271427929340508"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-warning text-white text-center py-5 mt-5">
+    <div class="container">
+      <p class="fs-5 fw-bold">EMpaticos © 2025 – No estás solo ❤️</p>
+      <p>Contactanos: matii.toorres.06@gmail.com</p>
+    </div>
+  </footer>
+
+  <!-- Activa Auto Ads -->
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
+  <script>
+    // === JavaScript del curso (Clases 10-19) ===
+
+    // Clase 12 + 16: Closure + localStorage para contador de visitas
+    function crearContadorVisitas() {
+      let visitas = localStorage.getItem('visitas') || 0;
+      visitas = Number(visitas);
+
+      return function () {
+        visitas++;
+        localStorage.setItem('visitas', visitas);
+        document.getElementById('contador-visitas').textContent = visitas;
+      };
+    }
+    const incrementarVisitas = crearContadorVisitas();
+    incrementarVisitas(); // Ejecuta al cargar
+
+    // Clase 10 + 11: Saludo personalizado según hora (template literal + condicional)
+    const hora = new Date().getHours();
+    let saludo = "";
+    if (hora < 12) saludo = "¡Buenos días!";
+    else if (hora < 18) saludo = "¡Buenas tardes!";
+    else saludo = "¡Buenas noches!";
+    document.getElementById('saludo-personalizado').textContent = `${saludo} Bienvenido a EMpaticos ❤️`;
+
+    // Clase 14 + 16: Frases motivadoras dinámicas (array + map + createElement)
+    const frases = [
+      "Cada día es una oportunidad para ser más fuerte.",
+      "La esperanza nunca se rinde.",
+      "Juntos somos más fuertes.",
+      "Tu historia puede cambiar la de alguien más.",
+      "No estás solo en este camino ❤️"
+    ];
+
+    function renderizarFrases() {
+      const container = document.getElementById('frases-container');
+      if (!container) return; // Guard clause (Clase 19)
+
+      frases
+        .map(frase => {
+          const col = document.createElement('div');
+          col.className = 'col-md-6 col-lg-4';
+          const card = document.createElement('div');
+          card.className = 'card h-100 shadow-sm';
+          card.innerHTML = `<div class="card-body text-center"><p class="card-text fs-5">${frase}</p></div>`;
+          col.appendChild(card);
+          return col;
+        })
+        .forEach(col => container.appendChild(col));
+    }
+    renderizarFrases();
+
+    // Clase 15: Evento para botón "Ver más"
+    document.getElementById('ver-mas-btn').addEventListener('click', () => {
+      const mas = document.getElementById('mas-contenido');
+      if (mas.style.display === 'none') {
+        mas.style.display = 'block';
+        document.getElementById('ver-mas-btn').textContent = 'Ocultar';
+      } else {
+        mas.style.display = 'none';
+        document.getElementById('ver-mas-btn').textContent = 'Ver más historias motivadoras';
+      }
+    });
+
+    // Clase 17: Mensaje al reproducir video (eventos play/pause)
+    document.getElementById('video-em').addEventListener('play', () => {
+      document.getElementById('mensaje-video').style.display = 'block';
+    });
+
+    document.getElementById('video-em').addEventListener('pause', () => {
+      document.getElementById('mensaje-video').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
