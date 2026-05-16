@@ -1,5 +1,5 @@
 // ==================== NOTICIAS - Clase 14 + 18 + 20 ====================
-// Matii: Uso array + map + filter para renderizar dinámicamente (como vimos en las clases)
+// Matii: acá uso array + map + filter para renderizar dinámicamente, tal como lo venimos trabajando.
 
 const noticias = [
   {
@@ -84,16 +84,16 @@ function cargarNoticias() {
       ? noticias 
       : noticias.filter(n => n.fecha.startsWith(filtro));
 
-    if (filtradas.length === 0) {
+    const ordenadas = [...filtradas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    if (ordenadas.length === 0) {
       container.innerHTML = `<p class="col-12 text-center text-muted fw-bold mt-5 fs-5">No se encontraron noticias publicadas en ese año.</p>`;
       return;
     }
 
-    // Ordenar de más reciente a más antigua
-    filtradas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-    filtradas.forEach((noticia, index) => {
-      // Intentamos parsear la fecha para que se vea linda
+    const fragment = document.createDocumentFragment();
+    ordenadas.forEach((noticia, index) => {
+      // Acá formateo la fecha para que se vea prolija en español.
       const dateParts = noticia.fecha.split('-');
       const formatedDate = dateParts.length === 3 
         ? new Date(dateParts[0], dateParts[1]-1, dateParts[2]).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -102,7 +102,7 @@ function cargarNoticias() {
       const col = document.createElement("div");
       col.className = "col";
 
-      // Si la noticia no tenía imagen definida explícita, usamos un placeholder premium genérico
+      // Si falta imagen, meto un placeholder para que no se rompa el diseño.
       const imagenUrl = noticia.imagen || "https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?w=500&q=80";
 
       col.innerHTML = `
@@ -117,22 +117,21 @@ function cargarNoticias() {
         </div>
       `;
 
-      container.appendChild(col);
+      fragment.appendChild(col);
     });
+
+    container.appendChild(fragment);
   }
 
-  // Escuchamos el select para filtrar:
+  // Cuando cambia el select, vuelvo a pintar según el año elegido.
   if (filtroSelect) {
     filtroSelect.addEventListener("change", (e) => {
       renderizarNoticias(e.target.value);
     });
   }
 
-  // Simulamos carga para darle estética profesional
-  setTimeout(() => {
-    renderizarNoticias("todos");
-  }, 600);
+  requestAnimationFrame(() => renderizarNoticias("todos"));
 }
 
-// Ejecutar directamente cuando el script cargue
+// Lo ejecuto al cargar el DOM.
 document.addEventListener("DOMContentLoaded", cargarNoticias);

@@ -7,6 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('btn-login').addEventListener('click', login);
   document.getElementById('btn-logout').addEventListener('click', logout);
   document.getElementById('btn-reload').addEventListener('click', loadStories);
+
+  const list = document.getElementById('stories-list');
+  if (list) {
+    list.addEventListener('click', (event) => {
+      const approveBtn = event.target.closest('.btn-approve');
+      if (approveBtn) {
+        approveStory(approveBtn.getAttribute('data-id'));
+        return;
+      }
+
+      const rejectBtn = event.target.closest('.btn-reject');
+      if (rejectBtn) {
+        rejectStory(rejectBtn.getAttribute('data-id'));
+      }
+    });
+  }
 });
 
 function login() {
@@ -52,6 +68,8 @@ async function loadStories() {
       return;
     }
 
+    const fragment = document.createDocumentFragment();
+
     querySnapshot.forEach((documento) => {
       const story = documento.data();
       const id = documento.id;
@@ -70,17 +88,10 @@ async function loadStories() {
           </div>
         </div>
       `;
-      list.appendChild(col);
+      fragment.appendChild(col);
     });
 
-    // Agregar eventos a botones generados
-    document.querySelectorAll('.btn-approve').forEach(btn => {
-      btn.addEventListener('click', () => approveStory(btn.getAttribute('data-id')));
-    });
-
-    document.querySelectorAll('.btn-reject').forEach(btn => {
-      btn.addEventListener('click', () => rejectStory(btn.getAttribute('data-id')));
-    });
+    list.appendChild(fragment);
 
   } catch (err) {
     console.error('Error al cargar historias:', err);

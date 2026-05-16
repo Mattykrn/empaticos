@@ -14,7 +14,7 @@ async function cargarHistoriasPublicas() {
   }
 
   try {
-    // Consultar solo las aprobadas
+    // Acá traigo solo las historias aprobadas para mostrarlas en público.
     const q = query(
       collection(db, "historias"),
       where("aprobado", "==", true)
@@ -31,10 +31,12 @@ async function cargarHistoriasPublicas() {
     }
 
     let index = 0;
+    const fragment = document.createDocumentFragment();
+
     querySnapshot.forEach((documento) => {
       const historia = documento.data();
       
-      // Formato de fecha si existe
+      // Si hay fecha en Firestore, la convierto a formato legible.
       let formatedDate = "Pronto";
       if (historia.fecha) {
         formatedDate = historia.fecha.toDate().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -56,9 +58,11 @@ async function cargarHistoriasPublicas() {
         </div>
       `;
 
-      container.appendChild(col);
+      fragment.appendChild(col);
       index++;
     });
+
+    container.appendChild(fragment);
 
   } catch (error) {
     console.error("Error cargando historias desde Firestore:", error);
@@ -67,5 +71,5 @@ async function cargarHistoriasPublicas() {
   }
 }
 
-// Ejecutar al cargar el documento
+// Arranco la carga apenas el DOM está listo.
 document.addEventListener("DOMContentLoaded", cargarHistoriasPublicas);
