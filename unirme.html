@@ -53,20 +53,15 @@
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="card shadow p-4">
-          <form id="form-unirme" action="https://formsubmit.co/matii.toorres.06@gmail.com" method="POST">
-            <!-- Redireccion oculta al enviar -->
-            <input type="hidden" name="_next" value="./historias.html">
-            <input type="hidden" name="_subject" value="❤️ ¡NUEVA HISTORIA EN EMPATICOS!">
-            <input type="hidden" name="_captcha" value="false">
-
+          <form id="form-unirme" action="/api/testimonios" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="nombre" class="form-label">Tu nombre (opcional)</label>
-              <input type="text" class="form-control" id="nombre" name="Nombre" placeholder="Ej: Matías">
+              <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Matías">
             </div>
 
             <div class="mb-3">
               <label for="tipoEM" class="form-label">Tipo de Esclerosis Múltiple *</label>
-              <select class="form-select" id="tipoEM" name="Tipo_EM" required>
+              <select class="form-select" id="tipoEM" name="tipoEM" required>
                 <option value="">Seleccioná tu fenotipo...</option>
                 <option value="SCA">Síndrome clínico aislado (SCA)</option>
                 <option value="EMRR">Remitente-recurrente (EMRR)</option>
@@ -77,7 +72,7 @@
 
             <div class="mb-3">
               <label for="ubicacion" class="form-label">Tu ubicación (opcional)</label>
-              <input type="text" class="form-control" id="ubicacion" name="Ubicacion" placeholder="Ciudad, País">
+              <input type="text" class="form-control" id="ubicacion" name="ubicacion" placeholder="Ciudad, País">
             </div>
 
             <div class="mb-3">
@@ -95,12 +90,12 @@
             </div>
 
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="anonimo-checkbox" name="Anonimo">
+              <input type="checkbox" class="form-check-input" id="anonimo-checkbox" name="anonimo">
               <label class="form-check-label" for="anonimo-checkbox">Quiero permanecer anónimo</label>
             </div>
 
             <div class="text-center">
-              <button id="submit-btn" type="submit" class="btn btn-warning btn-lg px-5 py-3">Enviar Historia al Mail ❤️</button>
+              <button id="submit-btn" type="submit" class="btn btn-warning btn-lg px-5 py-3">Enviar Historia ❤️</button>
             </div>
           </form>
 

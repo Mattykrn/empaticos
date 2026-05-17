@@ -136,26 +136,49 @@ const db = new sqlite3.Database('./testimonios.db', (err) => {
         nombre TEXT NOT NULL,
         testimonio TEXT NOT NULL,
         ubicacion TEXT NOT NULL,
+        tipoEM TEXT,
         foto TEXT,
         aprobado INTEGER DEFAULT 1,
+        anonimo INTEGER DEFAULT 0,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `, (err) => {
       if (err) {
         console.error('Error al crear tabla:', err);
       } else {
-        // Verificar si la columna 'aprobado' existe
+        // Verificar si las columnas 'aprobado', 'tipoEM' y 'anonimo' existen
         db.all("PRAGMA table_info(testimonios)", (err, columns) => {
           if (!err && columns) {
             const tieneAprobado = columns.some(col => col.name === 'aprobado');
-            
-            // Si no existe la columna, agregarla
+            const tieneTipoEM = columns.some(col => col.name === 'tipoEM');
+            const tieneAnonimo = columns.some(col => col.name === 'anonimo');
+
             if (!tieneAprobado) {
               db.run('ALTER TABLE testimonios ADD COLUMN aprobado INTEGER DEFAULT 1', (err) => {
                 if (err) {
                   console.error('Error al agregar columna aprobado:', err);
                 } else {
                   console.log('Columna aprobado agregada a la tabla');
+                }
+              });
+            }
+
+            if (!tieneTipoEM) {
+              db.run('ALTER TABLE testimonios ADD COLUMN tipoEM TEXT', (err) => {
+                if (err) {
+                  console.error('Error al agregar columna tipoEM:', err);
+                } else {
+                  console.log('Columna tipoEM agregada a la tabla');
+                }
+              });
+            }
+
+            if (!tieneAnonimo) {
+              db.run('ALTER TABLE testimonios ADD COLUMN anonimo INTEGER DEFAULT 0', (err) => {
+                if (err) {
+                  console.error('Error al agregar columna anonimo:', err);
+                } else {
+                  console.log('Columna anonimo agregada a la tabla');
                 }
               });
             }
@@ -168,21 +191,23 @@ const db = new sqlite3.Database('./testimonios.db', (err) => {
 
 // Ruta para guardar un testimonio con foto
 app.post('/api/testimonios', upload.single('imagen'), (req, res) => {
-  const { nombre, testimonio, ubicacion } = req.body;
-  
+  const { nombre, testimonio, ubicacion, tipoEM, anonimo } = req.body;
+  const anonimoValue = anonimo === '1' || anonimo === 'on';
+  const nombreFinal = anonimoValue ? 'Anónimo' : (nombre || 'Anónimo');
+
   // Validar campos requeridos
-  if (!nombre || !testimonio || !ubicacion) {
+  if (!nombreFinal || !testimonio || !ubicacion) {
     if (req.file) fs.unlinkSync(req.file.path); // Eliminar foto si existe
     return res.status(400).json({ error: 'Todos los campos son requeridos' });
   }
-  
+
   // Validar contenido de texto
   const validacionTexto = validarTexto(testimonio);
   if (!validacionTexto.valido) {
     if (req.file) fs.unlinkSync(req.file.path);
     return res.status(400).json({ error: validacionTexto.motivo });
   }
-  
+
   // Validar imagen si se subió
   if (req.file) {
     const validacionImagen = validarImagen(req.file);
@@ -191,12 +216,12 @@ app.post('/api/testimonios', upload.single('imagen'), (req, res) => {
       return res.status(400).json({ error: validacionImagen.motivo });
     }
   }
-  
+
   const foto = req.file ? `/uploads/${req.file.filename}` : null;
 
   db.run(
-    'INSERT INTO testimonios (nombre, testimonio, ubicacion, foto, aprobado) VALUES (?, ?, ?, ?, 1)',
-    [nombre, testimonio, ubicacion, foto],
+    'INSERT INTO testimonios (nombre, testimonio, ubicacion, tipoEM, foto, aprobado, anonimo) VALUES (?, ?, ?, ?, ?, 1, ?)',
+    [nombreFinal, testimonio, ubicacion, tipoEM || null, foto, anonimoValue ? 1 : 0],
     function (err) {
       if (err) {
         console.error('Error al guardar testimonio:', err);
@@ -205,10 +230,12 @@ app.post('/api/testimonios', upload.single('imagen'), (req, res) => {
       }
       res.json({
         id: this.lastID,
-        nombre,
+        nombre: nombreFinal,
         testimonio,
         ubicacion,
+        tipoEM: tipoEM || null,
         foto,
+        anonimo: anonimoValue,
         mensaje: 'Testimonio guardado exitosamente'
       });
     }
