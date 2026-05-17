@@ -6,7 +6,7 @@ const fs = require('fs');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Habilitar CORS
 app.use(cors());
@@ -123,7 +123,8 @@ app.get('/', (req, res) => {
 });
 
 // Inicializar base de datos SQLite
-const db = new sqlite3.Database('./testimonios.db', (err) => {
+const dbFile = path.join(__dirname, 'testimonios.db');
+const db = new sqlite3.Database(dbFile, (err) => {
   if (err) {
     console.error('Error al conectar a SQLite:', err);
   } else {

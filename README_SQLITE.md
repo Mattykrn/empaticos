@@ -73,10 +73,30 @@ Servidor ejecutándose en http://localhost:3000
 - `DELETE /api/testimonios/:id` - Eliminar un testimonio
 - `GET /uploads/:filename` - Acceder a las fotos guardadas
 
+## 🚀 Despliegue con SQLite
+
+Para que SQLite funcione bien en producción, el proyecto debe ejecutarse en un servidor Node con almacenamiento persistente.
+
+Opciones recomendadas:
+
+- Render
+- Railway
+- Fly.io
+- DigitalOcean App Platform
+
+Con Docker puedes llevar la app a cualquiera de esas plataformas:
+
+```bash
+docker build -t empaticos .
+docker run -p 3000:3000 empaticos
+```
+
+Asegúrate de que el directorio `uploads/` y el archivo `testimonios.db` sean persistentes en la plataforma.
+
 ## ⚠️ Importante
 
 - El servidor debe estar corriendo en todo momento para que funcione la aplicación
-- Asegúrate de que el puerto 3000 esté disponible
+- El puerto se toma de `process.env.PORT` si está disponible
 - Las fotos se guardan localmente en la carpeta `uploads/`
 
 ## 🎓 Para Vercel (despliegue)
