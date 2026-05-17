@@ -91,6 +91,8 @@ docker build -t empaticos .
 docker run -p 3000:3000 empaticos
 ```
 
+También puedes usar Render con `render.yaml`, que ya está incluido en el proyecto.
+
 Asegúrate de que el directorio `uploads/` y el archivo `testimonios.db` sean persistentes en la plataforma.
 
 ## ⚠️ Importante
