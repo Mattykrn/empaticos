@@ -3,6 +3,21 @@
 
 const noticias = [
   {
+    titulo: "Eventos de Día Mundial de EM en América Latina: charlas, caminatas y talleres",
+    resumen: "Este mayo, asociaciones de Argentina, México y Brasil anuncian actividades públicas para el Día Mundial de la EM: charlas informativas, caminatas solidarias y jornadas de apoyo comunitario.",
+    fecha: "2026-05-30",
+    visibleHasta: "2026-05-31",
+    imagen: "https://images.unsplash.com/photo-1508385082359-f38ae991e8f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    link: "https://www.worldmsday.org"
+  },
+  {
+    titulo: "EMA aprueba nuevos tratamientos para Esclerosis Múltiple en 2026",
+    resumen: "La Agencia Europea de Medicamentos da luz verde a nuevas terapias de EM, lo que impulsa el acceso a tratamientos innovadores y mayor cobertura en América Latina.",
+    fecha: "2026-05-17",
+    imagen: "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    link: "https://espanol.medscape.com/viewarticle/agencia-europea-medicamentos-aprueba-tratamientos-esclerosis-2026a1000ewt"
+  },
+  {
     titulo: "Gen de los yaks podría reparar la mielina",
     resumen: "Un gen adaptado a la vida en altura muestra potencial para regenerar la mielina dañada en pacientes con EM.",
     fecha: "2026-03-22",
@@ -16,6 +31,7 @@ const noticias = [
     imagen: "https://images.unsplash.com/photo-1576086213369-97a306d36557?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
     link: "https://www.campus.sanofi/es/esclerosis-multiple/biomarcadores"
   },
+
   {
     titulo: "Descubrimiento sobre la muerte neuronal en EM",
     resumen: "Investigadores de Johns Hopkins identificaron el mecanismo molecular de la muerte neuronal, abriendo la puerta a terapias más protectoras.",
@@ -80,9 +96,11 @@ function cargarNoticias() {
     if (loading) loading.style.display = "none";
     if (error) error.style.display = "none";
 
-    const filtradas = filtro === "todos" 
+    const hoy = new Date();
+    const filtradas = (filtro === "todos" 
       ? noticias 
-      : noticias.filter(n => n.fecha.startsWith(filtro));
+      : noticias.filter(n => n.fecha.startsWith(filtro)))
+      .filter(n => !n.visibleHasta || new Date(n.visibleHasta) >= hoy);
 
     const ordenadas = [...filtradas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 

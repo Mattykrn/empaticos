@@ -60,3 +60,21 @@ h1, h2, h3 {
 .btn-warning:hover {
   background-color: var(--naranja-oscuro) !important;
 }
+
+/* Tarjetas de recursos */
+.recurso-card {
+  background-color: #fff8f2;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 90, 31, 0.15);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.recurso-card h3 {
+  color: #d45114;
+  margin-bottom: 1rem;
+}
+
+.recurso-card p {
+  color: #444;
+  line-height: 1.6;
+}
