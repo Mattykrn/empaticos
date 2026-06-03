@@ -9,15 +9,19 @@
   --surface: rgba(255,255,255,0.92);
   --surface-strong: rgba(255,255,255,0.95);
   --card-border: rgba(226, 232, 240, 0.9);
+  --heading: #111827;
+  --card-text: #475569;
 }
 
 :root[data-theme="dark"] {
-  --text: #f8fafc;
+  --text: #eef2ff;
   --muted: #cbd5e1;
   --bg: #07101f;
   --surface: rgba(15, 23, 42, 0.92);
   --surface-strong: rgba(15, 23, 42, 0.98);
   --card-border: rgba(148, 163, 184, 0.22);
+  --heading: #ffffff;
+  --card-text: #cbd5e1;
 }
 
 * {
@@ -42,6 +46,54 @@ body {
   background: radial-gradient(circle at top left, rgba(255, 90, 31, 0.14), transparent 20%),
               radial-gradient(circle at bottom right, rgba(0, 158, 227, 0.12), transparent 18%),
               var(--bg);
+}
+
+body,
+p,
+span,
+label,
+button,
+input,
+textarea,
+select,
+.card-title,
+.card-text,
+.lead,
+.form-label {
+  color: var(--text) !important;
+}
+
+.text-muted,
+.page-heading p,
+.hero-section .lead,
+.form-text,
+small,
+.card-subtitle {
+  color: var(--muted) !important;
+}
+
+:root[data-theme="dark"] .navbar,
+:root[data-theme="dark"] .navbar-brand,
+:root[data-theme="dark"] .nav-link,
+:root[data-theme="dark"] .navbar-toggler-icon {
+  color: var(--text) !important;
+}
+
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .section-card,
+:root[data-theme="dark"] .form-card,
+:root[data-theme="dark"] .highlight-panel,
+:root[data-theme="dark"] .support-card,
+:root[data-theme="dark"] .video-wrapper,
+:root[data-theme="dark"] .news-card,
+:root[data-theme="dark"] .story-card {
+  background: var(--surface-strong);
+  border-color: var(--card-border);
+}
+
+:root[data-theme="dark"] .btn-outline-light {
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.85) !important;
 }
 
 .navbar {

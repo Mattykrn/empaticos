@@ -27,14 +27,17 @@ const navItems = [
 ];
 
 function ThemeToggle({ darkMode, onToggle }) {
+  const icon = darkMode ? '☀️' : '🌙';
+  const label = darkMode ? 'Modo claro' : 'Modo oscuro';
   return (
     <button
       type="button"
-      className={`btn btn-outline-light btn-sm rounded-pill ${darkMode ? 'btn-glow' : ''}`}
+      className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'} btn-sm rounded-pill btn-glow d-flex align-items-center gap-2`}
       onClick={onToggle}
       title="Cambiar modo claro/oscuro"
     >
-      {darkMode ? 'Modo claro' : 'Modo oscuro'}
+      <span>{icon}</span>
+      <span>{label}</span>
     </button>
   );
 }
