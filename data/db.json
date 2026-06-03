@@ -1,0 +1,12 @@
+{
+  "stories": [
+    {
+      "id": 1,
+      "name": "Matías",
+      "type": "EMRR",
+      "story": "Bienvenido a la sección de Historias. A partir de ahora, cuando alguien llene el formulario de 'Unirme', te llegará directamente a tu correo. Luego, podrás ver las historias aquí.",
+      "anonymous": false,
+      "createdAt": "2026-03-26T00:00:00Z"
+    }
+  ]
+}
