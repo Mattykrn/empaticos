@@ -31,7 +31,10 @@
        Solo para desarrollo y demostración, no para producción. -->
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
 
-  <!-- Configuración del backend. Cambiá esta URL cuando el backend se despliegue en línea. -->
+  <!-- Configuración del backend.
+       Si trabajás en local, el frontend usará localhost:4000.
+       Cuando despliegues el backend, reemplazá la URL de abajo.
+  -->
   <script>
     window.EMPATICOS_API_BASE = window.location.hostname === 'localhost'
       ? 'http://localhost:4000/api'

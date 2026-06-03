@@ -8,9 +8,13 @@
 const { useState, useEffect } = React;
 const { HashRouter, Routes, Route, NavLink, useLocation } = ReactRouterDOM;
 
-// API base URL for the local Node backend.
+// API base URL for the Node backend.
 // If `window.EMPATICOS_API_BASE` is set in index.html, the app uses it.
-const API_BASE = window.EMPATICOS_API_BASE || 'http://localhost:4000/api';
+// If the placeholder remains, hace fallback al backend local.
+const API_PLACEHOLDER = 'https://TU_BACKEND_URL/api';
+const API_BASE = window.EMPATICOS_API_BASE && window.EMPATICOS_API_BASE !== API_PLACEHOLDER
+  ? window.EMPATICOS_API_BASE
+  : 'http://localhost:4000/api';
 
 // Navigation items shown in the header menu.
 const navItems = [
