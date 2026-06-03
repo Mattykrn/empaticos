@@ -275,8 +275,8 @@ function Noticias() {
     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
   return (
-    <main className="container py-5">
-      <div className="text-center mb-5">
+    <main className="container py-5 section-card">
+      <div className="page-heading text-center mb-5">
         <h1 className="fw-bold display-5 text-warning mb-3">Noticias Reales sobre EM</h1>
         <p className="lead text-muted">Avanzamos juntos con los mejores avances científicos y apoyo de la comunidad.</p>
       </div>
@@ -304,7 +304,7 @@ function Noticias() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {filtered.map((noticia) => (
             <article key={noticia.titulo} className="col">
-              <div className="card h-100 shadow-sm border-0 rounded-4 text-start" style={{ backgroundColor: '#FAFAFA' }}>
+              <div className="card card-modern news-card h-100">
                 <img src={noticia.imagen} className="card-img-top news-image" alt={noticia.titulo} />
                 <div className="card-body d-flex flex-column p-4">
                   <span className="text-muted fw-bold mb-2">🗓️ {formatoFecha(noticia.fecha)}</span>
@@ -364,8 +364,8 @@ function Historias() {
   }, []);
 
   return (
-    <main className="container py-5">
-      <div className="text-center mb-5">
+    <main className="container py-5 section-card">
+      <div className="page-heading text-center mb-5">
         <h1 className="fw-bold display-5 text-warning mb-3">Historias Reales ❤️</h1>
         <p className="lead text-muted">Testimonios de nuestra comunidad que inspiran, emocionan y acompañan.</p>
       </div>
@@ -386,7 +386,7 @@ function Historias() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {stories.map((story) => (
             <div key={story.id} className="col">
-              <article className="card h-100 shadow-sm border-0 rounded-4 d-flex flex-column" style={{ backgroundColor: '#fff9f2' }}>
+              <article className="card card-modern story-card h-100 d-flex flex-column">
                 <div className="card-body">
                   <h5 className="card-title fw-bold text-dark">{story.name || 'Amigo EMpaticos'}</h5>
                   <h6 className="card-subtitle mb-3 text-warning fw-bold">{story.type || 'Historia EM'}</h6>
@@ -403,7 +403,7 @@ function Historias() {
         </div>
       )}
 
-      <div className="mt-5 text-center text-muted">
+      <div className="mt-5 text-center section-note">
         <p className="mb-1">Nota: ahora el formulario envía historias a un backend Node.js local.</p>
         <p className="mb-0">Si el servidor no está activo, verás un ejemplo estático hasta que lo inicies.</p>
       </div>
@@ -465,15 +465,15 @@ function Unirme() {
   }
 
   return (
-    <main className="container py-5">
-      <div className="text-center mb-5">
+    <main className="container py-5 section-card">
+      <div className="page-heading text-center mb-5">
         <h1 className="fw-bold display-5">Unirme a EMpaticos ❤️</h1>
         <p className="lead text-muted">Compartí tu historia y ayudá a otros a sentirse acompañados.</p>
       </div>
 
       <div className="row justify-content-center">
         <div className="col-lg-8">
-          <div className="card shadow p-4 rounded-4">
+          <div className="card card-modern form-card shadow-sm p-4">
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="nombre" className="form-label">Tu nombre (opcional)</label>
@@ -558,13 +558,13 @@ function Nosotros() {
   }, []);
 
   return (
-    <main className="container py-5">
-      <div className="text-center mb-5">
+    <main className="container py-5 section-card">
+      <div className="page-heading text-center mb-5">
         <h1 className="fw-bold display-5 text-warning mb-3">Quiénes Somos ❤️</h1>
         <p className="lead text-muted">Conocé nuestra misión, visión y el propósito humano que impulsa EMpaticos.</p>
       </div>
 
-      <div className="text-center mb-5 px-3 py-4 rounded-4" style={{ background: 'rgba(255, 90, 31, 0.05)' }}>
+      <div className="highlight-panel text-center mb-5">
         <p className="lead mb-1">Ya tenemos</p>
         <div className="fw-bold display-6 text-warning">{storyCount}</div>
         <p className="mb-0">historias compartidas en esta comunidad.</p>
@@ -572,16 +572,16 @@ function Nosotros() {
 
       <div className="row g-4 justify-content-center">
         <div className="col-md-5">
-          <div className="card h-100 shadow-sm border-0 rounded-4 text-center p-4">
-            <div className="mb-3" style={{ fontSize: '3rem' }}>🎯</div>
-            <h2 style={{ color: 'var(--naranja)' }}>Nuestra Misión</h2>
+          <div className="card card-modern h-100 text-center p-4">
+            <div className="mb-3 display-4">🎯</div>
+            <h2 className="text-warning">Nuestra Misión</h2>
             <p className="text-muted mt-2">Crear un espacio seguro, moderno y lleno de amor donde podamos compartir experiencias, aprender de expertos y sentir que nunca estamos solos en este camino.</p>
           </div>
         </div>
         <div className="col-md-5">
-          <div className="card h-100 shadow-sm border-0 rounded-4 text-center p-4">
-            <div className="mb-3" style={{ fontSize: '3rem' }}>👁️</div>
-            <h2 style={{ color: 'var(--naranja)' }}>Nuestra Visión</h2>
+          <div className="card card-modern h-100 text-center p-4">
+            <div className="mb-3 display-4">👁️</div>
+            <h2 className="text-warning">Nuestra Visión</h2>
             <p className="text-muted mt-2">Ser la comunidad premium de referencia global para apoyo emocional y empoderamiento de personas con Esclerosis Múltiple, ofreciendo herramientas reales.</p>
           </div>
         </div>
@@ -615,8 +615,8 @@ function Admin() {
   }
 
   return (
-    <main className="container py-5">
-      <div className="text-center mb-5">
+    <main className="container py-5 section-card">
+      <div className="page-heading text-center mb-5">
         <h1 className="fw-bold display-5 text-warning mb-3">Panel Admin</h1>
         <p className="lead text-muted">Accedé de forma segura y mirá los próximos pasos del sitio.</p>
       </div>
@@ -624,7 +624,7 @@ function Admin() {
       {!loggedIn ? (
         <div className="row justify-content-center">
           <div className="col-md-5">
-            <div className="card shadow-sm rounded-4 border-0 p-4">
+            <div className="card card-modern shadow-sm rounded-4 border-0 p-4">
               <h3 className="fw-bold mb-4">Acceso Reservado</h3>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
@@ -643,8 +643,8 @@ function Admin() {
           </div>
         </div>
       ) : (
-        <div className="card shadow-sm rounded-4 border-0 p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="card card-modern shadow-sm rounded-4 border-0 p-4">
+          <div className="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row gap-3">
             <div>
               <h3 className="fw-bold">Administrador</h3>
               <p className="text-muted mb-0">Por ahora tengo solo el acceso de prueba. En el próximo paso voy a integrar Firebase aquí.</p>
@@ -672,16 +672,16 @@ function SupportModal() {
           </div>
           <div className="modal-body text-center p-4">
             <p className="text-muted mb-4">Todo aporte nos permite mantener la página online y seguir compartiendo historias. ¡Gracias de todo corazón!</p>
-            <div className="card border-2 border-warning rounded-4 mb-3 shadow-sm" style={{ backgroundColor: '#fffaf0' }}>
+            <div className="card card-modern support-card border-warning mb-3">
               <div className="card-body py-3">
-                <h6 className="text-warning fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>🇦🇷 Cuenta Argentina</h6>
+                <h6 className="text-warning fw-bold mb-2 text-uppercase">🇦🇷 Cuenta Argentina</h6>
                 <p className="mb-1 text-muted">Alias Brubank</p>
                 <h4 className="fw-bolder text-dark mb-0 user-select-all">empaticos</h4>
               </div>
             </div>
-            <div className="card border-2 rounded-4 mb-3 shadow-sm" style={{ backgroundColor: '#fffaf0', borderColor: '#E23D3D' }}>
+            <div className="card card-modern support-card border-danger mb-3">
               <div className="card-body py-3">
-                <h6 className="fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px', color: '#E23D3D' }}>🌍 Cuenta Internacional</h6>
+                <h6 className="fw-bold mb-2 text-uppercase text-danger">🌍 Cuenta Internacional</h6>
                 <p className="mb-1 text-muted">N° de Cuenta Astropay</p>
                 <h4 className="fw-bolder text-dark mb-0 user-select-all">559328471673</h4>
               </div>
@@ -717,10 +717,12 @@ function Footer() {
  */
 function NotFound() {
   return (
-    <main className="container py-5 text-center">
-      <h1 className="display-5 fw-bold mb-4">Página no encontrada</h1>
-      <p className="lead text-muted mb-4">Esa ruta no existe todavía. Volvé al inicio y seguí navegando.</p>
-      <NavLink to="/" className="btn btn-warning btn-lg px-4">Volver al home</NavLink>
+    <main className="container py-5 section-card text-center">
+      <div className="card card-modern p-5 border-0 mx-auto" style={{ maxWidth: 720 }}>
+        <h1 className="display-5 fw-bold mb-4">Página no encontrada</h1>
+        <p className="lead text-muted mb-4">Esa ruta no existe todavía. Volvé al inicio y seguí navegando.</p>
+        <NavLink to="/" className="btn btn-warning btn-lg px-4 btn-glow">Volver al home</NavLink>
+      </div>
     </main>
   );
 }
