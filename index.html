@@ -31,6 +31,13 @@
        Solo para desarrollo y demostración, no para producción. -->
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
 
+  <!-- Configuración del backend. Cambiá esta URL cuando el backend se despliegue en línea. -->
+  <script>
+    window.EMPATICOS_API_BASE = window.location.hostname === 'localhost'
+      ? 'http://localhost:4000/api'
+      : 'https://TU_BACKEND_URL/api';
+  </script>
+
   <!-- Archivo principal de la aplicación React con rutas y lógica. -->
   <script type="text/babel" src="./js/app.jsx"></script>
 

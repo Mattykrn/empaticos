@@ -8,9 +8,9 @@
 const { useState, useEffect } = React;
 const { HashRouter, Routes, Route, NavLink, useLocation } = ReactRouterDOM;
 
-// API base URL for the local Node backend. If the backend is running,
-// the app uses it to store and load community stories.
-const API_BASE = 'http://localhost:4000/api';
+// API base URL for the local Node backend.
+// If `window.EMPATICOS_API_BASE` is set in index.html, the app uses it.
+const API_BASE = window.EMPATICOS_API_BASE || 'http://localhost:4000/api';
 
 // Navigation items shown in the header menu.
 const navItems = [

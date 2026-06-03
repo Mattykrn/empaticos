@@ -202,9 +202,9 @@ La app React está en `js/app.jsx` y tiene:
 ✅ Tema naranja personalizado
 ✅ Modal de donaciones
 
-## 🚢 Deploy a Vercel
+## 🚢 Deploy del Frontend a Vercel
 
-El proyecto está configurado para deployar a **Vercel**:
+El proyecto está listo para deployar el frontend a **Vercel**.
 
 ```bash
 # 1. Instala Vercel CLI
@@ -214,7 +214,73 @@ npm install -g vercel
 vercel
 ```
 
-**Nota:** El backend Node.js necesita un servidor separado (ej: Railway, Render, Heroku).
+Cuando el frontend esté en Vercel, necesitás un backend Node.js separado.
+
+### 📡 Deploy del Backend
+
+Como la aplicación usa un backend Express + JSON file, te recomiendo usar:
+
+- **Railway**
+- **Render**
+- **Heroku**
+
+Estas plataformas soportan un servidor Node.js en ejecución continua.
+
+### Opción A: Deploy en Railway
+
+1. Crea una cuenta en https://railway.app/
+2. Conecta tu repositorio `Mattykrn/empaticos`
+3. Selecciona el root del proyecto como directorio
+4. Configura el comando de build:
+   ```bash
+   npm install
+   ```
+5. Configura el comando de start:
+   ```bash
+   npm start
+   ```
+6. Despliega el proyecto
+
+Railway te dará una URL tipo `https://mi-backend.up.railway.app`.
+
+### Opción B: Deploy en Render
+
+1. Crea una cuenta en https://render.com/
+2. Crea un nuevo **Web Service**
+3. Conecta tu repositorio `Mattykrn/empaticos`
+4. Elige Node.js y el root del proyecto
+5. Configura:
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+6. Despliega el servicio
+
+Render te dará una URL tipo `https://mi-backend.onrender.com`.
+
+### Configurar la URL del backend en el frontend
+
+En `index.html` hay un script que define:
+
+```html
+<script>
+  window.EMPATICOS_API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://TU_BACKEND_URL/api';
+</script>
+```
+
+Cuando tengas la URL real del backend, reemplazá `https://TU_BACKEND_URL/api` con la URL de tu servicio en Railway o Render.
+
+### Ejemplo final
+
+Si tu backend queda en `https://backend-empaticos.up.railway.app`, el script debe quedar así:
+
+```html
+<script>
+  window.EMPATICOS_API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://backend-empaticos.up.railway.app/api';
+</script>
+```
 
 ## 🔐 Credenciales
 
