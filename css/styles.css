@@ -96,6 +96,89 @@ small,
   border-color: rgba(255,255,255,0.85) !important;
 }
 
+/* Ensure all heading levels use proper dark mode colors */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+  color: var(--heading) !important;
+}
+
+/* Text utilities with dark mode support */
+.text-dark,
+.card-title {
+  color: var(--text) !important;
+}
+
+.text-warning {
+  color: var(--naranja) !important;
+}
+
+.text-danger,
+.text-danger-custom {
+  color: #ff6b6b !important;
+}
+
+:root[data-theme="dark"] .text-danger,
+:root[data-theme="dark"] .text-danger-custom {
+  color: #ff8787 !important;
+}
+
+/* Avatar circle text fix */
+.avatar-circle.text-dark {
+  color: var(--text) !important;
+}
+
+:root[data-theme="dark"] .avatar-circle.text-dark {
+  color: #ffffff !important;
+}
+
+/* Alert boxes dark mode support */
+.alert {
+  color: var(--text) !important;
+}
+
+.alert-warning {
+  background-color: rgba(255, 90, 31, 0.12) !important;
+  border-color: rgba(255, 90, 31, 0.25) !important;
+  color: var(--text) !important;
+}
+
+:root[data-theme="dark"] .alert-warning {
+  background-color: rgba(255, 90, 31, 0.15) !important;
+  border-color: rgba(255, 90, 31, 0.3) !important;
+}
+
+/* Modal dark mode */
+.modal-content {
+  background: var(--surface-strong) !important;
+  color: var(--text) !important;
+  border-color: var(--card-border) !important;
+}
+
+.modal-title {
+  color: var(--text) !important;
+}
+
+/* Form elements dark mode */
+.form-control,
+.form-select {
+  background: var(--surface-strong) !important;
+  color: var(--text) !important;
+  border-color: var(--card-border) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background: var(--surface-strong) !important;
+  color: var(--text) !important;
+  border-color: var(--naranja) !important;
+}
+
+/* Spinner color */
+.spinner-border.text-warning {
+  color: var(--naranja) !important;
+}
+
 .navbar {
   background: rgba(255, 90, 31, 0.95) !important;
   backdrop-filter: blur(12px);

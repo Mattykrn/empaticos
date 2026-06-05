@@ -257,14 +257,14 @@ function Home() {
           </div>
           <div className="col-sm-6 col-lg-4">
             <div className="card card-modern p-4 h-100">
-              <div className="mb-3 avatar-circle bg-light text-dark">2</div>
+              <div className="mb-3 avatar-circle bg-light">2</div>
               <h3 className="h5 fw-bold">Noticias confiables</h3>
               <p className="text-muted">Actualizaciones científicas y sociales para mantenerte informado.</p>
             </div>
           </div>
           <div className="col-sm-6 col-lg-4">
             <div className="card card-modern p-4 h-100">
-              <div className="mb-3 avatar-circle bg-light text-dark">3</div>
+              <div className="mb-3 avatar-circle bg-light">3</div>
               <h3 className="h5 fw-bold">Apoyo real</h3>
               <p className="text-muted">Conectate con una comunidad que entiende lo que estás viviendo.</p>
             </div>
@@ -325,7 +325,7 @@ function Noticias() {
                 <img src={noticia.imagen} className="card-img-top news-image" alt={noticia.titulo} />
                 <div className="card-body d-flex flex-column p-4">
                   <span className="text-muted fw-bold mb-2">🗓️ {formatoFecha(noticia.fecha)}</span>
-                  <h5 className="card-title fw-bold text-dark mb-3">{noticia.titulo}</h5>
+                  <h5 className="card-title fw-bold mb-3">{noticia.titulo}</h5>
                   <p className="card-text text-muted flex-grow-1">{noticia.resumen}</p>
                   <a href={noticia.link} target="_blank" rel="noreferrer" className="btn btn-warning mt-3 fw-bold w-100 text-white">
                     Leer artículo original →
@@ -388,7 +388,7 @@ function Historias() {
       </div>
 
       {error && (
-        <div className="alert alert-warning text-dark" role="alert">
+        <div className="alert alert-warning" role="alert">
           {error}
         </div>
       )}
@@ -405,7 +405,7 @@ function Historias() {
             <div key={story.id} className="col">
               <article className="card card-modern story-card h-100 d-flex flex-column">
                 <div className="card-body">
-                  <h5 className="card-title fw-bold text-dark">{story.name || 'Amigo EMpaticos'}</h5>
+                  <h5 className="card-title fw-bold">{story.name || 'Amigo EMpaticos'}</h5>
                   <h6 className="card-subtitle mb-3 text-warning fw-bold">{story.type || 'Historia EM'}</h6>
                   <p className="card-text text-secondary mb-4" style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                     {story.story}
@@ -684,7 +684,7 @@ function SupportModal() {
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content rounded-4 border-0 shadow-lg">
           <div className="modal-header border-0 pb-0">
-            <h5 className="modal-title fw-bold fs-4 ms-2 mt-2 text-dark">Ayudanos a seguir creciendo 🤎</h5>
+            <h5 className="modal-title fw-bold fs-4 ms-2 mt-2">Ayudanos a seguir creciendo 🤎</h5>
             <button type="button" className="btn-close me-2 mt-2" data-bs-dismiss="modal" aria-label="Cerrar" />
           </div>
           <div className="modal-body text-center p-4">
@@ -693,14 +693,14 @@ function SupportModal() {
               <div className="card-body py-3">
                 <h6 className="text-warning fw-bold mb-2 text-uppercase">🇦🇷 Cuenta Argentina</h6>
                 <p className="mb-1 text-muted">Alias Brubank</p>
-                <h4 className="fw-bolder text-dark mb-0 user-select-all">empaticos</h4>
+                <h4 className="fw-bolder mb-0 user-select-all">empaticos</h4>
               </div>
             </div>
             <div className="card card-modern support-card border-danger mb-3">
               <div className="card-body py-3">
                 <h6 className="fw-bold mb-2 text-uppercase text-danger">🌍 Cuenta Internacional</h6>
                 <p className="mb-1 text-muted">N° de Cuenta Astropay</p>
-                <h4 className="fw-bolder text-dark mb-0 user-select-all">559328471673</h4>
+                <h4 className="fw-bolder mb-0 user-select-all">559328471673</h4>
               </div>
             </div>
             <div className="mt-4">
