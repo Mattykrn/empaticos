@@ -18,19 +18,6 @@
   <!-- El punto de montaje principal de React. -->
   <div id="root"></div>
 
-  <!-- React y ReactDOM se cargan primero para habilitar la app React. -->
-  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-
-  <!-- React Router Nebulas: history + react-router + react-router-dom. -->
-  <script src="https://cdn.jsdelivr.net/npm/history@5/umd/history.development.js" crossorigin></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-router@6/umd/react-router.development.js" crossorigin></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-router-dom@6/umd/react-router-dom.development.js" crossorigin></script>
-
-  <!-- Babel en el navegador transforma JSX a JavaScript en tiempo real.
-       Solo para desarrollo y demostración, no para producción. -->
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
-
   <!-- Configuración del backend.
        Si trabajás en local, el frontend usará localhost:4000.
        Cuando despliegues el backend, reemplazá la URL de abajo.
@@ -41,8 +28,8 @@
       : 'https://TU_BACKEND_URL/api';
   </script>
 
-  <!-- Archivo principal de la aplicación React con rutas y lógica. -->
-  <script type="text/babel" src="./js/app.jsx"></script>
+  <!-- Carga la app React moderna (Vite + ESM). -->
+  <script type="module" src="/src/main.jsx"></script>
 
   <!-- Bootstrap JS para la navegación responsive y el modal. -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,7 +1,9 @@
 {
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "public": true,
+  "buildCommand": "npm run client:build",
+  "outputDirectory": "dist",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
