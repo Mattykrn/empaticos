@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API_PLACEHOLDER = 'https://TU_BACKEND_URL/api';
-const API_BASE = window.EMPATICOS_API_BASE && window.EMPATICOS_API_BASE !== API_PLACEHOLDER
-  ? window.EMPATICOS_API_BASE
-  : 'http://localhost:4000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 function formatoFecha(fecha) {
   return new Date(fecha).toLocaleDateString('es-AR', {

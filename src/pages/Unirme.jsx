@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 
-const API_PLACEHOLDER = 'https://TU_BACKEND_URL/api';
-const API_BASE = window.EMPATICOS_API_BASE && window.EMPATICOS_API_BASE !== API_PLACEHOLDER
-  ? window.EMPATICOS_API_BASE
-  : 'http://localhost:4000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 /**
  * Unirme page: sends new story submissions to the Node backend.
@@ -44,7 +41,7 @@ export default function Unirme() {
       setStatus('Historia enviada con éxito. Gracias por compartir.');
       setFormState({ nombre: '', tipoEM: '', historia: '', anonimo: false });
     } catch (error) {
-      setStatus('No se pudo enviar la historia. Asegurate de que el backend esté activo en localhost:4000.');
+      setStatus('No se pudo enviar la historia. Asegurate de que el backend esté activo.');
     } finally {
       setSending(false);
     }

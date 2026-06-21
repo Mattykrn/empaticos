@@ -1,5 +1,8 @@
 // Clase 10 - Constantes y variables
-const API_URL = "https://lazaro-backend-sqlite.onrender.com/api"; // Cambiar cuando backend esté estable
+// En desarrollo usa localhost, en producción usa /api (mismo dominio)
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:4000/api'
+  : '/api';
 const ADMIN_PASSWORD = "EMpaticos2025arg";
 
 // Clase 13 - Clase Historia

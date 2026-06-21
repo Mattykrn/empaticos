@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+// Contraseña desde variable de entorno de Vite.
+// En desarrollo usá .env.local, en producción configurala en tu hosting.
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'EMpaticos2025arg';
+
 /**
  * Admin page. Includes a simple password check for local administration.
  */
@@ -10,7 +14,7 @@ export default function Admin() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (password === 'EMpaticos2025arg') {
+    if (password === ADMIN_PASSWORD) {
       setLoggedIn(true);
       setMessage('Ingreso correcto. Aquí estará el panel de administración en React.');
     } else {
