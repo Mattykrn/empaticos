@@ -4,6 +4,62 @@ import React, { useState, useEffect } from 'react';
 // and improves the visual representation of the news list.
 const noticiasData = [
   {
+    titulo: 'Dos grandes estudios confirman la eficacia de la dosis aprobada de Ocrevus',
+    resumen: 'Datos finales de dos ensayos de fase 3b muestran que aumentar la dosis de Ocrevus (ocrelizumab) no aporta beneficio adicional frente a la pauta aprobada para frenar la progresión de la discapacidad en la EM remitente y en la primaria progresiva.',
+    fecha: '2026-07-01',
+    imagen: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80',
+    link: 'https://multiplesclerosisnewstoday.com/news-posts/2026/07/01/2-large-trials-back-approved-ocrevus-dose-treating-ms/'
+  },
+  {
+    titulo: 'La FDA autoriza el primer ensayo en humanos de una terapia oral de remielinización',
+    resumen: 'El fármaco experimental PTD802 busca regenerar la mielina dañada por la enfermedad, un enfoque distinto al de los tratamientos antiinflamatorios clásicos. Es la primera terapia oral de este tipo en llegar a ensayo humano.',
+    fecha: '2026-06-25',
+    imagen: 'https://images.unsplash.com/photo-1581090700227-4c4d1a3a3a3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://multiplesclerosisnewstoday.com/news-posts/2026/06/25/fda-clears-first-human-trial-testing-oral-remyelination-therapy-ptd802/'
+  },
+  {
+    titulo: 'La Comisión Europea aprueba Cenrifki (tolebrutinib) para la EM secundaria progresiva',
+    resumen: 'Sanofi recibió la aprobación europea para comercializar Cenrifki (tolebrutinib), un inhibidor de BTK por vía oral indicado contra la progresión de la discapacidad en pacientes con EM secundaria progresiva sin brotes en los últimos dos años.',
+    fecha: '2026-06-24',
+    imagen: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80',
+    link: 'https://esclerosismultiple.com/sanofi-recibe-la-aprobacion-de-la-comision-europea-para-cenrifki-tolebrutinib-para-el-tratamiento-contra-la-discapacidad-en-la-esclerosis-multiple-secundaria-progresiva-sin-brotes/'
+  },
+  {
+    titulo: 'La FDA aprueba Ocrevus para la EM remitente-recurrente en niños y adolescentes',
+    resumen: 'Ocrevus (ocrelizumab) fue aprobado en Estados Unidos para pacientes pediátricos de 10 años o más con al menos 25 kg, convirtiéndose en la segunda terapia modificadora de la enfermedad aprobada para esa población.',
+    fecha: '2026-05-08',
+    imagen: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://www.gene.com/media/statements/ps_050826'
+  },
+  {
+    titulo: 'AAN 2026: Fenebrutinib supera a Aubagio en la EM remitente',
+    resumen: 'Nuevos datos de dos ensayos de fase 3 presentados en la reunión anual de la Academia Americana de Neurología muestran que fenebrutinib reduce de forma significativa los brotes y la actividad inflamatoria en resonancia frente a teriflunomida.',
+    fecha: '2026-04-23',
+    imagen: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://multiplesclerosisnewstoday.com/news-posts/2026/04/23/aan-2026-fenebrutinib-outperforms-aubagio-treating-relapsing-ms-trials/'
+  },
+  {
+    titulo: 'Ocrevus retrasa la progresión en EM primaria progresiva avanzada',
+    resumen: 'El ensayo de fase 3 ORATORIO-HAND, presentado en la AAN 2026, muestra que Ocrevus retrasa la progresión de la discapacidad y preserva la función manual incluso en pacientes mayores y con enfermedad más avanzada.',
+    fecha: '2026-04-18',
+    imagen: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://multiplesclerosisnewstoday.com/news-posts/2026/04/24/aan-2026-ocrevus-treatment-slows-disability-advanced-ppms/'
+  },
+  {
+    titulo: 'Identifican una molécula que protege las neuronas y repara la mielina',
+    resumen: 'Investigadores coordinados por la Universidad Vita-Salute San Raffaele hallaron que una molécula estudiada para trastornos del sueño protege las neuronas y promueve la reparación de la mielina en modelos experimentales de EM.',
+    fecha: '2026-01-21',
+    imagen: 'https://images.unsplash.com/photo-1508385082359-f38ae991e8f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://www.unisr.it/en/news/2026/1/sclerosi-multipla-nuova-scoperta'
+  },
+  {
+    titulo: 'Privosegtor recibe estatus de terapia innovadora para la neuritis óptica',
+    resumen: 'La FDA concedió la designación de terapia innovadora (breakthrough) a privosegtor, un tratamiento experimental que busca proteger la visión en episodios agudos de neuritis óptica, uno de los síntomas iniciales más frecuentes de la EM.',
+    fecha: '2026-01-08',
+    imagen: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    link: 'https://multiplesclerosisnewstoday.com/news-posts/2026/01/08/privosegtor-granted-fda-breakthrough-status-optic-neuritis/'
+  },
+  {
     titulo: 'EPOF Argentina impulsa campaña por las Enfermedades Poco Frecuentes',
     resumen: 'La organización EPOF Argentina lanza una iniciativa nacional para visibilizar las enfermedades raras, incluyendo la esclerosis múltiple, y promover el acceso equitativo a tratamientos y apoyo médico.',
     fecha: '2026-04-06',
