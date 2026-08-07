@@ -11,6 +11,7 @@ const adminAuth = require('./server/middleware/adminAuth');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const uploadsPath = path.join(__dirname, 'uploads');
+const inMemoryUploads = new Map();
 
 // Configuración de CORS más segura.
 // En desarrollo permitimos localhost.
@@ -33,6 +34,16 @@ app.use(cors({
 // Límite ampliado para permitir subida de imágenes en base64.
 app.use(express.json({ limit: '15mb' }));
 app.use(express.static(path.join(__dirname, '.')));
+
+app.get('/uploads/:filename', (req, res, next) => {
+  const { filename } = req.params;
+  if (inMemoryUploads.has(filename)) {
+    const item = inMemoryUploads.get(filename);
+    res.setHeader('Content-Type', item.mimeType);
+    return res.send(item.buffer);
+  }
+  next();
+});
 app.use('/uploads', express.static(uploadsPath));
 
 // En producción, servir el frontend built desde /dist
@@ -457,7 +468,12 @@ app.post('/api/upload', async (req, res) => {
     const ext = mimeType.split('/')[1] === 'jpeg' ? 'jpg' : mimeType.split('/')[1];
     const randomName = `${crypto.randomBytes(12).toString('hex')}.${ext}`;
     const targetPath = path.join(uploadsPath, randomName);
-    await fs.writeFile(targetPath, buffer);
+    try {
+      await fs.writeFile(targetPath, buffer);
+    } catch (writeError) {
+      console.warn('Advertencia: No se pudo guardar la imagen en disco. Usando fallback en memoria.', writeError.message);
+      inMemoryUploads.set(randomName, { buffer, mimeType });
+    }
     res.status(201).json({ url: `/uploads/${randomName}`, filename: safeName });
   } catch (error) {
     res.status(500).json({ error: 'No se pudo guardar la imagen.' });

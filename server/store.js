@@ -84,12 +84,16 @@ function filterEntries(entries, filters = {}) {
 // Backend JSON local (fallback para dev y tests)
 // ─────────────────────────────────────────────────────────────
 
+let inMemoryData = null;
+
 function readJson() {
+  if (inMemoryData) return inMemoryData;
   let content;
   try {
     content = fs.readFileSync(dataPath, 'utf-8');
   } catch (error) {
-    return { entries: [], favorites: {} };
+    inMemoryData = { entries: [], favorites: {} };
+    return inMemoryData;
   }
   const data = JSON.parse(content);
 
@@ -100,12 +104,19 @@ function readJson() {
   if (!Array.isArray(data.entries)) data.entries = [];
   for (const entry of data.entries) normalizeEntry(entry);
   if (!data.favorites || typeof data.favorites !== 'object') data.favorites = {};
-  return data;
+  
+  inMemoryData = data;
+  return inMemoryData;
 }
 
 function writeJson(data) {
-  fs.mkdirSync(path.dirname(dataPath), { recursive: true });
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+  inMemoryData = data;
+  try {
+    fs.mkdirSync(path.dirname(dataPath), { recursive: true });
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error) {
+    console.warn('Advertencia: No se pudo escribir en el disco (probable entorno de solo lectura). Usando fallback en memoria.', error.message);
+  }
 }
 
 // ─────────────────────────────────────────────────────────────

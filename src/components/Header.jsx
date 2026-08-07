@@ -10,7 +10,8 @@ const navItems = [
   { label: 'Historias', path: '/historias' },
   { label: 'Videos', path: '/videos' },
   { label: 'Galería', path: '/galeria' },
-  { label: 'Nosotros', path: '/nosotros' }
+  { label: 'Nosotros', path: '/nosotros' },
+  { label: 'Admin', path: '/admin' }
 ];
 
 /**
@@ -22,7 +23,18 @@ export default function Header({ darkMode, onToggleTheme }) {
     <header>
       <nav className="navbar navbar-expand-xl fixed-top navbar-compact">
         <div className="container-fluid">
-          <NavLink to="/" className="navbar-brand d-flex align-items-center">
+          <NavLink to="/" className="navbar-brand d-flex align-items-center gap-2">
+            <img
+              src="/images/LogoEMpaticos2.png"
+              alt="EMpaticos"
+              className="navbar-logo"
+              onError={(e) => {
+                // Si la imagen falla, mostrar badge con emoji en vez de ícono roto
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextSibling.style.display = 'flex';
+              }}
+            />
+            <span className="navbar-logo-fallback" style={{ display: 'none' }} aria-hidden="true">🧡</span>
             <span className="fw-bold navbar-brand-text">EMpaticos</span>
           </NavLink>
 

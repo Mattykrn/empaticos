@@ -17,8 +17,18 @@ const fs = require('fs');
 
 function loadServiceAccount() {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    const rawValue = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
+    if (rawValue.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(rawValue);
+        if (!parsed.project_id) throw new Error('Falta project_id en FIREBASE_SERVICE_ACCOUNT.');
+        return parsed;
+      } catch (error) {
+        throw new Error(`FIREBASE_SERVICE_ACCOUNT no es un JSON válido: ${error.message}`);
+      }
+    }
     try {
-      const raw = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString('utf-8');
+      const raw = Buffer.from(rawValue, 'base64').toString('utf-8');
       const parsed = JSON.parse(raw);
       if (!parsed.project_id) throw new Error('Falta project_id en FIREBASE_SERVICE_ACCOUNT.');
       return parsed;
