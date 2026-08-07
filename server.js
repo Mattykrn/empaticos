@@ -11,6 +11,7 @@ const adminAuth = require('./server/middleware/adminAuth');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const uploadsPath = path.join(__dirname, 'uploads');
+const distPath = path.join(__dirname, 'dist');
 const inMemoryUploads = new Map();
 
 // Configuración de CORS más segura.
@@ -33,7 +34,8 @@ app.use(cors({
 
 // Límite ampliado para permitir subida de imágenes en base64.
 app.use(express.json({ limit: '15mb' }));
-app.use(express.static(path.join(__dirname, '.')));
+// Servir solo el frontend built desde /dist (nunca el repo completo).
+app.use(express.static(distPath));
 
 app.get('/uploads/:filename', (req, res, next) => {
   const { filename } = req.params;
@@ -45,12 +47,6 @@ app.get('/uploads/:filename', (req, res, next) => {
   next();
 });
 app.use('/uploads', express.static(uploadsPath));
-
-// En producción, servir el frontend built desde /dist
-const distPath = path.join(__dirname, 'dist');
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(distPath));
-}
 
 // ─────────────────────────────────────────────────────────────
 // Constantes del schema
