@@ -61,7 +61,7 @@ body {
               var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
@@ -294,25 +294,6 @@ label {
   margin: 0;
 }
 
-.navbar-brand .navbar-logo {
-  height: 44px;
-  width: 44px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: #fff;
-  flex-shrink: 0;
-}
-
-.navbar-brand .navbar-logo-fallback {
-  width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 50%;
-  font-size: 24px;
-}
-
 .navbar-brand span {
   color: var(--navbar-texto) !important;
   font-weight: 800;
@@ -344,6 +325,20 @@ label {
   white-space: nowrap;
 }
 
+.font-scale-btn {
+  padding: 0.2rem 0.45rem !important;
+  line-height: 1.2;
+}
+
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
 .navbar-social {
   display: inline-flex;
 }
@@ -369,12 +364,12 @@ label {
 
 /* Offset para el navbar fijo: evita que los títulos queden tapados */
 .app-shell {
-  padding-top: 84px;
+  padding-top: 5.25rem;
 }
 
 @media (max-width: 767.98px) {
   .app-shell {
-    padding-top: 76px;
+    padding-top: 4.75rem;
   }
 }
 

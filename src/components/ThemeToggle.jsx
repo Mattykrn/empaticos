@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * ThemeToggle is a button that allows users to toggle between light and dark modes.
+ * ThemeToggle es un botón de ícono que alterna entre modo claro y oscuro.
  */
 export default function ThemeToggle({ darkMode, onToggle }) {
   const icon = darkMode ? '☀️' : '🌙';
@@ -9,12 +9,12 @@ export default function ThemeToggle({ darkMode, onToggle }) {
   return (
     <button
       type="button"
-      className="btn btn-outline-dark btn-sm rounded-pill btn-glow d-flex align-items-center gap-2"
+      className="btn btn-outline-dark btn-sm rounded-circle btn-glow theme-toggle"
       onClick={onToggle}
-      title="Cambiar modo claro/oscuro"
+      title={label}
+      aria-label={label}
     >
-      <span>{icon}</span>
-      <span>{label}</span>
+      <span aria-hidden="true">{icon}</span>
     </button>
   );
 }
