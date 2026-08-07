@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'empaticos-font-scale';
 const MIN = 0.85;
-const MAX = 1.3;
+const MAX = 1.4;
 const STEP = 0.1;
 
 /**
  * FontSizeControl ajusta el tamaño de fuente de todo el sitio (accesibilidad).
- * Escala el font-size del elemento <html>; el resto del CSS usa unidades rem.
+ * Escala el font-size del elemento <html> y expone data-font-scale en CSS.
  */
 export default function FontSizeControl() {
   const [scale, setScale] = useState(() => {
@@ -17,6 +17,7 @@ export default function FontSizeControl() {
 
   useEffect(() => {
     document.documentElement.style.fontSize = `${scale}rem`;
+    document.documentElement.dataset.fontScale = String(scale);
     window.localStorage.setItem(STORAGE_KEY, String(scale));
   }, [scale]);
 

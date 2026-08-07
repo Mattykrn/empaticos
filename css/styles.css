@@ -383,13 +383,18 @@ label {
 
 /* Offset para el navbar fijo: evita que los títulos queden tapados */
 .app-shell {
-  padding-top: 5.25rem;
+  padding-top: 88px;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
   .app-shell {
-    padding-top: 4.75rem;
+    padding-top: 76px;
   }
+}
+
+/* Con font-scale grande el navbar crece: compensar */
+html[data-font-scale="1.4"] .app-shell {
+  padding-top: 110px;
 }
 
 :root[data-theme="dark"] .navbar-compact .nav-link,
