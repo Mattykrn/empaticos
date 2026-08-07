@@ -9,7 +9,7 @@ export default function ThemeToggle({ darkMode, onToggle }) {
   return (
     <button
       type="button"
-      className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'} btn-sm rounded-pill btn-glow d-flex align-items-center gap-2`}
+      className="btn btn-outline-dark btn-sm rounded-pill btn-glow d-flex align-items-center gap-2"
       onClick={onToggle}
       title="Cambiar modo claro/oscuro"
     >
