@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { getStats } from '../api';
 
 /**
- * Nosotros page content. Shows mission, vision and a count placeholder.
+ * Nosotros page content. Shows mission, vision and community stats.
  */
 export default function Nosotros() {
-  const [storyCount, setStoryCount] = useState(0);
+  const [stats, setStats] = useState({ total: 0, totalReactions: 0 });
 
   useEffect(() => {
-    // Example placeholder: this can be replaced with a real count from the backend.
-    setStoryCount(0);
+    let mounted = true;
+    getStats()
+      .then((data) => {
+        if (mounted) setStats(data);
+      })
+      .catch(() => {
+        // backend sin conexión: quedamos en 0
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -20,8 +30,8 @@ export default function Nosotros() {
 
       <div className="highlight-panel text-center mb-5">
         <p className="lead mb-1">Ya tenemos</p>
-        <div className="fw-bold display-6 text-warning">{storyCount}</div>
-        <p className="mb-0">historias compartidas en esta comunidad.</p>
+        <div className="fw-bold display-6 text-warning">{stats.total}</div>
+        <p className="mb-0">publicaciones aprobadas y {stats.totalReactions} reacciones de la comunidad.</p>
       </div>
 
       <div className="row g-4 justify-content-center">

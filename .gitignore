@@ -1,8 +1,8 @@
 .vercel
 .env*.local
-.env.production
 node_modules/
 *.tar.xz
 dist/
 dist-ssr/
+uploads/
 

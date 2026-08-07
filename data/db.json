@@ -1,12 +1,430 @@
 {
-  "stories": [
+  "entries": [
     {
-      "id": 1,
-      "name": "Matías",
-      "type": "EMRR",
-      "story": "Bienvenido a la sección de Historias. A partir de ahora, cuando alguien llene el formulario de 'Unirme', te llegará directamente a tu correo. Luego, podrás ver las historias aquí.",
-      "anonymous": false,
-      "createdAt": "2026-03-26T00:00:00Z"
+      "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "type": "galeria",
+      "title": "Momentos de la comunidad",
+      "content": "Fotos compartidas por nuestra comunidad: encuentros, salidas y pequeños grandes momentos.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "mediaUrls": [
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80",
+        "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=600&q=80",
+        "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80",
+        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
+        "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=600&q=80"
+      ],
+      "emType": null,
+      "tags": [
+        "comunidad",
+        "fotos",
+        "encuentros"
+      ],
+      "authorName": "Comunidad EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 18,
+        "laughs": 4,
+        "hugs": 11
+      },
+      "comments": [],
+      "createdAt": "2026-07-15T00:00:00Z"
+    },
+    {
+      "id": "7f9c6b2e-3d4a-4f1e-9b2c-1a2b3c4d5e6f",
+      "type": "historia",
+      "title": "Mi vida después del diagnóstico",
+      "content": "Fui diagnosticado con EMRR en 2023. Al principio fue un shock, pero con el tiempo entendí que tener EM no significa dejar de vivir. Hoy llevo una vida activa, trabajo, hago ejercicio adaptado y disfruto cada día. A quienes están empezando este camino: no están solos. Infórmense, busquen apoyo y nunca pierdan la esperanza.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMRR",
+      "tags": [
+        "esperanza",
+        "ejercicio",
+        "vida-activa"
+      ],
+      "authorName": "Matías",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 24,
+        "laughs": 2,
+        "hugs": 18
+      },
+      "createdAt": "2026-03-26T00:00:00Z",
+      "comments": [
+        {
+          "id": "c1a2b3c4-d5e6-f7a8-b9c0-111111111111",
+          "authorName": "Lucía",
+          "avatar": "🌈",
+          "visitorId": null,
+          "text": "Me identifico mucho con tu historia. Gracias por la esperanza ❤️",
+          "createdAt": "2026-03-27T10:15:00Z"
+        },
+        {
+          "id": "c2b3c4d5-e6f7-a8b9-c0d1-222222222222",
+          "authorName": "Ricardo",
+          "avatar": null,
+          "visitorId": null,
+          "text": "¡Qué mensaje tan necesario! Compartir salva.",
+          "createdAt": "2026-03-28T18:40:00Z"
+        }
+      ],
+      "mediaUrls": []
+    },
+    {
+      "id": "8a1d2f44-9e55-4c22-8fbb-aa11bb22cc33",
+      "type": "historia",
+      "title": "Cada amanecer es una oportunidad",
+      "content": "Me diagnosticaron EMPP en 2019. Al principio sentí que mi vida se terminaba, pero gracias al apoyo de mi familia, médicos y grupos como este, aprendí a adaptarme. Uso bastón para caminar y tengo días buenos y malos, pero cada amanecer es una oportunidad para seguir adelante. Gracias EMpaticos por existir.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMPP",
+      "tags": [
+        "adaptacion",
+        "familia",
+        "gratitud"
+      ],
+      "authorName": "Laura",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 31,
+        "laughs": 0,
+        "hugs": 27
+      },
+      "createdAt": "2026-04-02T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "9b2e3f55-af66-4d33-90cc-bb22cc33dd44",
+      "type": "historia",
+      "title": "Hablar de esto me hace fuerte",
+      "content": "Tengo 28 años y me diagnosticaron EM hace dos años. Al principio no quería contárselo a nadie por miedo al rechazo. Hasta que un día compartí mi historia en un grupo de Facebook y recibí tanto apoyo que entendí que hablar de esto no me hace débil, me hace fuerte. Hoy soy parte activa de esta comunidad.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMRR",
+      "tags": [
+        "aceptacion",
+        "comunidad",
+        "valentia"
+      ],
+      "authorName": "Anónimo",
+      "isAnonymous": true,
+      "status": "approved",
+      "reactions": {
+        "hearts": 19,
+        "laughs": 1,
+        "hugs": 22
+      },
+      "createdAt": "2026-04-15T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "ac3f4066-b077-4e44-91dd-cc33dd44ee55",
+      "type": "historia",
+      "title": "La ciencia avanza y con ella la esperanza",
+      "content": "Vivo con EM secundaria progresiva desde hace más de una década. He visto cómo la ciencia avanza y cómo cada vez hay más opciones terapéuticas. Mi consejo: infórmense, pregunten todo a sus neurólogos y no dejen que el miedo les gane. La EM se trata, se investiga y cada vez hay más esperanza.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMSP",
+      "tags": [
+        "ciencia",
+        "tratamiento",
+        "esperanza"
+      ],
+      "authorName": "Carlos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 16,
+        "laughs": 0,
+        "hugs": 14
+      },
+      "createdAt": "2026-04-28T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "bd405177-c188-4f55-92ee-dd44ee55ff66",
+      "type": "historia",
+      "title": "El diagnóstico temprano cambia todo",
+      "content": "Tuve un síndrome clínico aislado en 2024. Fue aterrador perder la visión de un ojo por unos días. Los médicos me explicaron que podía ser el inicio de EM o no. Decidí compartir mi experiencia para que otras personas que pasan por esto sepan que no están solos. El diagnóstico temprano cambia todo. Mucha fuerza a todos.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "SCA",
+      "tags": [
+        "sca",
+        "diagnostico",
+        "sintomas"
+      ],
+      "authorName": "Sofía",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 14,
+        "laughs": 0,
+        "hugs": 12
+      },
+      "createdAt": "2026-05-10T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "ce516288-d299-4f66-a3ff-ee55ff66aa77",
+      "type": "anecdota",
+      "title": "El día que confundí el termostato con mi medicación",
+      "content": "Con la niebla mental de un brote, agarré el control del aire acondicionado, lo puse en 32 grados y me tomé un vaso de agua pensando que era mi pastilla. Cuando mi hermana me vio tosiendo con el control en la mano, no paramos de reír una hora. Mi neurólogo todavía se ríe cuando se lo cuento.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMRR",
+      "tags": [
+        "humor",
+        "niebla-mental",
+        "familia"
+      ],
+      "authorName": "María",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 12,
+        "laughs": 45,
+        "hugs": 6
+      },
+      "createdAt": "2026-06-02T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "df627399-e3aa-4f77-b400-ff66aa77bb88",
+      "type": "anecdota",
+      "title": "Mi pierna se quedó dormida en mitad de la presentación",
+      "content": "Estaba dando una presentación en el trabajo y, de repente, mi pierna derecha decidió hacer huelga. Me quedé clavada en el medio del pasillo explicando la proyección de ventas con una cara de póker. Mis compañeros pensaron que era una técnica de drama. No, chicos, es la EM haciendo de las suyas.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMRR",
+      "tags": [
+        "humor",
+        "trabajo",
+        "sintomas"
+      ],
+      "authorName": "Carla",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 8,
+        "laughs": 33,
+        "hugs": 4
+      },
+      "createdAt": "2026-06-20T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "e07384aa-f4bb-4f88-c511-11aa22bb33cc",
+      "type": "anecdota",
+      "title": "El bastón con más estilo del barrio",
+      "content": "Mi hijo me convenció de personalizar mi bastón con calcomanías de superhéroes. Ahora cuando camino por el barrio, los chicos me preguntan si soy un superhéroe de verdad. Les digo que sí: mi superpoder es no rendirme nunca. Y el bastón quedó divino, la verdad.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMPP",
+      "tags": [
+        "humor",
+        "familia",
+        "actitud"
+      ],
+      "authorName": "Ramón",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 22,
+        "laughs": 28,
+        "hugs": 15
+      },
+      "createdAt": "2026-07-08T00:00:00Z",
+      "comments": [
+        {
+          "id": "c3c4d5e6-f7a8-b9c0-d1e2-333333333333",
+          "authorName": "Andrea",
+          "avatar": "😄",
+          "visitorId": null,
+          "text": "Jajaja necesito ver esa foto urgente 😂",
+          "createdAt": "2026-07-09T13:20:00Z"
+        },
+        {
+          "id": "c4d5e6f7-a8b9-c0d1-e2f3-444444444444",
+          "authorName": "Matías",
+          "avatar": "💪",
+          "visitorId": null,
+          "text": "El superhéroe del barrio, sin dudas.",
+          "createdAt": "2026-07-10T09:05:00Z"
+        }
+      ],
+      "mediaUrls": []
+    },
+    {
+      "id": "f18495bb-05cc-4f99-d622-22bb33cc44dd",
+      "type": "video",
+      "title": "Esclerosis Múltiple: qué es, síntomas y diagnóstico",
+      "content": "Video educativo que explica de forma clara qué es la esclerosis múltiple, cómo se origina, qué síntomas produce y por qué es una de las principales causas de discapacidad neurológica en adultos jóvenes. Ideal para quienes recién empiezan a informarse.",
+      "mediaType": "youtube",
+      "mediaUrl": "https://www.youtube.com/embed/_MENjcGp9Ng",
+      "emType": null,
+      "tags": [
+        "educativo",
+        "diagnostico",
+        "informacion"
+      ],
+      "authorName": "Comunidad EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 11,
+        "laughs": 0,
+        "hugs": 7
+      },
+      "createdAt": "2026-05-18T00:00:00Z",
+      "comments": [
+        {
+          "id": "c5e6f7a8-b9c0-d1e2-f3a4-555555555555",
+          "authorName": "Sofía",
+          "avatar": null,
+          "visitorId": null,
+          "text": "Este video me ayudó a explicarle a mi familia qué tengo. Gracias.",
+          "createdAt": "2026-05-19T20:30:00Z"
+        }
+      ],
+      "mediaUrls": []
+    },
+    {
+      "id": "a295c6cc-16dd-4eaa-e733-33cc44dd55ee",
+      "type": "video",
+      "title": "¿Qué es la esclerosis múltiple? Síntomas y tratamientos",
+      "content": "La esclerosis múltiple es una enfermedad impredecible del sistema nervioso central, que incluye el cerebro, la médula espinal y los nervios ópticos. Este video resume sus tipos, síntomas y opciones de tratamiento.",
+      "mediaType": "youtube",
+      "mediaUrl": "https://www.youtube.com/embed/4tZEIi192xg",
+      "emType": null,
+      "tags": [
+        "educativo",
+        "tratamiento",
+        "tipos"
+      ],
+      "authorName": "Comunidad EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 9,
+        "laughs": 0,
+        "hugs": 5
+      },
+      "createdAt": "2026-06-10T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "b3a6d7dd-27ee-4fbb-f844-44dd55ee66ff",
+      "type": "video",
+      "title": "Qué es la EM y cómo acompaña la comunidad",
+      "content": "Una introducción cálida a la esclerosis múltiple, pensada para compartir con familiares y amigos que quieren entender el camino que recorremos juntos.",
+      "mediaType": "youtube",
+      "mediaUrl": "https://www.youtube.com/embed/gbkrlXuzodU",
+      "emType": null,
+      "tags": [
+        "introduccion",
+        "familia",
+        "comunidad"
+      ],
+      "authorName": "Comunidad EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 13,
+        "laughs": 1,
+        "hugs": 9
+      },
+      "createdAt": "2026-07-01T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "c4b7e8ee-38ff-40cc-a955-55ee66ff7700",
+      "type": "diagnostico",
+      "title": "Síndrome clínico aislado (SCA)",
+      "content": "El SCA es el primer episodio de síntomas neurológicos causado por inflamación y pérdida de mielina. No todas las personas con SCA desarrollan esclerosis múltiple, pero es un factor de riesgo importante. El seguimiento con resonancia magnética y el diagnóstico temprano son fundamentales para decidir el tratamiento adecuado.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "SCA",
+      "tags": [
+        "sca",
+        "primer-episodio",
+        "diagnostico"
+      ],
+      "authorName": "Equipo EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 6,
+        "laughs": 0,
+        "hugs": 3
+      },
+      "createdAt": "2026-05-22T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "d5c8f9ff-4901-4dd1-ba66-66ff7700aa11",
+      "type": "diagnostico",
+      "title": "EM remitente-recurrente (EMRR)",
+      "content": "Es la forma más frecuente de esclerosis múltiple: se caracteriza por brotes (recaídas) seguidos de periodos de recuperación total o parcial. Los tratamientos modificadores de la enfermedad buscan reducir la frecuencia y severidad de los brotes y prevenir la acumulación de discapacidad.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMRR",
+      "tags": [
+        "emrr",
+        "brotes",
+        "tratamiento"
+      ],
+      "authorName": "Equipo EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 7,
+        "laughs": 0,
+        "hugs": 4
+      },
+      "createdAt": "2026-05-24T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
+    },
+    {
+      "id": "e6d900aa-5a12-4ee2-cb77-77ff8800bb22",
+      "type": "diagnostico",
+      "title": "EM primaria progresiva (EMPP) y secundaria progresiva (EMSP)",
+      "content": "Las formas progresivas de EM implican un empeoramiento gradual de los síntomas sin brotes claros (EMPP) o después de un periodo inicial remitente-recurrente (EMSP). Requieren un abordaje integral: medicación, rehabilitación, apoyo psicológico y una red de contención como la que ofrecemos en EMpaticos.",
+      "mediaType": "none",
+      "mediaUrl": "",
+      "emType": "EMPP",
+      "tags": [
+        "progresiva",
+        "empp",
+        "emsp"
+      ],
+      "authorName": "Equipo EMpaticos",
+      "isAnonymous": false,
+      "status": "approved",
+      "reactions": {
+        "hearts": 5,
+        "laughs": 0,
+        "hugs": 6
+      },
+      "createdAt": "2026-05-26T00:00:00Z",
+      "comments": [],
+      "mediaUrls": []
     }
-  ]
+  ],
+  "favorites": {}
 }

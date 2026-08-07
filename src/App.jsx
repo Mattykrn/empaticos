@@ -5,14 +5,19 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Noticias from './pages/Noticias';
 import Historias from './pages/Historias';
+import Anecdotas from './pages/Anecdotas';
+import Videos from './pages/Videos';
+import Galeria from './pages/Galeria';
 import Unirme from './pages/Unirme';
 import Nosotros from './pages/Nosotros';
+import Perfil from './pages/Perfil';
 import Admin from './pages/Admin';
 
 // Import components
 import Header from './components/Header';
 import Footer from './components/Footer';
 import SupportModal from './components/SupportModal';
+import ProfileModal from './components/ProfileModal';
 import ScrollToTop from './components/ScrollToTop';
 
 /**
@@ -59,13 +64,18 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/noticias" element={<Noticias />} />
           <Route path="/historias" element={<Historias />} />
+          <Route path="/anecdotas" element={<Anecdotas />} />
+          <Route path="/videos" element={<Videos />} />
+          <Route path="/galeria" element={<Galeria />} />
           <Route path="/unirme" element={<Unirme />} />
           <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
       <SupportModal />
+      <ProfileModal />
       <Footer />
     </>
   );
