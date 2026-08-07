@@ -50,7 +50,7 @@ export default function Header({ darkMode, onToggleTheme }) {
                   </NavLink>
                 </li>
               ))}
-              <li className="nav-item ms-xl-3 d-flex align-items-center flex-nowrap gap-2 ps-xl-2 ps-0">
+              <li className="nav-item navbar-utils ms-xl-3 ps-xl-2 ps-0">
                 <FontSizeControl />
                 <ThemeToggle darkMode={darkMode} onToggle={onToggleTheme} />
                 <a
