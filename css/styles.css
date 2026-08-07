@@ -30,9 +30,9 @@
 }
 
 :root[data-theme="dark"] {
-  --text: #eef2ff;
-  --text-secondary: #cbd5e1;
-  --muted: #94a3b8;
+  --text: #f5f7ff;
+  --text-secondary: #dbe4f0;
+  --muted: #b6c0d6;
   --bg: #0b1120;
   --bg-warm: #0f172a;
   --surface: rgba(15, 23, 42, 0.92);
@@ -41,8 +41,12 @@
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   --card-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
   --heading: #ffffff;
-  --card-text: #cbd5e1;
+  --card-text: #dbe4f0;
   --naranja-claro: #1a0f08;
+  --navbar-bg: #111827;
+  --navbar-texto: #f5f7ff;
+  --navbar-activo-bg: rgba(255, 255, 255, 0.16);
+  --navbar-activo-texto: #ffffff;
 }
 
 * {
@@ -404,7 +408,7 @@ html[data-font-scale="1.4"] .app-shell {
 
 :root[data-theme="dark"] .navbar-compact .nav-link:hover,
 :root[data-theme="dark"] .navbar-compact .navbar-social:hover {
-  color: #000 !important;
+  color: #ffffff !important;
 }
 
 :root[data-theme="dark"] .navbar-compact .nav-link.active {
@@ -412,6 +416,30 @@ html[data-font-scale="1.4"] .app-shell {
   color: var(--navbar-activo-texto) !important;
   border-radius: 999px;
   padding: 0.35rem 0.9rem !important;
+}
+
+:root[data-theme="dark"] .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+:root[data-theme="dark"] .navbar-toggler:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+:root[data-theme="dark"] .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.9)' stroke-width='2.5' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+:root[data-theme="dark"] .navbar-utils .btn-outline-dark,
+:root[data-theme="dark"] .navbar-utils a.btn-outline-dark {
+  color: #f5f7ff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+:root[data-theme="dark"] .navbar-utils .btn-outline-dark:hover,
+:root[data-theme="dark"] .navbar-utils a.btn-outline-dark:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff !important;
 }
 
 /* ── Hero ── */
