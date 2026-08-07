@@ -37,7 +37,14 @@ function loadServiceAccount() {
 }
 
 const serviceAccount = loadServiceAccount();
-const USE_FIREBASE = Boolean(serviceAccount);
+
+function resolveUseFirebase() {
+  if (process.env.USE_FIREBASE === 'true') return true;
+  if (process.env.USE_FIREBASE === 'false') return false;
+  return Boolean(serviceAccount);
+}
+
+const USE_FIREBASE = resolveUseFirebase();
 
 let _app = null;
 
@@ -47,6 +54,9 @@ function getApp() {
   if (admin.getApps().length) {
     _app = admin.getApps()[0];
   } else {
+    if (!serviceAccount) {
+      throw new Error('USE_FIREBASE está activo pero falta FIREBASE_SERVICE_ACCOUNT o GOOGLE_APPLICATION_CREDENTIALS.');
+    }
     _app = admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
   }
   return _app;

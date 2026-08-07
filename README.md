@@ -158,6 +158,8 @@ Definí **una** de estas variables de entorno:
 | `FIREBASE_SERVICE_ACCOUNT` | JSON de la cuenta de servicio de Firebase, codificado en base64 |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Ruta al archivo JSON de la cuenta de servicio |
 
+Opcionalmente, `USE_FIREBASE` fuerza la decisión: `true` activa Firestore (requiere una de las credenciales de arriba) y `false` la fuerza a usar `data/db.json`. Si no se define, se auto-detecta por la presencia de credenciales.
+
 Colecciones en Firestore:
 
 ```
@@ -188,6 +190,7 @@ Configuración (las tres variables son necesarias para activar Cloudinary):
 | `CLOUDINARY_CLOUD_NAME` | Nombre del cloud |
 | `CLOUDINARY_API_KEY` | API Key |
 | `CLOUDINARY_API_SECRET` | API Secret |
+| `USE_CLOUDINARY` | `true` fuerza Cloudinary, `false` fuerza el filesystem local `uploads/`. Si no se define, se activa por la presencia de las tres credenciales |
 
 - Las imágenes se suben a la carpeta `empaticos/` del cloud y se devuelven como URL segura (`https://res.cloudinary.com/...`).
 - `sanitizeMediaUrls` acepta tanto `/uploads/...` (local) como `https://res.cloudinary.com/...` para galerías.
@@ -300,7 +303,9 @@ El repo está preparado para subirse completo a Vercel:
 |----------|-------------|-------|
 | `VITE_API_URL` | ✅ (build) | `=/api` (ya en `.env.production`) |
 | `FIREBASE_SERVICE_ACCOUNT` | ⚠️ recomendada | JSON de cuenta de servicio en base64 → Firestore persistente |
+| `USE_FIREBASE` | ⚠️ recomendada | `true` para activar Firestore explícitamente (opcional; se auto-detecta) |
 | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | ⚠️ recomendadas | Subidas de imágenes persistentes |
+| `USE_CLOUDINARY` | ⚠️ recomendada | `true` para activar Cloudinary explícitamente (opcional; se auto-detecta) |
 | `FIREBASE_AUTH_ENABLED` | ⚠️ recomendada | `true` para auth real con Firebase |
 | `ADMIN_PASSWORD` / `JWT_SECRET` | para dev | Modo contraseña simple (no recomendado en prod) |
 

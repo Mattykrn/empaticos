@@ -13,17 +13,27 @@
 //   CLOUDINARY_API_SECRET
 // ─────────────────────────────────────────────────────────────
 
-const USE_CLOUDINARY = Boolean(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-);
+const USE_CLOUDINARY = (() => {
+  const hasCreds = Boolean(
+    process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  );
+  if (process.env.USE_CLOUDINARY === 'true') return true;
+  if (process.env.USE_CLOUDINARY === 'false') return false;
+  return hasCreds;
+})();
 
 let _configured = false;
 
 function getCloudinary() {
   const cloudinary = require('cloudinary').v2;
   if (!_configured) {
+    const missing = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET']
+      .filter((key) => !process.env[key]);
+    if (missing.length) {
+      throw new Error(`USE_CLOUDINARY está activo pero faltan: ${missing.join(', ')}`);
+    }
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
