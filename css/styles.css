@@ -23,6 +23,10 @@
   --radius-md: 20px;
   --radius-lg: 28px;
   --radius-xl: 36px;
+  --navbar-bg: #f97316;
+  --navbar-texto: #402400;
+  --navbar-activo-bg: #402400;
+  --navbar-activo-texto: #ffd9b8;
 }
 
 :root[data-theme="dark"] {
@@ -274,7 +278,7 @@ label {
 
 /* ── Navbar ── */
 .navbar {
-  background: linear-gradient(135deg, var(--naranja), var(--naranja-suave)) !important;
+  background: var(--navbar-bg) !important;
   backdrop-filter: blur(16px);
   border-bottom: none;
   box-shadow: 0 2px 20px rgba(255, 90, 31, 0.15);
@@ -310,13 +314,14 @@ label {
 }
 
 .navbar-brand span {
-  color: #2b1004 !important;
+  color: var(--navbar-texto) !important;
   font-weight: 800;
   font-size: 1.25rem;
 }
 
 .nav-link {
-  color: #2b1004 !important;
+  color: var(--navbar-texto) !important;
+  font-weight: 700;
   padding: 0.35rem 0.6rem !important;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
@@ -324,9 +329,15 @@ label {
   transition: all 0.2s ease;
 }
 
-.nav-link:hover, .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.6);
-  color: #1a0b05 !important;
+.nav-link:hover {
+  color: #000 !important;
+}
+
+.nav-link.active {
+  background: var(--navbar-activo-bg);
+  color: var(--navbar-activo-texto) !important;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem !important;
 }
 
 .navbar .btn {
@@ -338,8 +349,7 @@ label {
 }
 
 .navbar-social:hover, .navbar-social:focus {
-  background-color: rgba(255, 255, 255, 0.6);
-  color: #1a0b05 !important;
+  color: #000 !important;
 }
 
 .navbar-toggler {
@@ -370,14 +380,19 @@ label {
 
 :root[data-theme="dark"] .navbar-compact .nav-link,
 :root[data-theme="dark"] .navbar-compact .navbar-social {
-  color: #2b1004 !important;
+  color: var(--navbar-texto) !important;
 }
 
 :root[data-theme="dark"] .navbar-compact .nav-link:hover,
-:root[data-theme="dark"] .navbar-compact .nav-link.active,
 :root[data-theme="dark"] .navbar-compact .navbar-social:hover {
-  background-color: rgba(255, 255, 255, 0.6);
-  color: #1a0b05 !important;
+  color: #000 !important;
+}
+
+:root[data-theme="dark"] .navbar-compact .nav-link.active {
+  background: var(--navbar-activo-bg);
+  color: var(--navbar-activo-texto) !important;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem !important;
 }
 
 /* ── Hero ── */
