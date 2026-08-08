@@ -60,6 +60,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: clip;
   background: radial-gradient(ellipse at 20% 0%, rgba(255, 90, 31, 0.07), transparent 50%),
               radial-gradient(ellipse at 80% 100%, rgba(0, 158, 227, 0.06), transparent 50%),
               var(--bg);
@@ -641,10 +642,6 @@ footer p {
 }
 
 /* ── Layout ── */
-main {
-  margin-top: 110px;
-}
-
 .page-title {
   letter-spacing: -0.02em;
 }
@@ -887,6 +884,54 @@ p {
   }
 }
 
+/* Teléfonos muy angostos: tipografía y paddings compactos */
+@media (max-width: 480px) {
+  .container, .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .navbar-brand span {
+    font-size: 1.05rem;
+  }
+
+  .hero-section {
+    padding: 2.5rem 0;
+  }
+
+  .hero-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero-section .lead {
+    font-size: 0.95rem;
+  }
+
+  .section-card {
+    padding: 1rem;
+  }
+
+  .card-modern {
+    padding: 1rem !important;
+  }
+
+  .filter-bar {
+    padding: 0.75rem;
+  }
+
+  .admin-stat-value {
+    font-size: 1.5rem;
+  }
+
+  .entrada-title {
+    font-size: 1.05rem;
+  }
+
+  .btn {
+    white-space: normal;
+  }
+}
+
 /* ── Comunidad: badges de tipo ── */
 .badge-type {
   display: inline-flex;
@@ -996,6 +1041,8 @@ p {
 .entrada-content {
   color: var(--card-text);
   line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Comunidad: chips de filtro y etiquetas ── */
