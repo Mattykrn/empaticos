@@ -2,6 +2,7 @@ import { Router } from 'express';
 import publicacionController from '../controllers/publicacion.controller.js';
 import { validarPublicacion } from '../middlewares/publicacionValidator.js';
 import { moderarContenido } from '../middlewares/moderarContenido.js';
+import { verificarSesion } from '../middlewares/authMiddleware.js';
 
 // En este módulo configuro mi enrutador Express modular para las operaciones del recurso Publicacion.
 // Aplico mis middlewares de validación de sintaxis y moderación de contenido en las rutas correspondientes.
@@ -20,6 +21,9 @@ router.get('/:id', publicacionController.getPublicacionPorId);
 // Endpoint POST /api/publicaciones: Creo una publicación ejecutando primero mis validaciones y moderación
 router.post('/', validarPublicacion, moderarContenido, publicacionController.crearPublicacion);
 
+// Endpoint POST /api/publicaciones/:id/reaccionar: Registra una reacción para el usuario autenticado
+router.post('/:id/reaccionar', verificarSesion, publicacionController.reaccionarPublicacion);
+
 // Endpoint PATCH /api/publicaciones/:id/status: Cambia el estado de aprobación desde el panel admin
 router.patch('/:id/status', publicacionController.cambiarEstadoPublicacion);
 
@@ -31,8 +35,3 @@ router.delete('/:id', publicacionController.eliminarPublicacion);
 
 // Exporto mi router para conectarlo en app.js
 export default router;
-
-
-
-
-

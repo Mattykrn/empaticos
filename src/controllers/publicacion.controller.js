@@ -1,4 +1,5 @@
 import publicacionService from '../services/publicacion.service.js';
+import Publicacion from '../models/Publicacion.model.js';
 import mongoose from 'mongoose';
 
 // En este archivo de controladores me encargo de manejar la capa de presentación y peticiones HTTP.
@@ -43,6 +44,60 @@ export class PublicacionController {
         mensaje: 'Error interno al obtener el listado de publicaciones',
         error: error.message
       });
+    }
+  };
+
+  // En este método procesamos las reacciones del usuario autenticado ('fuerza', 'abrazo', 'gracias')
+  reaccionarPublicacion = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { tipo } = req.body || {};
+      const usuarioId = req.usuario?.id;
+
+      if (!['fuerza', 'abrazo', 'gracias'].includes(tipo)) {
+        return res.status(400).json({
+          success: false,
+          mensaje: "El tipo de reacción debe ser 'fuerza', 'abrazo' o 'gracias'"
+        });
+      }
+
+      if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(id)) {
+        const pub = await Publicacion.findById(id);
+        if (!pub) {
+          return res.status(404).json({ success: false, mensaje: 'Publicación no encontrada' });
+        }
+
+        // Remuevo la reacción previa de este usuario si existía
+        pub.reacciones = pub.reacciones.filter(r => String(r.usuarioId) !== String(usuarioId));
+
+        // Añado la nueva reacción
+        pub.reacciones.push({ usuarioId, tipo });
+        await pub.save();
+
+        return res.status(200).json({
+          success: true,
+          mensaje: 'Reacción registrada correctamente',
+          reacciones: pub.reacciones
+        });
+      }
+
+      // Fallback local en memoria
+      const pubLocal = await publicacionService.obtenerPorId(id);
+      if (pubLocal) {
+        if (!pubLocal.reacciones) pubLocal.reacciones = [];
+        pubLocal.reacciones = pubLocal.reacciones.filter(r => String(r.usuarioId) !== String(usuarioId));
+        pubLocal.reacciones.push({ usuarioId, tipo });
+        return res.status(200).json({
+          success: true,
+          mensaje: 'Reacción registrada localmente',
+          reacciones: pubLocal.reacciones
+        });
+      }
+
+      return res.status(404).json({ success: false, mensaje: 'Publicación no encontrada' });
+    } catch (error) {
+      console.error('Error al registrar la reacción:', error);
+      return res.status(500).json({ success: false, mensaje: 'Error al procesar reacción', error: error.message });
     }
   };
 
@@ -92,6 +147,11 @@ export class PublicacionController {
   crearPublicacion = async (req, res) => {
     try {
       const datos = req.body || {};
+
+      // Inyecto el ID del usuario si viene autenticado vía middleware
+      if (req.usuario?.id && !datos.autor) {
+        datos.autor = req.usuario.id;
+      }
 
       // Invoco a mi servicio para guardar la publicación en estado 'pending' para revisión del administrador
       const nuevaPublicacion = await publicacionService.crear(datos);
@@ -260,8 +320,3 @@ export class PublicacionController {
 
 // Exporto una instancia del controlador para conectarlo con mis rutas
 export default new PublicacionController();
-
-
-
-
-

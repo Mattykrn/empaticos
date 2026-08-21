@@ -6,6 +6,7 @@ import { conectarDB } from './config/database.js';
 import publicacionRoutes from './routes/publicacion.routes.js';
 import frasesRoutes from './routes/frases.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 // Acá inicializo la configuración de las variables de entorno guardadas en mi archivo .env
 dotenv.config();
@@ -147,14 +148,7 @@ app.use((req, res) => {
 });
 
 // Middleware de manejo centralizado de errores para capturar excepciones no contempladas
-app.use((err, req, res, next) => {
-  console.error(`Error no controlado capturado: ${err.stack}`);
-  return res.status(500).json({
-    success: false,
-    mensaje: 'Ocurrió un error inesperado en el servidor',
-    error: err.message
-  });
-});
+app.use(errorHandler);
 
 // Acá pongo a escuchar a mi servidor Express en el puerto configurado
 app.listen(PORT, () => {
