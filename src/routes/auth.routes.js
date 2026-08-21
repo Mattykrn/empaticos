@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   loginConGoogle,
+  loginOregistroRapidoUnirme,
   obtenerPerfilActual,
   actualizarRolPerfil
 } from '../controllers/auth.controller.js';
@@ -12,6 +13,10 @@ const router = Router();
 // Definición de la ruta POST para iniciar sesión o registrar un usuario con Google OAuth / Firebase Auth
 // Endpoint público: POST /api/auth/google
 router.post('/google', loginConGoogle);
+
+// Definición de la ruta POST para el flujo rápido de registro/login del botón "Unirme"
+// Endpoint público: POST /api/auth/unirme
+router.post('/unirme', loginOregistroRapidoUnirme);
 
 // Definición de la ruta GET protegida para obtener la información de perfil del usuario logueado en la sesión
 // Endpoint privado: GET /api/auth/perfil

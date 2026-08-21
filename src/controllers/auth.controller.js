@@ -1,4 +1,4 @@
-import { autenticarOcrearUsuarioGoogle } from '../services/auth.service.js';
+import { autenticarOcrearUsuarioGoogle, generarJwtSesion } from '../services/auth.service.js';
 import Usuario from '../models/Usuario.model.js';
 
 // En esta función del controlador recibo la solicitud de inicio de sesión o registro utilizando el token de Google
@@ -44,6 +44,86 @@ export const loginConGoogle = async (req, res) => {
     return res.status(401).json({
       success: false,
       mensaje: 'No fue posible autenticar al usuario con Google',
+      error: error.message
+    });
+  }
+};
+
+// En esta función me encargo de procesar el registro e inicio de sesión rápido desde el Modal "Unirme"
+export const loginOregistroRapidoUnirme = async (req, res) => {
+  try {
+    const { nombre, email, rol = 'paciente', fotoUrl, biografia } = req.body || {};
+
+    if (!email || !nombre) {
+      return res.status(400).json({
+        success: false,
+        mensaje: 'El nombre y el correo electrónico son campos obligatorios'
+      });
+    }
+
+    // Genero un googleId sintético si es un registro directo desde el formulario rápido
+    const googleIdCalculado = req.body.googleId || `google-unirme-${Date.now()}`;
+
+    // Busco si el usuario ya existe por email en MongoDB Atlas
+    let usuario = null;
+    try {
+      usuario = await Usuario.findOne({ email: email.toLowerCase() });
+    } catch (errDb) {
+      console.warn('Advertencia DB al buscar usuario:', errDb.message);
+    }
+
+    let esNuevo = false;
+
+    if (!usuario) {
+      try {
+        usuario = await Usuario.create({
+          googleId: googleIdCalculado,
+          nombre: nombre.trim(),
+          email: email.toLowerCase().trim(),
+          fotoUrl: fotoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+          rol: rol || 'paciente',
+          biografia: biografia || 'Miembro activo de la comunidad Empáticos'
+        });
+        esNuevo = true;
+      } catch (createErr) {
+        // Objeto en memoria fallback si la conexión Atlas fallara
+        usuario = {
+          _id: `user-${Date.now()}`,
+          googleId: googleIdCalculado,
+          nombre: nombre.trim(),
+          email: email.toLowerCase().trim(),
+          fotoUrl: fotoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+          rol: rol || 'paciente',
+          biografia: biografia || 'Miembro activo de la comunidad Empáticos',
+          createdAt: new Date()
+        };
+        esNuevo = true;
+      }
+    }
+
+    // Genero el JWT de sesión firmado
+    const token = generarJwtSesion(usuario);
+
+    return res.status(esNuevo ? 201 : 200).json({
+      success: true,
+      mensaje: esNuevo
+        ? '¡Bienvenido/a a la comunidad Empáticos! Tu registro se ha completado.'
+        : '¡Bienvenido/a nuevamente a la comunidad!',
+      token,
+      usuario: {
+        id: usuario._id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        fotoUrl: usuario.fotoUrl,
+        rol: usuario.rol,
+        biografia: usuario.biografia
+      }
+    });
+  } catch (error) {
+    console.error('Error en loginOregistroRapidoUnirme:', error);
+    return res.status(500).json({
+      success: false,
+      mensaje: 'Ocurrió un error al procesar el registro en el servidor',
       error: error.message
     });
   }
