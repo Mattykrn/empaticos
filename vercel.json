@@ -3,11 +3,6 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/" }
-  ],
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "data/db.json"
-    }
-  }
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

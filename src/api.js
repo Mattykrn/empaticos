@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const ENTRY_TYPES = ['historia', 'anecdota', 'video', 'diagnostico', 'galeria'];
 
@@ -54,10 +54,46 @@ async function request(path, options = {}) {
       error.isUnauthorized = true;
       throw error;
     }
-    throw new Error(data.error || `Error HTTP ${response.status}`);
+    throw new Error(data.mensaje || data.error || `Error HTTP ${response.status}`);
   }
 
   return response.json();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Funciones del Proyecto Integrador Empáticos (CRUD + API Externa)
+// ─────────────────────────────────────────────────────────────
+
+export function getPublicaciones() {
+  return request('/publicaciones');
+}
+
+export function getPublicacionPorId(id) {
+  return request(`/publicaciones/${id}`);
+}
+
+export function crearPublicacion(payload) {
+  return request('/publicaciones', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function actualizarPublicacion(id, payload) {
+  return request(`/publicaciones/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function eliminarPublicacion(id) {
+  return request(`/publicaciones/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function getFraseInspiradora() {
+  return request('/frases/inspiracion');
 }
 
 export function getStats() {
@@ -65,15 +101,15 @@ export function getStats() {
 }
 
 export function getEntries(type) {
-  return request(`/entries${buildQuery({ type })}`);
+  return request(`/publicaciones${buildQuery({ type })}`);
 }
 
 export function getMyEntries(visitorId) {
-  return request(`/entries/mine${buildQuery({ visitorId })}`);
+  return request(`/publicaciones${buildQuery({ visitorId })}`);
 }
 
 export function createEntry(payload) {
-  return request('/entries', {
+  return request('/publicaciones', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -190,13 +226,13 @@ export function loginAdmin(email, password) {
 }
 
 export function getAllEntries(adminPassword) {
-  return request('/entries/all', {
+  return request('/publicaciones/all?status=all', {
     headers: adminHeaders(adminPassword),
   });
 }
 
 export function setEntryStatus(id, status, adminPassword) {
-  return request(`/entries/${id}/status`, {
+  return request(`/publicaciones/${id}/status`, {
     method: 'PATCH',
     headers: adminHeaders(adminPassword),
     body: JSON.stringify({ status }),
@@ -204,7 +240,7 @@ export function setEntryStatus(id, status, adminPassword) {
 }
 
 export function deleteEntry(id, adminPassword) {
-  return request(`/entries/${id}`, {
+  return request(`/publicaciones/${id}`, {
     method: 'DELETE',
     headers: adminHeaders(adminPassword),
   });

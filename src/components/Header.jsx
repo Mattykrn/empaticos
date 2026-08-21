@@ -5,9 +5,10 @@ import FontSizeControl from './FontSizeControl';
 
 const navItems = [
   { label: 'Home', path: '/' },
-  { label: 'Noticias', path: '/noticias' },
-  { label: 'Anécdotas', path: '/anecdotas' },
+  { label: 'Unirme ✍️', path: '/unirme' },
   { label: 'Historias', path: '/historias' },
+  { label: 'Anécdotas', path: '/anecdotas' },
+  { label: 'Noticias', path: '/noticias' },
   { label: 'Videos', path: '/videos' },
   { label: 'Galería', path: '/galeria' },
   { label: 'Nosotros', path: '/nosotros' },

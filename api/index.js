@@ -1,11 +1,4 @@
-'use strict';
+import app from '../src/app.js';
 
-// ─────────────────────────────────────────────────────────────
-// Entry point para Vercel (serverless function).
-// El server expone la app Express; Vercel la invoca por request.
-// Las rutas /api/* se sirven acá (ver vercel.json → rewrites).
-// ─────────────────────────────────────────────────────────────
-
-const app = require('../server');
-
-module.exports = app;
+// Adaptador Serverless para despliegue de la API Express en Vercel
+export default app;

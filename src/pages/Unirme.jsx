@@ -329,9 +329,14 @@ export default function Unirme() {
             </form>
 
             {status.text && (
-              <p className={`text-center mt-4 fw-bold ${status.type === 'error' ? 'text-danger' : 'text-success'}`}>
-                {status.text}
-              </p>
+              <div className={`alert text-center mt-4 p-3 ${status.type === 'error' ? 'alert-danger' : 'alert-success'}`}>
+                <p className="fw-bold mb-2">{status.text}</p>
+                {status.type === 'success' && (
+                  <a href="/historias" className="btn btn-sm btn-success fw-bold text-white px-3 py-2 mt-2 shadow-sm">
+                    Ver publicaciones en Historias ➔
+                  </a>
+                )}
+              </div>
             )}
           </div>
         </div>
