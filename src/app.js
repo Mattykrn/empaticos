@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { conectarDB } from './config/database.js';
 import publicacionRoutes from './routes/publicacion.routes.js';
 import frasesRoutes from './routes/frases.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 // Acá inicializo la configuración de las variables de entorno guardadas en mi archivo .env
 dotenv.config();
@@ -131,6 +132,7 @@ app.delete('/api/favorites/:visitorId/:entryId', (req, res) => {
 });
 
 // Acá monto las rutas modulares de mi aplicación
+app.use('/api/auth', authRoutes);
 app.use('/api/publicaciones', publicacionRoutes);
 app.use('/api/entries', publicacionRoutes); // Alias para compatibilidad con llamadas del cliente
 app.use('/api/frases', frasesRoutes);
