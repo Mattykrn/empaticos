@@ -416,6 +416,51 @@ function MuroComunitarioApp() {
 
         {/* CONTENIDO PRINCIPAL */}
         <main className="max-w-6xl mx-auto px-4 py-8 space-y-16">
+          {/* SECCIÓN VIDEO EXPLICATIVO: ¿QUÉ ES LA ESCLEROSIS MÚLTIPLE? */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'nosotros') && (
+            <section className="bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-orange-100/30 p-6 md:p-10 rounded-3xl border border-orange-200/80 shadow-sm space-y-6">
+              <div className="max-w-3xl mx-auto text-center space-y-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
+                  🎬 Video Educativo & Concientización
+                </span>
+                <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">
+                  ¿Qué es la Esclerosis Múltiple?
+                </h2>
+                <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                  Un recurso audiovisual claro e informativo para comprender cómo afecta la EM al sistema nervioso central, visibilizar sus síntomas y empatizar con quienes convivimos con esta condición.
+                </p>
+              </div>
+
+              <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-black aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/gbkrlXuzodU"
+                  title="¿Qué es la Esclerosis Múltiple? - Video Explicativo"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-center text-xs">
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🧠</span>
+                  <p className="font-bold text-slate-800 mt-1">Enfermedad Autoinmune</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">El sistema inmune afecta el sistema nervioso central</p>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🛡️</span>
+                  <p className="font-bold text-slate-800 mt-1">La Vaina de Mielina</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">Capa protectora de las neuronas que transmite impulsos</p>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🤝</span>
+                  <p className="font-bold text-slate-800 mt-1">Apoyo & Empatía</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">Comprender los síntomas invisibles nos conecta a todos</p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* SECCIÓN DE HISTORIAS */}
           {(seccionActiva === 'inicio' || seccionActiva === 'historias') && (
             <section className="space-y-8">
