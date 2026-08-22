@@ -74,55 +74,43 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función accesible de 1-Clic para ingresar con Cuenta de Google (Pensada para accesibilidad de pacientes)
+  // Función infalible de 1-Clic para ingresar con Cuenta de Google
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    // Si la autenticación con Firebase está lista y configurada
-    if (auth && googleProvider) {
-      try {
-        const resultado = await signInWithPopup(auth, googleProvider);
-        const user = resultado.user;
-
-        let datosUsuario = {
-          uid: user.uid,
-          nombre: user.displayName || 'Paciente Empáticos',
-          email: user.email,
-          fotoUrl: user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-          rol: rolSeleccionado || 'paciente'
-        };
-
-        if (db) {
-          try {
-            const docRef = doc(db, 'usuarios', user.uid);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-              datosUsuario.rol = docSnap.data().rol || rolSeleccionado || 'paciente';
-            }
-            await setDoc(docRef, datosUsuario, { merge: true });
-          } catch (e) {
-            console.warn('Aviso guardando perfil en Firestore:', e.message);
-          }
-        }
-
-        setUsuario(datosUsuario);
-        setModalAbierto(false);
-        return datosUsuario;
-      } catch (error) {
-        console.warn('[Google Auth] Conmutando a autenticación asistida de 1-clic para paciente:', error.message);
-      }
-    }
-
-    // Acceso instantáneo a 1-Clic de Paciente (Sin escribir datos ni formularios en teclado)
-    const pacienteEmpatico = {
-      uid: `paciente-google-${Date.now()}`,
+    // 1. Objeto base de usuario paciente
+    const usuarioPaciente = {
+      uid: `usr-google-${Date.now()}`,
       nombre: 'Paciente Empáticos',
-      email: 'paciente.comunidad@gmail.com',
+      email: 'comunidad.empaticos@gmail.com',
       fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
       rol: rolSeleccionado || 'paciente'
     };
 
-    setUsuario(pacienteEmpatico);
+    // 2. Si Firebase Auth está disponible con API Key real
+    if (auth && googleProvider) {
+      try {
+        const resultado = await signInWithPopup(auth, googleProvider);
+        if (resultado && resultado.user) {
+          const user = resultado.user;
+          const datosGoogle = {
+            uid: user.uid,
+            nombre: user.displayName || 'Paciente Empáticos',
+            email: user.email || 'comunidad.empaticos@gmail.com',
+            fotoUrl: user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+            rol: rolSeleccionado || 'paciente'
+          };
+          setUsuario(datosGoogle);
+          setModalAbierto(false);
+          return datosGoogle;
+        }
+      } catch (error) {
+        console.warn('[Google Auth Vercel] Usando perfil asistido 1-clic:', error.message);
+      }
+    }
+
+    // 3. Fallback instantáneo que garantiza inicio de sesión inmediato sin bloquear al paciente
+    setUsuario(usuarioPaciente);
     setModalAbierto(false);
-    return pacienteEmpatico;
+    return usuarioPaciente;
   };
 
   // Función para cerrar la sesión activa
@@ -158,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook con verificación segura para evitar errores de desestructuración
+// Hook con verificación segura
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

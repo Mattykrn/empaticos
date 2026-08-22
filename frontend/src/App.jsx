@@ -181,23 +181,22 @@ function MuroComunitarioApp() {
   // 3. Crear historias enviando POST /api/stories con VITE_API_URL
   const handlePublicar = async (e) => {
     e.preventDefault();
-    if (!usuario) {
-      if (setModalAbierto) setModalAbierto(true);
-      else if (abrirModalRegistro) abrirModalRegistro();
-      return;
-    }
-
     if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
+
+    let usuarioActual = usuario;
+    if (!usuarioActual) {
+      usuarioActual = await loginConGoogle(rolSeleccionado || 'paciente');
+    }
 
     setGuardandoHistoria(true);
     try {
       const payload = {
-        author: usuario.nombre || 'Usuario Empáticos',
-        avatar: usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+        author: usuarioActual.nombre || 'Paciente Empáticos',
+        avatar: usuarioActual.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
         content: nuevoContenido.trim(),
         contenido: nuevoContenido.trim(),
         titulo: nuevoTitulo.trim(),
-        rolAutor: usuario.rol || rolSeleccionado || 'paciente',
+        rolAutor: usuarioActual.rol || rolSeleccionado || 'paciente',
         imageUrl: ''
       };
 
@@ -214,14 +213,13 @@ function MuroComunitarioApp() {
       setNuevoContenido('');
     } catch (err) {
       console.error('Error al guardar la historia en MongoDB Atlas:', err.message);
-      // Fallback local en pantalla
       const historiaLocal = {
         _id: Date.now().toString(),
-        author: usuario.nombre || 'Usuario Empáticos',
-        avatar: usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+        author: usuarioActual?.nombre || 'Paciente Empáticos',
+        avatar: usuarioActual?.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
         titulo: nuevoTitulo.trim(),
         content: nuevoContenido.trim(),
-        rolAutor: usuario.rol || 'paciente',
+        rolAutor: usuarioActual?.rol || 'paciente',
         createdAt: new Date().toISOString(),
         reacciones: []
       };
@@ -235,13 +233,12 @@ function MuroComunitarioApp() {
 
   // 4. Conectar botones de reacción para enviar POST /api/reactions y actualizar contador persistente
   const handleReaccionar = async (storyId, tipoReaccion) => {
-    if (!usuario) {
-      if (setModalAbierto) setModalAbierto(true);
-      else if (abrirModalRegistro) abrirModalRegistro();
-      return;
+    let usuarioActual = usuario;
+    if (!usuarioActual) {
+      usuarioActual = await loginConGoogle(rolSeleccionado || 'paciente');
     }
 
-    const userId = usuario.uid || usuario.id || 'usr-anon';
+    const userId = usuarioActual?.uid || usuarioActual?.id || 'usr-anon';
 
     // Actualización optimista de estado local
     setHistorias(prev =>
