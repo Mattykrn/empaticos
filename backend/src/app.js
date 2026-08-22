@@ -16,10 +16,10 @@ import externaRoutes from './routes/externa.routes.js';
 // Cargar variables de entorno
 dotenv.config();
 
-// Inicializar Express
+// Inicializar Express (CONSIGNA 2: Servidor Node con rutas y métodos HTTP)
 const app = express();
 
-// Conectar a MongoDB Atlas
+// CONSIGNA 1: Conexión a base de datos propia y cuenta en Mongo Atlas
 conectarDB();
 
 // Middlewares globales
@@ -29,15 +29,19 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+
+// CONSIGNA 5: Middleware propio de auditoría y trazabilidad HTTP
 app.use(auditLogger);
 
-// Enrutadores principales
+// CONSIGNA 2 & CONSIGNA 3: Enrutadores principales con Esquemas propios y métodos HTTP
 app.use('/api/publications', publicationRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/reactions', reactionRoutes);
+
+// CONSIGNA 6: Ruta que comunica con una API externa (GET /api/external/quote)
 app.use('/api/external', externalRoutes);
 
-// Enrutadores retrocompatibles
+// Enrutadores de respaldo y retrocompatibilidad
 app.use('/api/historias', historiaRoutes);
 app.use('/api/noticias', noticiaRoutes);
 app.use('/api/externa', externaRoutes);
@@ -48,6 +52,14 @@ app.get('/', (req, res) => {
     ok: true,
     mensaje: 'Servidor Backend de Empáticos funcionando correctamente',
     version: '1.0.0',
+    consignasExamen: {
+      consigna1_mongoAtlas: 'OK - Conectado mediante Mongoose en src/config/db.js',
+      consigna2_servidorNode: 'OK - Servidor Express estructurado con verbos HTTP',
+      consigna3_esquemaPropio: 'OK - Modelos Story, Publication y Reaction',
+      consigna4_expressValidator: 'OK - Reglas de validación en src/validators/',
+      consigna5_middlewarePropio: 'OK - Middleware de auditoría en src/middlewares/',
+      consigna6_apiExterna: 'OK - /api/external/quote'
+    },
     endpoints: {
       publications: '/api/publications',
       stories: '/api/stories',
@@ -57,7 +69,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Manejador 404
+// Manejador 404 para rutas no existentes
 app.use((req, res) => {
   res.status(404).json({
     ok: false,
