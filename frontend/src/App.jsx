@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from './services/api';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+// Función auxiliar para extraer el ID de video de YouTube y generar la URL embed
+const obtenerEmbedYoutube = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+};
+
 // Base de noticias especializada en Esclerosis Múltiple con fuentes oficiales
 const NOTICIAS_ORIGINALES = [
   {
@@ -89,11 +97,28 @@ Dejo un mensaje que a mí me abrió la cabeza: "No podés pelear contra lo inven
 
 Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva este consejo y bueno, ¡que esta comunidad crezca, lleguemos a todos lados y que ningún otro paciente se sienta solo nunca más!`,
     rolAutor: 'paciente',
+    tipo: 'historia',
+    videoUrl: '',
     createdAt: new Date().toISOString(),
     reacciones: [
       { uid: 'u1', tipo: 'fuerza' },
       { uid: 'u2', tipo: 'abrazo' },
       { uid: 'u3', tipo: 'gracias' }
+    ]
+  },
+  {
+    _id: 'anecdota-mysterio-101',
+    author: 'Matías Torres (Admin)',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+    titulo: '😂 El misterio del control remoto y la heladera',
+    content: '¡No todo es superación solemne, las anécdotas insólitas sobran! La famosa "niebla mental" de la EM no perdona jaja. El otro día estuve 40 minutos buscando el control remoto del televisor por toda la casa y adivinen dónde estaba: adentro de la heladera junto a la leche. Me reí solo 10 minutos seguidos. ¡A tomar la vida con buen humor!',
+    rolAutor: 'paciente',
+    tipo: 'anecdota',
+    videoUrl: '',
+    createdAt: new Date(Date.now() - 36000000).toISOString(),
+    reacciones: [
+      { uid: 'u10', tipo: 'fuerza' },
+      { uid: 'u11', tipo: 'gracias' }
     ]
   },
   {
@@ -103,6 +128,8 @@ Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva est
     titulo: 'Mi camino de superación tras 3 años del diagnóstico de EM',
     content: 'Al principio sentí mucha incertidumbre tras el diagnóstico de Esclerosis Múltiple, pero con el tratamiento adecuado y el apoyo de mi familia aprendí que la fortaleza se construye día a día.',
     rolAutor: 'paciente',
+    tipo: 'historia',
+    videoUrl: 'https://www.youtube.com/watch?v=gbkrlXuzodU',
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     reacciones: [
       { uid: 'u1', tipo: 'fuerza' },
@@ -124,6 +151,8 @@ function MuroComunitarioApp() {
   
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevoContenido, setNuevoContenido] = useState('');
+  const [nuevoVideoUrl, setNuevoVideoUrl] = useState('');
+  const [nuevoTipo, setNuevoTipo] = useState('historia'); // 'historia' | 'anecdota'
   const [guardandoHistoria, setGuardandoHistoria] = useState(false);
 
   const [fraseInspiradora, setFraseInspiradora] = useState(null);
@@ -178,7 +207,7 @@ function MuroComunitarioApp() {
     cargarFraseExterna();
   }, []);
 
-  // 3. Crear historias enviando POST /api/stories con VITE_API_URL
+  // 3. Crear historias o anécdotas enviando POST /api/stories con VITE_API_URL
   const handlePublicar = async (e) => {
     e.preventDefault();
     if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
@@ -197,7 +226,9 @@ function MuroComunitarioApp() {
         contenido: nuevoContenido.trim(),
         titulo: nuevoTitulo.trim(),
         rolAutor: usuarioActual.rol || rolSeleccionado || 'paciente',
-        imageUrl: ''
+        tipo: nuevoTipo,
+        videoUrl: nuevoVideoUrl.trim(),
+        imageUrl: nuevoVideoUrl.trim()
       };
 
       const res = await api.post('/stories', payload);
@@ -211,8 +242,9 @@ function MuroComunitarioApp() {
       setHistorias(prev => [historiaRespuesta, ...prev]);
       setNuevoTitulo('');
       setNuevoContenido('');
+      setNuevoVideoUrl('');
     } catch (err) {
-      console.error('Error al guardar la historia en MongoDB Atlas:', err.message);
+      console.error('Error al guardar en MongoDB Atlas:', err.message);
       const historiaLocal = {
         _id: Date.now().toString(),
         author: usuarioActual?.nombre || 'Paciente Empáticos',
@@ -220,12 +252,15 @@ function MuroComunitarioApp() {
         titulo: nuevoTitulo.trim(),
         content: nuevoContenido.trim(),
         rolAutor: usuarioActual?.rol || 'paciente',
+        tipo: nuevoTipo,
+        videoUrl: nuevoVideoUrl.trim(),
         createdAt: new Date().toISOString(),
         reacciones: []
       };
       setHistorias(prev => [historiaLocal, ...prev]);
       setNuevoTitulo('');
       setNuevoContenido('');
+      setNuevoVideoUrl('');
     } finally {
       setGuardandoHistoria(false);
     }
@@ -302,10 +337,18 @@ function MuroComunitarioApp() {
     return 0;
   };
 
+  // Filtrar historias vs anécdotas
+  const historiasFiltradas = historias.filter(h => {
+    if (seccionActiva === 'anecdotas') {
+      return h.tipo === 'anecdota' || (h.titulo && h.titulo.toLowerCase().includes('anécdota')) || (h.titulo && h.titulo.includes('😂')) || (h.titulo && h.titulo.includes('😄'));
+    }
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col justify-between">
       <div>
-        {/* NAVBAR NARANJA ENERGETICO CON LINK A INSTAGRAM */}
+        {/* NAVBAR NARANJA ENERGETICO CON LINK A INSTAGRAM Y NAVEGACIÓN COMPLETA */}
         <header className="sticky top-0 z-40 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md border-b border-orange-600">
           <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
             <div 
@@ -322,17 +365,17 @@ function MuroComunitarioApp() {
             </div>
 
             <nav className="hidden md:flex items-center gap-1.5 bg-orange-600/40 p-1.5 rounded-full border border-orange-400/50 backdrop-blur-md">
-              {['inicio', 'historias', 'noticias', 'nosotros'].map((tab) => (
+              {['inicio', 'historias', 'anecdotas', 'noticias', 'nosotros'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setSeccionActiva(tab)}
-                  className={`px-5 py-2 rounded-full text-sm font-bold capitalize transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-full text-xs md:text-sm font-bold capitalize transition-all duration-200 ${
                     seccionActiva === tab
                       ? 'bg-white text-orange-600 shadow-md scale-105'
                       : 'text-orange-100 hover:text-white hover:bg-white/20'
                   }`}
                 >
-                  {tab}
+                  {tab === 'anecdotas' ? '😄 Anécdotas' : tab}
                 </button>
               ))}
             </nav>
@@ -406,7 +449,7 @@ function MuroComunitarioApp() {
                 Nadie camina solo en este proceso.
               </h1>
               <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, encontrar contención y acceder a novedades científicas verificadas sobre Esclerosis Múltiple.
+                Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, anécdotas divertidas con humor, encontrar contención y acceder a novedades científicas sobre EM.
               </p>
               <div className="pt-4 flex flex-wrap justify-center gap-4">
                 <button
@@ -416,10 +459,10 @@ function MuroComunitarioApp() {
                   Ver Muro de Historias
                 </button>
                 <button
-                  onClick={() => setSeccionActiva('noticias')}
-                  className="bg-white hover:bg-slate-50 text-slate-700 font-bold px-8 py-3.5 rounded-full border border-slate-200 shadow-sm transition-colors"
+                  onClick={() => setSeccionActiva('anecdotas')}
+                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
                 >
-                  Últimos Avances Médicos
+                  😄 Anécdotas Divertidas
                 </button>
               </div>
             </div>
@@ -475,27 +518,60 @@ function MuroComunitarioApp() {
             </section>
           )}
 
-          {/* SECCIÓN DE HISTORIAS */}
-          {(seccionActiva === 'inicio' || seccionActiva === 'historias') && (
+          {/* SECCIÓN DE HISTORIAS Y ANÉCDOTAS */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'historias' || seccionActiva === 'anecdotas') && (
             <section className="space-y-8">
               <div className="flex justify-between items-end border-b border-orange-100 pb-4">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">Muro de la Comunidad</h2>
-                  <p className="text-sm text-slate-500">Experiencias y testimonios persistidos en MongoDB Atlas (/api/stories & /api/reactions)</p>
+                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">
+                    {seccionActiva === 'anecdotas' ? '😄 Anecdotario & Humor Comunitario' : 'Muro de la Comunidad'}
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    {seccionActiva === 'anecdotas'
+                      ? 'No todo es superación solemne: ¡nos reímos de los despistes, ocurrencias y momentos insólitos!'
+                      : 'Experiencias, videos y testimonios persistidos en MongoDB Atlas'}
+                  </p>
                 </div>
               </div>
 
-              {/* FORMULARIO DE PUBLICACIÓN */}
+              {/* FORMULARIO DE PUBLICACIÓN CON SOPORTE DE VIDEO Y ANÉCDOTAS */}
               <div className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm space-y-4">
-                <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-                  ✍️ Comparte tu historia o testimonio
-                </h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
+                    ✍️ Publicar una Historia o Anécdota Divertida
+                  </h3>
+                  <div className="flex gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setNuevoTipo('historia')}
+                      className={`px-3 py-1 rounded-full font-bold transition-all ${
+                        nuevoTipo === 'historia'
+                          ? 'bg-orange-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      📖 Historia
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNuevoTipo('anecdota')}
+                      className={`px-3 py-1 rounded-full font-bold transition-all ${
+                        nuevoTipo === 'anecdota'
+                          ? 'bg-amber-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      😄 Anécdota
+                    </button>
+                  </div>
+                </div>
+
                 <form onSubmit={handlePublicar} className="space-y-3">
                   <input
                     id="nuevoTitulo"
                     name="nuevoTitulo"
                     type="text"
-                    placeholder="Título de tu publicación..."
+                    placeholder={nuevoTipo === 'anecdota' ? 'Título divertido (ej: El día que dejé el teléfono en la heladera)...' : 'Título de tu publicación...'}
                     value={nuevoTitulo}
                     onChange={(e) => setNuevoTitulo(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -504,11 +580,28 @@ function MuroComunitarioApp() {
                     id="nuevoContenido"
                     name="nuevoContenido"
                     rows="3"
-                    placeholder="Escribe tu vivencia, consejo o mensaje para la comunidad..."
+                    placeholder={nuevoTipo === 'anecdota' ? 'Contá esa situación insólita o cómica que te pasó conviviendo con la EM...' : 'Escribe tu vivencia, consejo o mensaje para la comunidad...'}
                     value={nuevoContenido}
                     onChange={(e) => setNuevoContenido(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                   />
+                  
+                  {/* CAMPO OPCIONAL PARA ADJUNTAR ENLACE DE VIDEO (YOUTUBE O MP4) */}
+                  <div className="pt-1">
+                    <label htmlFor="nuevoVideoUrl" className="text-xs font-bold text-slate-600 block mb-1">
+                      🎬 Link de Video (Opcional - Enlace de YouTube o MP4)
+                    </label>
+                    <input
+                      id="nuevoVideoUrl"
+                      name="nuevoVideoUrl"
+                      type="url"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={nuevoVideoUrl}
+                      onChange={(e) => setNuevoVideoUrl(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 bg-slate-50"
+                    />
+                  </div>
+
                   <div className="flex justify-between items-center pt-2">
                     <span className="text-xs text-slate-400">
                       {usuario ? `Publicando como ${usuario.nombre}` : 'Inicia sesión con Google para publicar'}
@@ -521,13 +614,13 @@ function MuroComunitarioApp() {
                       {guardandoHistoria && (
                         <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                       )}
-                      <span>{guardandoHistoria ? 'Guardando en BD...' : 'Publicar Historia'}</span>
+                      <span>{guardandoHistoria ? 'Guardando en BD...' : nuevoTipo === 'anecdota' ? 'Publicar Anécdota' : 'Publicar Historia'}</span>
                     </button>
                   </div>
                 </form>
               </div>
 
-              {/* MANEJO DE ESTADOS DE CARGA (SPINNER / SKELETON) Y ERROR */}
+              {/* MANEJO DE ESTADOS DE CARGA Y TARJETAS */}
               {cargandoHistorias ? (
                 <div className="space-y-4">
                   <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
@@ -540,18 +633,6 @@ function MuroComunitarioApp() {
                     </div>
                     <div className="h-4 bg-slate-200 rounded w-3/4"></div>
                     <div className="h-3 bg-slate-100 rounded w-full"></div>
-                    <div className="h-3 bg-slate-100 rounded w-5/6"></div>
-                  </div>
-                  <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
-                      <div className="space-y-2 flex-1">
-                        <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                        <div className="h-3 bg-slate-100 rounded w-1/5"></div>
-                      </div>
-                    </div>
-                    <div className="h-4 bg-slate-200 rounded w-2/3"></div>
-                    <div className="h-3 bg-slate-100 rounded w-full"></div>
                   </div>
                 </div>
               ) : (
@@ -563,7 +644,7 @@ function MuroComunitarioApp() {
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {historias.map((historia) => {
+                    {historiasFiltradas.map((historia) => {
                       const idUnico = (historia._id || historia.id).toString();
                       const fuerzaCount = obtenerConteo(historia.reacciones, 'fuerza');
                       const abrazoCount = obtenerConteo(historia.reacciones, 'abrazo');
@@ -571,9 +652,17 @@ function MuroComunitarioApp() {
                       const nombreAutor = historia.author || historia.autorNombre || 'Anónimo';
                       const avatarAutor = historia.avatar || historia.autorFoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
                       const textoContenido = historia.content || historia.contenido;
+                      const videoTarget = historia.videoUrl || historia.imageUrl || '';
+                      const embedYoutube = obtenerEmbedYoutube(videoTarget);
 
                       return (
-                        <article key={idUnico} className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+                        <article key={idUnico} className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow relative">
+                          {historia.tipo === 'anecdota' && (
+                            <span className="absolute top-4 right-4 bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                              😄 Anécdota
+                            </span>
+                          )}
+
                           <div className="space-y-3">
                             <div className="flex items-center gap-3">
                               <img 
@@ -592,8 +681,30 @@ function MuroComunitarioApp() {
                                 </div>
                               </div>
                             </div>
-                            <h5 className="font-bold text-slate-800 text-base">{historia.titulo || 'Historia de la comunidad'}</h5>
-                            <p className="text-sm text-slate-600 leading-relaxed">{textoContenido}</p>
+
+                            <h5 className="font-bold text-slate-800 text-base">{historia.titulo || 'Publicación comunitaria'}</h5>
+                            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{textoContenido}</p>
+
+                            {/* REPRODUCTOR DE VIDEO SI SE ADJUNTÓ UN VIDEO */}
+                            {embedYoutube ? (
+                              <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 aspect-video bg-black mt-2">
+                                <iframe
+                                  className="w-full h-full"
+                                  src={embedYoutube}
+                                  title={historia.titulo}
+                                  loading="lazy"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                ></iframe>
+                              </div>
+                            ) : (videoTarget && videoTarget.endsWith('.mp4')) ? (
+                              <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 aspect-video bg-black mt-2">
+                                <video controls className="w-full h-full">
+                                  <source src={videoTarget} type="video/mp4" />
+                                  Tu navegador no soporta reproducción de video.
+                                </video>
+                              </div>
+                            ) : null}
                           </div>
 
                           <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
@@ -691,7 +802,7 @@ function MuroComunitarioApp() {
               <span className="text-4xl">🧡</span>
               <h2 className="text-3xl font-black text-slate-900">Sobre la Plataforma Empáticos</h2>
               <p className="text-slate-600 leading-relaxed text-sm">
-                Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real con divulgación científica de fuentes médicas oficiales.
+                Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real, anécdotas con humor y divulgación científica de fuentes médicas oficiales.
               </p>
 
               <div className="pt-2">
