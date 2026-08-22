@@ -2,47 +2,31 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Verificar si existe una API Key REAL de Firebase proporcionada en las variables de entorno de Vite/Vercel
-const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+// Credenciales oficiales del proyecto Firebase empaticosBD (empaticos-web-v2)
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyA_OiKkVu-2_VWuUxEgGGIlDf8U4un24o4",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "empaticosbd.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "empaticosbd",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "empaticosbd.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "723912898582",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:723912898582:web:02c9c78a9bbe778d0d9d37"
+};
 
+// Verificación de validez de las credenciales oficiales
 export const esApiKeyValida = Boolean(
-  apiKey &&
-  apiKey !== 'undefined' &&
-  apiKey.startsWith('AIzaSy') &&
-  !apiKey.includes('OAUTH_KEY') &&
-  !apiKey.includes('EMPATICOS') &&
-  !apiKey.includes('MOCK') &&
-  !apiKey.includes('DemoKey')
+  firebaseConfig.apiKey &&
+  firebaseConfig.apiKey.startsWith('AIzaSy')
 );
 
-let app = null;
-let auth = null;
-let googleProvider = null;
-let db = null;
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-if (esApiKeyValida) {
-  try {
-    const firebaseConfig = {
-      apiKey: apiKey,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-      appId: import.meta.env.VITE_FIREBASE_APP_ID
-    };
+// Forzar el despliegue del selector de cuentas de Google
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
-    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    googleProvider = new GoogleAuthProvider();
-    googleProvider.setCustomParameters({ prompt: 'select_account' });
-    db = getFirestore(app);
-  } catch (error) {
-    console.warn('[Firebase Config] Error al inicializar cliente real:', error.message);
-    app = null;
-    auth = null;
-    googleProvider = null;
-    db = null;
-  }
-}
+const db = getFirestore(app);
 
 export { app, auth, googleProvider, db };
