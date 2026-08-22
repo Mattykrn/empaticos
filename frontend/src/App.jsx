@@ -293,7 +293,7 @@ function MuroComunitarioApp() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col justify-between">
       <div>
-        {/* NAVBAR NARANJA ENERGETICO */}
+        {/* NAVBAR NARANJA ENERGETICO CON LINK A INSTAGRAM */}
         <header className="sticky top-0 z-40 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md border-b border-orange-600">
           <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
             <div 
@@ -326,6 +326,21 @@ function MuroComunitarioApp() {
             </nav>
 
             <div className="flex items-center gap-3">
+              {/* BOTÓN DE INSTAGRAM CON ICONO OFICIAL */}
+              <a
+                href="https://www.instagram.com/em.paticos2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border border-white/30 backdrop-blur-md transition-all hover:scale-110 shadow-sm"
+                title="Síguenos en Instagram @em.paticos2026"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
+
               {usuario ? (
                 <div className="flex items-center gap-3 bg-orange-600/50 p-1.5 pr-4 rounded-full border border-orange-400 text-white backdrop-blur-md">
                   <img 
@@ -607,7 +622,7 @@ function MuroComunitarioApp() {
             </section>
           )}
 
-          {/* SECCIÓN NOSOTROS */}
+          {/* SECCIÓN NOSOTROS CON LINK A INSTAGRAM */}
           {seccionActiva === 'nosotros' && (
             <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
               <span className="text-4xl">🧡</span>
@@ -615,6 +630,23 @@ function MuroComunitarioApp() {
               <p className="text-slate-600 leading-relaxed text-sm">
                 Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real con divulgación científica de fuentes médicas oficiales.
               </p>
+
+              <div className="pt-2">
+                <a
+                  href="https://www.instagram.com/em.paticos2026/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white font-bold text-sm shadow-md hover:scale-105 transition-transform"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  <span>Seguinos en Instagram @em.paticos2026</span>
+                </a>
+              </div>
+
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
                 <div className="p-3 bg-orange-50/50 rounded-2xl">
                   <span className="text-xl block">🤝</span>
@@ -687,13 +719,28 @@ function MuroComunitarioApp() {
         </div>
       )}
 
-      {/* FOOTER NARANJA ENERGETICO */}
+      {/* FOOTER NARANJA ENERGETICO CON LINK DIRECTO A INSTAGRAM */}
       <footer className="border-t border-orange-600 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 py-8 text-center text-xs text-orange-100 shadow-inner">
-        <div className="max-w-6xl mx-auto px-4 space-y-2">
+        <div className="max-w-6xl mx-auto px-4 space-y-3">
           <div className="flex justify-center items-center gap-2 text-white text-base font-bold">
             <span>🧡</span> Empáticos
           </div>
           <p>© 2026 Empáticos — Desarrollado por Matías Torres. Global Academy.</p>
+          <div className="pt-1">
+            <a 
+              href="https://www.instagram.com/em.paticos2026/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all hover:scale-105"
+            >
+              <svg className="w-4 h-4 text-orange-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              <span>@em.paticos2026 en Instagram</span>
+            </a>
+          </div>
         </div>
       </footer>
     </div>
