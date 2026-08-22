@@ -1,9 +1,13 @@
-.vercel
-.env*.local
 node_modules/
-*.tar.xz
 dist/
 dist-ssr/
 uploads/
+.vercel
+.DS_Store
+*.log
 
-.env*
+.env
+.env.local
+.env*.local
+
+!.env.example

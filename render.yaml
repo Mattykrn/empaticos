@@ -2,16 +2,10 @@ services:
   - type: web
     name: empaticos-backend
     env: node
-    buildCommand: npm install
-    startCommand: node src/app.js
+    buildCommand: cd backend && npm install
+    startCommand: node backend/src/app.js
     envVars:
       - key: PORT
         value: 5000
       - key: MONGO_URI
-        sync: false
-      - key: ADMIN_EMAIL
-        value: admin@empaticos.com
-      - key: ADMIN_PASSWORD
-        sync: false
-      - key: JWT_SECRET
         sync: false
