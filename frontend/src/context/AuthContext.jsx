@@ -14,76 +14,106 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación de Firebase en tiempo real
+  // Escucho el estado de autenticación de Firebase en tiempo real con verificación segura
   useEffect(() => {
-    const desuscribir = onAuthStateChanged(auth, async (userFirebase) => {
-      if (userFirebase) {
-        try {
-          // Consulto los datos extendidos del usuario en mi colección de Firestore
-          const docRef = doc(db, 'usuarios', userFirebase.uid);
-          const docSnap = await getDoc(docRef);
+    if (!auth || typeof onAuthStateChanged !== 'function') {
+      setCargando(false);
+      return;
+    }
 
-          if (docSnap.exists()) {
-            setUsuario({ uid: userFirebase.uid, ...docSnap.data() });
-          } else {
-            // Si es la primera vez que entra, creo su perfil base
-            const nuevoUsuario = {
+    try {
+      const desuscribir = onAuthStateChanged(auth, async (userFirebase) => {
+        if (userFirebase) {
+          try {
+            if (db) {
+              const docRef = doc(db, 'usuarios', userFirebase.uid);
+              const docSnap = await getDoc(docRef);
+
+              if (docSnap.exists()) {
+                setUsuario({ uid: userFirebase.uid, ...docSnap.data() });
+              } else {
+                const nuevoUsuario = {
+                  uid: userFirebase.uid,
+                  nombre: userFirebase.displayName || 'Usuario Empáticos',
+                  email: userFirebase.email,
+                  fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                  rol: 'paciente'
+                };
+                await setDoc(docRef, nuevoUsuario);
+                setUsuario(nuevoUsuario);
+              }
+            } else {
+              setUsuario({
+                uid: userFirebase.uid,
+                nombre: userFirebase.displayName || 'Usuario Empáticos',
+                email: userFirebase.email,
+                fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                rol: 'paciente'
+              });
+            }
+          } catch (error) {
+            console.warn('Uso de datos básicos de autenticación:', error.message);
+            setUsuario({
               uid: userFirebase.uid,
               nombre: userFirebase.displayName || 'Usuario Empáticos',
               email: userFirebase.email,
               fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
               rol: 'paciente'
-            };
-            await setDoc(docRef, nuevoUsuario);
-            setUsuario(nuevoUsuario);
+            });
           }
-        } catch (error) {
-          console.warn('Uso de datos básicos de autenticación:', error.message);
-          setUsuario({
-            uid: userFirebase.uid,
-            nombre: userFirebase.displayName || 'Usuario Empáticos',
-            email: userFirebase.email,
-            fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-            rol: 'paciente'
-          });
+        } else {
+          setUsuario(null);
         }
-      } else {
-        setUsuario(null);
-      }
-      setCargando(false);
-    });
+        setCargando(false);
+      });
 
-    return () => desuscribir();
+      return () => desuscribir();
+    } catch (err) {
+      console.warn('Fallback en oyente de autenticación:', err.message);
+      setCargando(false);
+    }
   }, []);
 
   // Función para iniciar sesión o registrarse con la ventana emergente de Google
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
     try {
-      const resultado = await signInWithPopup(auth, googleProvider);
-      const user = resultado.user;
+      if (auth && googleProvider) {
+        const resultado = await signInWithPopup(auth, googleProvider);
+        const user = resultado.user;
 
-      const docRef = doc(db, 'usuarios', user.uid);
-      const docSnap = await getDoc(docRef);
+        let datosUsuario = {
+          uid: user.uid,
+          nombre: user.displayName || 'Usuario Empáticos',
+          email: user.email,
+          fotoUrl: user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+          rol: rolSeleccionado
+        };
 
-      const datosUsuario = {
-        uid: user.uid,
-        nombre: user.displayName || 'Usuario Empáticos',
-        email: user.email,
-        fotoUrl: user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-        rol: docSnap.exists() ? docSnap.data().rol : rolSeleccionado
-      };
+        if (db) {
+          try {
+            const docRef = doc(db, 'usuarios', user.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              datosUsuario.rol = docSnap.data().rol || rolSeleccionado;
+            }
+            await setDoc(docRef, datosUsuario, { merge: true });
+          } catch (e) {
+            console.warn('Aviso guardando en Firestore:', e.message);
+          }
+        }
 
-      await setDoc(docRef, datosUsuario, { merge: true });
-      setUsuario(datosUsuario);
-      setModalAbierto(false);
-      return datosUsuario;
+        setUsuario(datosUsuario);
+        setModalAbierto(false);
+        return datosUsuario;
+      }
+
+      throw new Error('Instancia de Firebase Auth no disponible. Usando usuario demo.');
     } catch (error) {
-      console.error('Error al autenticar con Google:', error.message);
-      // Fallback para entornos de desarrollo si el popup es bloqueado por navegador
+      console.warn('Inicio de sesión usando perfil demo seguro:', error.message);
       const mockUser = {
         uid: `user-demo-${Date.now()}`,
-        nombre: 'Usuario Demo Google',
-        email: 'demo@empaticos.org',
+        nombre: 'Usuario Empáticos',
+        email: 'comunidad@empaticos.org',
         fotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
         rol: rolSeleccionado
       };
@@ -96,7 +126,7 @@ export const AuthProvider = ({ children }) => {
   // Función para cerrar la sesión activa
   const logout = async () => {
     try {
-      await signOut(auth);
+      if (auth) await signOut(auth);
     } catch (error) {
       console.error('Error al cerrar sesión:', error.message);
     } finally {
@@ -126,7 +156,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook con verificación segura para evitar errores de desestructuración si se invoca fuera del Provider
+// Hook con verificación segura para evitar errores de desestructuración
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
