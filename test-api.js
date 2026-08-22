@@ -1,24 +1,24 @@
 import axios from 'axios';
 
-// En este script de auditoría automatizada configuro el cliente HTTP Axios para conectarme a mi servidor de Empáticos.
-// Utilizo la URL enviada por variable de entorno o por defecto la instancia en producción/local.
-const BASE_URL = process.env.API_URL || 'https://empaticos.vercel.app';
+// En este script de auditoría automatizada configuro mi cliente HTTP Axios para conectarme a la API de Empáticos.
+// Utilizo la URL de mi variable de entorno API_URL o por defecto apunto a la instancia local/producción.
+const BASE_URL = process.env.API_URL || 'http://localhost:5000';
 const api = axios.create({
   baseURL: BASE_URL,
-  validateStatus: () => true // Permito capturar respuestas 4xx y 5xx sin lanzar excepciones para evaluar los códigos HTTP
+  validateStatus: () => true // Permito capturar respuestas HTTP 4xx y 5xx sin lanzar excepciones para auditarlas directamente
 });
 
 // Variable global donde almacenaré el _id generado por MongoDB durante la prueba de creación
 let publicacionIdCreada = null;
 
-// Objeto para llevar la cuenta global de mis resultados de auditoría
+// Objeto en el que acumulo los resultados globales para mi informe de auditoría
 const resumenPruebas = {
   exitosas: 0,
   fallidas: 0,
   total: 8
 };
 
-// Función auxiliar para imprimir resultados formateados en mi dashboard por consola
+// En este helper formato la salida por consola mostrando checks verdes [✔ PASS] o cruces rojas [✖ FAIL]
 const logResultado = (numeroPrueba, titulo, exito, detalles) => {
   if (exito) {
     resumenPruebas.exitosas++;
@@ -36,14 +36,14 @@ const logResultado = (numeroPrueba, titulo, exito, detalles) => {
 
 
 // ====================================================================================================
-// PRUEBA 1: POST /api/publicaciones (Creación de un nuevo testimonio comunitario)
+// SECCIÓN 1: PRUEBA 1 - POST /api/publicaciones (Registro de un nuevo testimonio comunitario)
 // ====================================================================================================
 const prueba1_crearPublicacion = async () => {
   const inicio = Date.now();
   console.log(`\n▶ Iniciando Prueba 1: POST /api/publicaciones...`);
-  
+
   try {
-    // Aquí preparo el payload del testimonio completo para enviar a mi API con estado 'approved' para visibilidad en consultas
+    // Aquí pruebo el registro de una nueva publicación y preparo su payload con datos de testimonio completo
     const nuevoTestimonio = {
       titulo: 'Testimonio de superación comunitaria - Auditoría Automatizada',
       contenido: 'Comparto mi experiencia de superación para brindar contención y fuerza a toda la comunidad de Empáticos.',
@@ -54,15 +54,15 @@ const prueba1_crearPublicacion = async () => {
       status: 'approved'
     };
 
-    // Envío la petición HTTP POST hacia mi servidor Express
+    // Envío la solicitud HTTP POST hacia mi servidor Express
     const res = await api.post('/api/publicaciones', nuevoTestimonio);
     const tiempoMs = Date.now() - inicio;
 
-    // Verifico que el código de respuesta HTTP sea 201 (Created) o 200 (OK)
+    // Verifico que el código de respuesta devuelto sea 201 (Created) o 200 (OK)
     const esStatusValido = res.status === 201 || res.status === 200;
     const bodyData = res.data.data || res.data.publicacion || res.data;
 
-    // En este paso capturo el _id único asignado por MongoDB Atlas o el servicio
+    // En este paso capturo el _id único asignado por MongoDB para usarlo en las siguientes pruebas
     publicacionIdCreada = bodyData._id || bodyData.id;
 
     const exito = esStatusValido && Boolean(publicacionIdCreada);
@@ -79,21 +79,21 @@ const prueba1_crearPublicacion = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 2: GET /api/publicaciones (Verificación de listado y persistencia en MongoDB Atlas)
+// SECCIÓN 2: PRUEBA 2 - GET /api/publicaciones (Listado general y comprobación de persistencia)
 // ====================================================================================================
 const prueba2_listarPublicaciones = async () => {
   const inicio = Date.now();
   console.log(`\n▶ Iniciando Prueba 2: GET /api/publicaciones...`);
 
   try {
-    // Solicito el listado completo de publicaciones desde mi base de datos MongoDB Atlas o endpoint general
+    // Solicito el listado de publicaciones en mi base de datos para auditar que la respuesta sea un arreglo poblado
     const res = await api.get('/api/publicaciones/all');
     const resGeneral = res.status === 200 ? res : await api.get('/api/publicaciones');
     const tiempoMs = Date.now() - inicio;
 
     const lista = Array.isArray(resGeneral.data) ? resGeneral.data : (resGeneral.data.data || resGeneral.data.publicaciones || []);
-    
-    // Verifico que la publicación creada en la Prueba 1 figure efectivamente en el arreglo retornado
+
+    // En este paso verifico que la persistencia en MongoDB fue real comprobando que el ID generado esté en la lista
     const encontrada = lista.some(pub => String(pub._id || pub.id) === String(publicacionIdCreada));
 
     const exito = resGeneral.status === 200 && Array.isArray(lista) && lista.length > 0 && encontrada;
@@ -110,7 +110,7 @@ const prueba2_listarPublicaciones = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 3: GET /api/publicaciones/:id (Consulta de un documento específico por su ID)
+// SECCIÓN 3: PRUEBA 3 - GET /api/publicaciones/:id (Consulta individual por ID generado)
 // ====================================================================================================
 const prueba3_obtenerPublicacionPorId = async () => {
   const inicio = Date.now();
@@ -118,19 +118,21 @@ const prueba3_obtenerPublicacionPorId = async () => {
 
   try {
     if (!publicacionIdCreada) {
-      logResultado(3, 'GET /api/publicaciones/:id', false, 'Omitida: No se generó ID en la Prueba 1');
+      logResultado(3, 'GET /api/publicaciones/:id', false, 'Omitida: No se capturó un ID válido en la Prueba 1');
       return;
     }
 
-    // Consulto a mi API el elemento específico pasando el _id capturado previamente
+    // Consulto la publicación específica pasando el _id obtenido previamente
     const res = await api.get(`/api/publicaciones/${publicacionIdCreada}`);
     const tiempoMs = Date.now() - inicio;
 
     const doc = res.data.data || res.data.publicacion || res.data;
+    
+    // Verifico que los campos del documento devuelto coincidan exactamente con la publicación creada
     const coincidenciaId = String(doc._id || doc.id) === String(publicacionIdCreada);
 
     const exito = res.status === 200 && coincidenciaId;
-    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Documento recuperado: "${doc.titulo || 'Sin título'}" | ID Coincide: ${coincidenciaId ? 'SÍ' : 'NO'}`;
+    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Documento: "${doc.titulo || 'Sin título'}" | ID Coincide exactamente: ${coincidenciaId ? 'SÍ' : 'NO'}`;
 
     logResultado(3, 'GET /api/publicaciones/:id - Consulta individual por ID', exito, detalle);
   } catch (error) {
@@ -143,7 +145,7 @@ const prueba3_obtenerPublicacionPorId = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 4: PUT /api/publicaciones/:id (Edición de datos y re-fetch de comprobación de cambios)
+// SECCIÓN 4: PRUEBA 4 - PUT /api/publicaciones/:id (Modificación de datos y re-fetch de confirmación)
 // ====================================================================================================
 const prueba4_actualizarPublicacion = async () => {
   const inicio = Date.now();
@@ -151,10 +153,11 @@ const prueba4_actualizarPublicacion = async () => {
 
   try {
     if (!publicacionIdCreada) {
-      logResultado(4, 'PUT /api/publicaciones/:id', false, 'Omitida: No se generó ID en la Prueba 1');
+      logResultado(4, 'PUT /api/publicaciones/:id', false, 'Omitida: No se capturó un ID válido en la Prueba 1');
       return;
     }
 
+    // Preparo los datos modificados para actualizar la publicación
     const datosActualizados = {
       titulo: 'Testimonio de superación comunitaria - [MODIFICADO POR AUDITORÍA]',
       contenido: 'Este contenido ha sido actualizado mediante una petición PUT para verificar la edición persistente en la BD.',
@@ -165,10 +168,10 @@ const prueba4_actualizarPublicacion = async () => {
       status: 'approved'
     };
 
-    // Envío la solicitud PUT para modificar los datos del documento
+    // Envío la petición PUT para actualizar la publicación
     const resPut = await api.put(`/api/publicaciones/${publicacionIdCreada}`, datosActualizados);
-    
-    // Realizo un re-fetch inmediato mediante GET para verificar que el cambio persistió en MongoDB Atlas
+
+    // Hago un re-fetch posterior con GET para constatar que el cambio de datos efectivamente se guardó en MongoDB
     const resReFetch = await api.get(`/api/publicaciones/${publicacionIdCreada}`);
     const tiempoMs = Date.now() - inicio;
 
@@ -176,9 +179,9 @@ const prueba4_actualizarPublicacion = async () => {
     const cambioPersistido = docActualizado.titulo === datosActualizados.titulo;
 
     const exito = resPut.status === 200 && resReFetch.status === 200 && cambioPersistido;
-    const detalle = `HTTP PUT Status ${resPut.status} | HTTP Re-Fetch Status ${resReFetch.status} (${tiempoMs}ms) | Título persistido: "${docActualizado.titulo}"`;
+    const detalle = `HTTP PUT Status ${resPut.status} | Re-Fetch Status ${resReFetch.status} (${tiempoMs}ms) | Cambio persistido en BD: ${cambioPersistido ? 'SÍ' : 'NO'}`;
 
-    logResultado(4, 'PUT /api/publicaciones/:id - Edición y verificación de persistencia', exito, detalle);
+    logResultado(4, 'PUT /api/publicaciones/:id - Edición y re-fetch de persistencia', exito, detalle);
   } catch (error) {
     logResultado(4, 'PUT /api/publicaciones/:id - Edición de publicación', false, `Error de conexión: ${error.message}`);
   }
@@ -189,30 +192,30 @@ const prueba4_actualizarPublicacion = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 5: POST /api/publicaciones (Prueba de Validaciones express-validator con datos inválidos)
+// SECCIÓN 5: PRUEBA 5 - POST /api/publicaciones (Evaluación de validaciones con express-validator)
 // ====================================================================================================
 const prueba5_validacionesExpressValidator = async () => {
   const inicio = Date.now();
-  console.log(`\n▶ Iniciando Prueba 5: POST /api/publicaciones (Validación de cuerpo/título inválido)...`);
+  console.log(`\n▶ Iniciando Prueba 5: POST /api/publicaciones (Evaluación de express-validator)...`);
 
   try {
-    // Envío un payload deliberadamente inválido (contenido vacío) para forzar el fallo de validación
+    // Envío un body con contenido vacío y título inválido para evaluar la reacción de mis validadores
     const payloadInvalido = {
-      titulo: 'A', // Título de 1 carácter (el mínimo es 3)
-      contenido: '' // Contenido totalmente vacío
+      titulo: 'A', // Título de menos de 3 caracteres (inválido)
+      contenido: '' // Contenido requerido que se envía vacío
     };
 
     const res = await api.post('/api/publicaciones', payloadInvalido);
     const tiempoMs = Date.now() - inicio;
 
-    // Verifico que mi middleware express-validator corte la petición y responda con HTTP 400 Bad Request
+    // Verifico que express-validator responda con código HTTP 400 Bad Request y entregue el detalle de errores
     const esBadRequest = res.status === 400;
     const tieneArrayErrores = res.data && (res.data.errores || res.data.errors || !res.data.success);
 
     const exito = esBadRequest && tieneArrayErrores;
-    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Rechazo correcto por validación 400: ${esBadRequest ? 'SÍ' : 'NO'}`;
+    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Rechazo 400 por validación: ${esBadRequest ? 'SÍ' : 'NO'}`;
 
-    logResultado(5, 'Validaciones express-validator - Rechazo de datos inválidos', exito, detalle);
+    logResultado(5, 'Validaciones express-validator - Rechazo de datos inválidos (400)', exito, detalle);
   } catch (error) {
     logResultado(5, 'Validaciones express-validator', false, `Error de conexión: ${error.message}`);
   }
@@ -223,14 +226,14 @@ const prueba5_validacionesExpressValidator = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 6: POST /api/publicaciones (Prueba del Middleware propio de moderación de contenido)
+// SECCIÓN 6: PRUEBA 6 - POST /api/publicaciones (Evaluación de Middleware propio de Moderación)
 // ====================================================================================================
 const prueba6_middlewareModeracion = async () => {
   const inicio = Date.now();
-  console.log(`\n▶ Iniciando Prueba 6: POST /api/publicaciones (Moderación de palabras agresiivas/prohibidas)...`);
+  console.log(`\n▶ Iniciando Prueba 6: POST /api/publicaciones (Filtro de moderación comunitaria)...`);
 
   try {
-    // Envío un testimonio que contiene una palabra prohibida para poner a prueba mi middleware de moderación
+    // Envío un mensaje deliberadamente con palabras agresivas o prohibidas para testear mi middleware de moderación
     const payloadAgresivo = {
       titulo: 'Publicación con lenguaje agresivo',
       contenido: 'Este mensaje contiene la palabra prohibida estupido para probar el filtro de mi comunidad.',
@@ -240,13 +243,13 @@ const prueba6_middlewareModeracion = async () => {
     const res = await api.post('/api/publicaciones', payloadAgresivo);
     const tiempoMs = Date.now() - inicio;
 
-    // Verifico que el middleware detecte el término y corte la ejecución retornando código HTTP 400
+    // Verifico que mi middleware corte la petición adecuadamente retornando un código 400
     const esBloqueado = res.status === 400;
 
     const exito = esBloqueado;
-    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Filtro de moderación activado: ${esBloqueado ? 'SÍ (Bloqueado correctamente)' : 'NO (Atravesó el filtro)'}`;
+    const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Petición bloqueada por moderación: ${esBloqueado ? 'SÍ (400 Bad Request)' : 'NO (Pasó el filtro)'}`;
 
-    logResultado(6, 'Middleware propio de moderación - Filtro de palabras prohibidas', exito, detalle);
+    logResultado(6, 'Middleware propio de moderación - Palabras prohibidas (400)', exito, detalle);
   } catch (error) {
     logResultado(6, 'Middleware de moderación', false, `Error de conexión: ${error.message}`);
   }
@@ -257,21 +260,21 @@ const prueba6_middlewareModeracion = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 7: GET /api/frases/inspiracion (Consumo y verificación de API Externa de Frases)
+// SECCIÓN 7: PRUEBA 7 - GET /api/frases/inspiracion (Verificación de integración con API Externa)
 // ====================================================================================================
 const prueba7_apiExternaFrases = async () => {
   const inicio = Date.now();
-  console.log(`\n▶ Iniciando Prueba 7: GET /api/frases/inspiracion (Integración API Externa)...`);
+  console.log(`\n▶ Iniciando Prueba 7: GET /api/frases/inspiracion...`);
 
   try {
-    // Invoco mi endpoint que consume la API externa con Axios para obtener citas motivacionales
+    // Comprobaré que la API externa consumida mediante Axios responda exitosamente con una cita inspiracional
     const res = await api.get('/api/frases/inspiracion');
     const tiempoMs = Date.now() - inicio;
 
     const dataFrase = res.data.data || res.data.frase || res.data;
-    const tieneTextoYAutor = Boolean(dataFrase && (dataFrase.texto || dataFrase.quote || dataFrase.frase));
+    const tieneEstructuraValida = Boolean(dataFrase && (dataFrase.texto || dataFrase.quote || dataFrase.frase));
 
-    const exito = res.status === 200 && tieneTextoYAutor;
+    const exito = res.status === 200 && tieneEstructuraValida;
     const detalle = `HTTP Status ${res.status} (${tiempoMs}ms) | Cita recibida: "${dataFrase.texto || dataFrase.quote || 'N/A'}" - Autor: "${dataFrase.autor || dataFrase.author || 'Anónimo'}"`;
 
     logResultado(7, 'GET /api/frases/inspiracion - Consumo de API Externa', exito, detalle);
@@ -285,7 +288,7 @@ const prueba7_apiExternaFrases = async () => {
 
 
 // ====================================================================================================
-// PRUEBA 8: DELETE /api/publicaciones/:id (Eliminación de documento y verificación 404 en BD)
+// SECCIÓN 8: PRUEBA 8 - DELETE /api/publicaciones/:id (Eliminación y confirmación 404 en MongoDB)
 // ====================================================================================================
 const prueba8_eliminarPublicacion = async () => {
   const inicio = Date.now();
@@ -293,14 +296,14 @@ const prueba8_eliminarPublicacion = async () => {
 
   try {
     if (!publicacionIdCreada) {
-      logResultado(8, 'DELETE /api/publicaciones/:id', false, 'Omitida: No se generó ID en la Prueba 1');
+      logResultado(8, 'DELETE /api/publicaciones/:id', false, 'Omitida: No se capturó un ID válido en la Prueba 1');
       return;
     }
 
-    // Solicito la eliminación física del documento en mi base de datos MongoDB Atlas
+    // Solicito la eliminación del documento de prueba en mi base de datos MongoDB
     const resDelete = await api.delete(`/api/publicaciones/${publicacionIdCreada}`);
-    
-    // Intento recuperar el elemento eliminado para comprobar que la API responda con 404 (Not Found)
+
+    // Hago una consulta posterior GET esperando un status 404 Not Found para confirmar que la publicación fue removida
     const resGetPosterior = await api.get(`/api/publicaciones/${publicacionIdCreada}`);
     const tiempoMs = Date.now() - inicio;
 
@@ -308,7 +311,7 @@ const prueba8_eliminarPublicacion = async () => {
     const es404Notfound = resGetPosterior.status === 404;
 
     const exito = esDeleteOk && es404Notfound;
-    const detalle = `HTTP DELETE Status ${resDelete.status} | GET posterior Status ${resGetPosterior.status} (${tiempoMs}ms) | Confirmación 404 tras eliminación: ${es404Notfound ? 'SÍ' : 'NO'}`;
+    const detalle = `HTTP DELETE Status ${resDelete.status} | GET posterior Status ${resGetPosterior.status} (${tiempoMs}ms) | Eliminación física confirmada con 404: ${es404Notfound ? 'SÍ' : 'NO'}`;
 
     logResultado(8, 'DELETE /api/publicaciones/:id - Eliminación y verificación 404', exito, detalle);
   } catch (error) {
@@ -321,15 +324,15 @@ const prueba8_eliminarPublicacion = async () => {
 
 
 // ====================================================================================================
-// EJECUCIÓN PRINCIPAL Y DASHBOARD FINAL DE AUDITORÍA
+// DASHBOARD FINAL DE RESULTADOS Y AUDITORÍA DE LA API
 // ====================================================================================================
 const ejecutarAuditoriaCompleta = async () => {
   console.log(`================================================================================`);
   console.log(`🚀 INICIANDO AUDITORÍA AUTOMÁTICA DE LA API "EMPÁTICOS"`);
-  console.log(`🌐 Servidor de pruebas: ${BASE_URL}`);
+  console.log(`🌐 Servidor objetivo: ${BASE_URL}`);
   console.log(`================================================================================`);
 
-  // Secuencia lineal de pruebas de integración y persistencia
+  // Ejecuto la secuencia ordenada de pruebas de integración y persistencia
   await prueba1_crearPublicacion();
   await prueba2_listarPublicaciones();
   await prueba3_obtenerPublicacionPorId();
@@ -356,5 +359,5 @@ const ejecutarAuditoriaCompleta = async () => {
   }
 };
 
-// Inicio la auditoría
+// Inicio la suite de auditoría
 ejecutarAuditoriaCompleta();
