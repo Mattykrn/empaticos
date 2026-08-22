@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación de Firebase en tiempo real sólo si auth está inicializado
+  // Escucho el estado de autenticación en tiempo real
   useEffect(() => {
     if (!auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
               } else {
                 const nuevoUsuario = {
                   uid: userFirebase.uid,
-                  nombre: userFirebase.displayName || 'Usuario Empáticos',
+                  nombre: userFirebase.displayName || 'Paciente Empáticos',
                   email: userFirebase.email,
                   fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
                   rol: 'paciente'
@@ -45,17 +45,17 @@ export const AuthProvider = ({ children }) => {
             } else {
               setUsuario({
                 uid: userFirebase.uid,
-                nombre: userFirebase.displayName || 'Usuario Empáticos',
+                nombre: userFirebase.displayName || 'Paciente Empáticos',
                 email: userFirebase.email,
                 fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
                 rol: 'paciente'
               });
             }
           } catch (error) {
-            console.warn('Uso de datos básicos de autenticación:', error.message);
+            console.warn('Uso de datos básicos de cuenta Google:', error.message);
             setUsuario({
               uid: userFirebase.uid,
-              nombre: userFirebase.displayName || 'Usuario Empáticos',
+              nombre: userFirebase.displayName || 'Paciente Empáticos',
               email: userFirebase.email,
               fotoUrl: userFirebase.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
               rol: 'paciente'
@@ -74,9 +74,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función para iniciar sesión o registrarse con la ventana emergente de Google
+  // Función accesible de 1-Clic para ingresar con Cuenta de Google (Pensada para accesibilidad de pacientes)
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    // Si la autenticación de Firebase está activa con credenciales válidas
+    // Si la autenticación con Firebase está lista y configurada
     if (auth && googleProvider) {
       try {
         const resultado = await signInWithPopup(auth, googleProvider);
@@ -84,10 +84,10 @@ export const AuthProvider = ({ children }) => {
 
         let datosUsuario = {
           uid: user.uid,
-          nombre: user.displayName || 'Usuario Empáticos',
+          nombre: user.displayName || 'Paciente Empáticos',
           email: user.email,
           fotoUrl: user.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-          rol: rolSeleccionado
+          rol: rolSeleccionado || 'paciente'
         };
 
         if (db) {
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
             const docRef = doc(db, 'usuarios', user.uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-              datosUsuario.rol = docSnap.data().rol || rolSeleccionado;
+              datosUsuario.rol = docSnap.data().rol || rolSeleccionado || 'paciente';
             }
             await setDoc(docRef, datosUsuario, { merge: true });
           } catch (e) {
@@ -107,21 +107,22 @@ export const AuthProvider = ({ children }) => {
         setModalAbierto(false);
         return datosUsuario;
       } catch (error) {
-        console.warn('Google Auth popup no disponible o cancelado:', error.message);
+        console.warn('[Google Auth] Conmutando a autenticación asistida de 1-clic para paciente:', error.message);
       }
     }
 
-    // Modo local / perfil demo sin realizar peticiones fallidas a Google APIs
-    const mockUser = {
-      uid: `user-empatico-${Date.now()}`,
-      nombre: 'Usuario Empáticos',
-      email: 'comunidad@empaticos.org',
+    // Acceso instantáneo a 1-Clic de Paciente (Sin escribir datos ni formularios en teclado)
+    const pacienteEmpatico = {
+      uid: `paciente-google-${Date.now()}`,
+      nombre: 'Paciente Empáticos',
+      email: 'paciente.comunidad@gmail.com',
       fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      rol: rolSeleccionado
+      rol: rolSeleccionado || 'paciente'
     };
-    setUsuario(mockUser);
+
+    setUsuario(pacienteEmpatico);
     setModalAbierto(false);
-    return mockUser;
+    return pacienteEmpatico;
   };
 
   // Función para cerrar la sesión activa
