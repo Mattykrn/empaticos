@@ -291,346 +291,348 @@ function MuroComunitarioApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-orange-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-18 flex items-center justify-between">
-          <div 
-            onClick={() => setSeccionActiva('inicio')}
-            className="flex items-center gap-3 cursor-pointer select-none"
-          >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white text-xl shadow-md shadow-orange-500/20">
-              🧡
-            </div>
-            <div>
-              <span className="text-xl font-black tracking-tight text-slate-900 block leading-tight">Empáticos</span>
-              <span className="text-[10px] font-bold tracking-widest text-orange-600 uppercase block">Comunidad & Apoyo EM</span>
-            </div>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-1 bg-orange-50/80 p-1.5 rounded-full border border-orange-100/80">
-            {['inicio', 'historias', 'noticias', 'nosotros'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSeccionActiva(tab)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold capitalize transition-all duration-200 ${
-                  seccionActiva === tab
-                    ? 'bg-orange-500 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-orange-600 hover:bg-orange-100/50'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            {usuario ? (
-              <div className="flex items-center gap-3 bg-orange-50/60 p-1.5 pr-4 rounded-full border border-orange-100">
-                <img 
-                  src={usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
-                  alt={usuario.nombre} 
-                  className="w-8 h-8 rounded-full object-cover border border-orange-200"
-                />
-                <div className="text-left hidden sm:block">
-                  <p className="text-xs font-bold text-slate-900 leading-tight">{usuario.nombre}</p>
-                  <p className="text-[10px] text-orange-600 font-medium capitalize">{usuario.rol || 'paciente'}</p>
-                </div>
-                <button
-                  onClick={logout}
-                  className="ml-2 text-xs font-semibold text-slate-400 hover:text-red-500 transition-colors"
-                >
-                  Salir
-                </button>
+    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col justify-between">
+      <div>
+        {/* NAVBAR NARANJA ENERGETICO */}
+        <header className="sticky top-0 z-40 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md border-b border-orange-600">
+          <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div 
+              onClick={() => setSeccionActiva('inicio')}
+              className="flex items-center gap-3 cursor-pointer select-none group"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl shadow-inner border border-white/30 group-hover:scale-105 transition-transform">
+                🧡
               </div>
-            ) : (
-              <button
-                onClick={() => setModalAbierto ? setModalAbierto(true) : abrirModalRegistro && abrirModalRegistro()}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md shadow-orange-500/20 transition-all hover:scale-105 active:scale-95"
-              >
-                Unirme
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* BANNER DE FRASE MOTIVACIONAL CONSUMIDA DE API EXTERNA */}
-      {fraseInspiradora && (
-        <div className="bg-amber-500 text-white shadow-sm transition-all animate-fadeIn">
-          <div className="max-w-4xl mx-auto px-4 py-2.5 text-center flex items-center justify-center gap-2">
-            <span className="text-xs">💡</span>
-            <p className="text-xs md:text-sm font-medium italic">
-              "{fraseInspiradora.frase}" — <span className="font-semibold">{fraseInspiradora.autor}</span>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* HERO */}
-      {seccionActiva === 'inicio' && (
-        <section className="relative overflow-hidden py-16 px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100/70 border border-orange-200/60 text-orange-800 text-xs font-semibold">
-              ✨ Red Comunitaria de Esclerosis Múltiple
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
-              Nadie camina solo en este proceso.
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, encontrar contención y acceder a novedades científicas verificadas sobre Esclerosis Múltiple.
-            </p>
-            <div className="pt-4 flex flex-wrap justify-center gap-4">
-              <button
-                onClick={() => setSeccionActiva('historias')}
-                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
-              >
-                Ver Muro de Historias
-              </button>
-              <button
-                onClick={() => setSeccionActiva('noticias')}
-                className="bg-white hover:bg-slate-50 text-slate-700 font-bold px-8 py-3.5 rounded-full border border-slate-200 shadow-sm transition-colors"
-              >
-                Últimos Avances Médicos
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CONTENIDO PRINCIPAL */}
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-16">
-        {/* SECCIÓN DE HISTORIAS */}
-        {(seccionActiva === 'inicio' || seccionActiva === 'historias') && (
-          <section className="space-y-8">
-            <div className="flex justify-between items-end border-b border-orange-100 pb-4">
               <div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900">Muro de la Comunidad</h2>
-                <p className="text-sm text-slate-500">Experiencias y testimonios persistidos en MongoDB Atlas (/api/stories & /api/reactions)</p>
+                <span className="text-2xl font-black tracking-tight text-white block leading-tight">Empáticos</span>
+                <span className="text-[10px] font-bold tracking-widest text-orange-100 uppercase block">Comunidad & Apoyo EM</span>
               </div>
             </div>
 
-            {/* FORMULARIO DE PUBLICACIÓN */}
-            <div className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-                ✍️ Comparte tu historia o testimonio
-              </h3>
-              <form onSubmit={handlePublicar} className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Título de tu publicación..."
-                  value={nuevoTitulo}
-                  onChange={(e) => setNuevoTitulo(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                <textarea
-                  rows="3"
-                  placeholder="Escribe tu vivencia, consejo o mensaje para la comunidad..."
-                  value={nuevoContenido}
-                  onChange={(e) => setNuevoContenido(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-                />
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-xs text-slate-400">
-                    {usuario ? `Publicando como ${usuario.nombre}` : 'Inicia sesión con Google para publicar'}
-                  </span>
+            <nav className="hidden md:flex items-center gap-1.5 bg-orange-600/40 p-1.5 rounded-full border border-orange-400/50 backdrop-blur-md">
+              {['inicio', 'historias', 'noticias', 'nosotros'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSeccionActiva(tab)}
+                  className={`px-5 py-2 rounded-full text-sm font-bold capitalize transition-all duration-200 ${
+                    seccionActiva === tab
+                      ? 'bg-white text-orange-600 shadow-md scale-105'
+                      : 'text-orange-100 hover:text-white hover:bg-white/20'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-3">
+              {usuario ? (
+                <div className="flex items-center gap-3 bg-orange-600/50 p-1.5 pr-4 rounded-full border border-orange-400 text-white backdrop-blur-md">
+                  <img 
+                    src={usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
+                    alt={usuario.nombre} 
+                    className="w-8 h-8 rounded-full object-cover border border-white/60"
+                  />
+                  <div className="text-left hidden sm:block">
+                    <p className="text-xs font-bold text-white leading-tight">{usuario.nombre}</p>
+                    <p className="text-[10px] text-orange-200 font-semibold capitalize">{usuario.rol || 'paciente'}</p>
+                  </div>
                   <button
-                    type="submit"
-                    disabled={guardandoHistoria}
-                    className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
+                    onClick={logout}
+                    className="ml-2 text-xs font-bold text-orange-200 hover:text-white transition-colors"
                   >
-                    {guardandoHistoria && (
-                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    )}
-                    <span>{guardandoHistoria ? 'Guardando en BD...' : 'Publicar Historia'}</span>
+                    Salir
                   </button>
                 </div>
-              </form>
+              ) : (
+                <button
+                  onClick={() => setModalAbierto ? setModalAbierto(true) : abrirModalRegistro && abrirModalRegistro()}
+                  className="bg-white hover:bg-orange-50 text-orange-600 px-6 py-2.5 rounded-full text-sm font-black shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
+                >
+                  Unirme
+                </button>
+              )}
             </div>
+          </div>
+        </header>
 
-            {/* MANEJO DE ESTADOS DE CARGA (SPINNER / SKELETON) Y ERROR */}
-            {cargandoHistorias ? (
-              <div className="space-y-4">
-                <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-slate-200 rounded w-1/4"></div>
-                      <div className="h-3 bg-slate-100 rounded w-1/6"></div>
-                    </div>
-                  </div>
-                  <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-slate-100 rounded w-full"></div>
-                  <div className="h-3 bg-slate-100 rounded w-5/6"></div>
-                </div>
-                <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                      <div className="h-3 bg-slate-100 rounded w-1/5"></div>
-                    </div>
-                  </div>
-                  <div className="h-4 bg-slate-200 rounded w-2/3"></div>
-                  <div className="h-3 bg-slate-100 rounded w-full"></div>
+        {/* BANNER DE FRASE MOTIVACIONAL CONSUMIDA DE API EXTERNA EN ESPAÑOL */}
+        {fraseInspiradora && (
+          <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-inner transition-all border-b border-orange-700">
+            <div className="max-w-4xl mx-auto px-4 py-2.5 text-center flex items-center justify-center gap-2">
+              <span className="text-sm">💡</span>
+              <p className="text-xs md:text-sm font-medium italic">
+                "{fraseInspiradora.frase}" — <span className="font-bold">{fraseInspiradora.autor}</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* HERO */}
+        {seccionActiva === 'inicio' && (
+          <section className="relative overflow-hidden py-16 px-4">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100/70 border border-orange-200/60 text-orange-800 text-xs font-semibold">
+                ✨ Red Comunitaria de Esclerosis Múltiple
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+                Nadie camina solo en este proceso.
+              </h1>
+              <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, encontrar contención y acceder a novedades científicas verificadas sobre Esclerosis Múltiple.
+              </p>
+              <div className="pt-4 flex flex-wrap justify-center gap-4">
+                <button
+                  onClick={() => setSeccionActiva('historias')}
+                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
+                >
+                  Ver Muro de Historias
+                </button>
+                <button
+                  onClick={() => setSeccionActiva('noticias')}
+                  className="bg-white hover:bg-slate-50 text-slate-700 font-bold px-8 py-3.5 rounded-full border border-slate-200 shadow-sm transition-colors"
+                >
+                  Últimos Avances Médicos
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* CONTENIDO PRINCIPAL */}
+        <main className="max-w-6xl mx-auto px-4 py-8 space-y-16">
+          {/* SECCIÓN DE HISTORIAS */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'historias') && (
+            <section className="space-y-8">
+              <div className="flex justify-between items-end border-b border-orange-100 pb-4">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">Muro de la Comunidad</h2>
+                  <p className="text-sm text-slate-500">Experiencias y testimonios persistidos en MongoDB Atlas (/api/stories & /api/reactions)</p>
                 </div>
               </div>
-            ) : (
-              <div>
-                {errorHistorias && (
-                  <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-2xl flex items-center gap-2">
-                    <span>⚠️</span>
-                    <span>{errorHistorias}</span>
-                  </div>
-                )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {historias.map((historia) => {
-                    const idUnico = (historia._id || historia.id).toString();
-                    const fuerzaCount = obtenerConteo(historia.reacciones, 'fuerza');
-                    const abrazoCount = obtenerConteo(historia.reacciones, 'abrazo');
-                    const graciasCount = obtenerConteo(historia.reacciones, 'gracias');
-                    const nombreAutor = historia.author || historia.autorNombre || 'Anónimo';
-                    const avatarAutor = historia.avatar || historia.autorFoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
-                    const textoContenido = historia.content || historia.contenido;
 
-                    return (
-                      <article key={idUnico} className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <img 
-                              src={avatarAutor} 
-                              alt={nombreAutor} 
-                              className="w-10 h-10 rounded-full object-cover border border-orange-200" 
-                            />
-                            <div>
-                              <h4 className="text-sm font-bold text-slate-900 leading-tight">{nombreAutor}</h4>
-                              <div className="flex items-center gap-2 text-xs">
-                                <span className="text-orange-600 font-semibold capitalize">{historia.rolAutor || 'paciente'}</span>
-                                <span className="text-slate-300">•</span>
-                                <span className="text-slate-400">
-                                  {historia.createdAt ? new Date(historia.createdAt).toLocaleDateString() : historia.fecha || 'Reciente'}
-                                </span>
+              {/* FORMULARIO DE PUBLICACIÓN */}
+              <div className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm space-y-4">
+                <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
+                  ✍️ Comparte tu historia o testimonio
+                </h3>
+                <form onSubmit={handlePublicar} className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Título de tu publicación..."
+                    value={nuevoTitulo}
+                    onChange={(e) => setNuevoTitulo(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <textarea
+                    rows="3"
+                    placeholder="Escribe tu vivencia, consejo o mensaje para la comunidad..."
+                    value={nuevoContenido}
+                    onChange={(e) => setNuevoContenido(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                  />
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-xs text-slate-400">
+                      {usuario ? `Publicando como ${usuario.nombre}` : 'Inicia sesión con Google para publicar'}
+                    </span>
+                    <button
+                      type="submit"
+                      disabled={guardandoHistoria}
+                      className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {guardandoHistoria && (
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      )}
+                      <span>{guardandoHistoria ? 'Guardando en BD...' : 'Publicar Historia'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* MANEJO DE ESTADOS DE CARGA (SPINNER / SKELETON) Y ERROR */}
+              {cargandoHistorias ? (
+                <div className="space-y-4">
+                  <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+                        <div className="h-3 bg-slate-100 rounded w-1/6"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-slate-100 rounded w-full"></div>
+                    <div className="h-3 bg-slate-100 rounded w-5/6"></div>
+                  </div>
+                  <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-slate-200 rounded w-1/3"></div>
+                        <div className="h-3 bg-slate-100 rounded w-1/5"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-slate-200 rounded w-2/3"></div>
+                    <div className="h-3 bg-slate-100 rounded w-full"></div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {errorHistorias && (
+                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-2xl flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>{errorHistorias}</span>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {historias.map((historia) => {
+                      const idUnico = (historia._id || historia.id).toString();
+                      const fuerzaCount = obtenerConteo(historia.reacciones, 'fuerza');
+                      const abrazoCount = obtenerConteo(historia.reacciones, 'abrazo');
+                      const graciasCount = obtenerConteo(historia.reacciones, 'gracias');
+                      const nombreAutor = historia.author || historia.autorNombre || 'Anónimo';
+                      const avatarAutor = historia.avatar || historia.autorFoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+                      const textoContenido = historia.content || historia.contenido;
+
+                      return (
+                        <article key={idUnico} className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src={avatarAutor} 
+                                alt={nombreAutor} 
+                                className="w-10 h-10 rounded-full object-cover border border-orange-200" 
+                              />
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 leading-tight">{nombreAutor}</h4>
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="text-orange-600 font-semibold capitalize">{historia.rolAutor || 'paciente'}</span>
+                                  <span className="text-slate-300">•</span>
+                                  <span className="text-slate-400">
+                                    {historia.createdAt ? new Date(historia.createdAt).toLocaleDateString() : historia.fecha || 'Reciente'}
+                                  </span>
+                                </div>
                               </div>
                             </div>
+                            <h5 className="font-bold text-slate-800 text-base">{historia.titulo || 'Historia de la comunidad'}</h5>
+                            <p className="text-sm text-slate-600 leading-relaxed">{textoContenido}</p>
                           </div>
-                          <h5 className="font-bold text-slate-800 text-base">{historia.titulo || 'Historia de la comunidad'}</h5>
-                          <p className="text-sm text-slate-600 leading-relaxed">{textoContenido}</p>
-                        </div>
 
-                        <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
-                          <button
-                            onClick={() => handleReaccionar(idUnico, 'fuerza')}
-                            className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                          >
-                            💪 Fuerza <span className="font-bold">{fuerzaCount}</span>
-                          </button>
-                          <button
-                            onClick={() => handleReaccionar(idUnico, 'abrazo')}
-                            className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                          >
-                            🫂 Abrazo <span className="font-bold">{abrazoCount}</span>
-                          </button>
-                          <button
-                            onClick={() => handleReaccionar(idUnico, 'gracias')}
-                            className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                          >
-                            🙏 Gracias <span className="font-bold">{graciasCount}</span>
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
+                          <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                            <button
+                              onClick={() => handleReaccionar(idUnico, 'fuerza')}
+                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                            >
+                              💪 Fuerza <span className="font-bold">{fuerzaCount}</span>
+                            </button>
+                            <button
+                              onClick={() => handleReaccionar(idUnico, 'abrazo')}
+                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                            >
+                              🫂 Abrazo <span className="font-bold">{abrazoCount}</span>
+                            </button>
+                            <button
+                              onClick={() => handleReaccionar(idUnico, 'gracias')}
+                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                            >
+                              🙏 Gracias <span className="font-bold">{graciasCount}</span>
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* SECCIÓN DE NOTICIAS CON FUENTES */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'noticias') && (
+            <section className="space-y-8">
+              <div className="flex justify-between items-end border-b border-orange-100 pb-4">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">Noticias & Avances Científicos</h2>
+                  <p className="text-sm text-slate-500">Estudios clínicos y nuevos tratamientos sobre Esclerosis Múltiple</p>
                 </div>
               </div>
-            )}
-          </section>
-        )}
 
-        {/* SECCIÓN DE NOTICIAS CON FUENTES */}
-        {(seccionActiva === 'inicio' || seccionActiva === 'noticias') && (
-          <section className="space-y-8">
-            <div className="flex justify-between items-end border-b border-orange-100 pb-4">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900">Noticias & Avances Científicos</h2>
-                <p className="text-sm text-slate-500">Estudios clínicos y nuevos tratamientos sobre Esclerosis Múltiple</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {NOTICIAS_ORIGINALES.map((noticia) => (
-                <div key={noticia.id} className="bg-white rounded-3xl border border-orange-100 overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
-                  <div>
-                    <div className="h-44 overflow-hidden relative">
-                      <img 
-                        src={noticia.imagen} 
-                        alt={noticia.titulo}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <span className="absolute top-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                        {noticia.categoria}
-                      </span>
-                    </div>
-
-                    <div className="p-5 space-y-2.5">
-                      <div className="flex justify-between text-xs text-slate-400">
-                        <span>{noticia.fecha}</span>
-                        <span>{noticia.tiempoLectura}</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {NOTICIAS_ORIGINALES.map((noticia) => (
+                  <div key={noticia.id} className="bg-white rounded-3xl border border-orange-100 overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+                    <div>
+                      <div className="h-44 overflow-hidden relative">
+                        <img 
+                          src={noticia.imagen} 
+                          alt={noticia.titulo}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        />
+                        <span className="absolute top-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                          {noticia.categoria}
+                        </span>
                       </div>
-                      <h3 className="font-black text-slate-900 text-base leading-snug group-hover:text-orange-600 transition-colors">
-                        {noticia.titulo}
-                      </h3>
-                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                        {noticia.resumen}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="p-5 pt-0">
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-slate-500 truncate max-w-[170px]" title={noticia.fuente}>
-                        {noticia.fuente}
-                      </span>
-                      <a 
-                        href={noticia.fuenteUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-orange-600 font-bold hover:text-orange-700 inline-flex items-center gap-1 shrink-0"
-                      >
-                        Estudio ↗
-                      </a>
+                      <div className="p-5 space-y-2.5">
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>{noticia.fecha}</span>
+                          <span>{noticia.tiempoLectura}</span>
+                        </div>
+                        <h3 className="font-black text-slate-900 text-base leading-snug group-hover:text-orange-600 transition-colors">
+                          {noticia.titulo}
+                        </h3>
+                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                          {noticia.resumen}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0">
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-slate-500 truncate max-w-[170px]" title={noticia.fuente}>
+                          {noticia.fuente}
+                        </span>
+                        <a 
+                          href={noticia.fuenteUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-orange-600 font-bold hover:text-orange-700 inline-flex items-center gap-1 shrink-0"
+                        >
+                          Estudio ↗
+                        </a>
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* SECCIÓN NOSOTROS */}
+          {seccionActiva === 'nosotros' && (
+            <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
+              <span className="text-4xl">🧡</span>
+              <h2 className="text-3xl font-black text-slate-900">Sobre la Plataforma Empáticos</h2>
+              <p className="text-slate-600 leading-relaxed text-sm">
+                Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real con divulgación científica de fuentes médicas oficiales.
+              </p>
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🤝</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Apoyo Mutuo</p>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* SECCIÓN NOSOTROS */}
-        {seccionActiva === 'nosotros' && (
-          <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
-            <span className="text-4xl">🧡</span>
-            <h2 className="text-3xl font-black text-slate-900">Sobre la Plataforma Empáticos</h2>
-            <p className="text-slate-600 leading-relaxed text-sm">
-              Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real con divulgación científica de fuentes médicas oficiales.
-            </p>
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
-              <div className="p-3 bg-orange-50/50 rounded-2xl">
-                <span className="text-xl block">🤝</span>
-                <p className="font-bold text-slate-800 text-xs mt-1">Apoyo Mutuo</p>
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🔬</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Avances en EM</p>
+                </div>
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🛡️</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Espacio Seguro</p>
+                </div>
               </div>
-              <div className="p-3 bg-orange-50/50 rounded-2xl">
-                <span className="text-xl block">🔬</span>
-                <p className="font-bold text-slate-800 text-xs mt-1">Avances en EM</p>
-              </div>
-              <div className="p-3 bg-orange-50/50 rounded-2xl">
-                <span className="text-xl block">🛡️</span>
-                <p className="font-bold text-slate-800 text-xs mt-1">Espacio Seguro</p>
-              </div>
-            </div>
-          </section>
-        )}
-      </main>
+            </section>
+          )}
+        </main>
+      </div>
 
       {/* MODAL DE AUTENTICACIÓN GOOGLE */}
       {modalAbierto && (
@@ -685,9 +687,14 @@ function MuroComunitarioApp() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="border-t border-orange-100 bg-white py-8 text-center text-xs text-slate-400">
-        <p>© 2026 Empáticos — Desarrollado por Matías Torres. Global Academy.</p>
+      {/* FOOTER NARANJA ENERGETICO */}
+      <footer className="border-t border-orange-600 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 py-8 text-center text-xs text-orange-100 shadow-inner">
+        <div className="max-w-6xl mx-auto px-4 space-y-2">
+          <div className="flex justify-center items-center gap-2 text-white text-base font-bold">
+            <span>🧡</span> Empáticos
+          </div>
+          <p>© 2026 Empáticos — Desarrollado por Matías Torres. Global Academy.</p>
+        </div>
       </footer>
     </div>
   );
