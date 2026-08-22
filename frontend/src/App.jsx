@@ -492,6 +492,8 @@ function MuroComunitarioApp() {
                 </h3>
                 <form onSubmit={handlePublicar} className="space-y-3">
                   <input
+                    id="nuevoTitulo"
+                    name="nuevoTitulo"
                     type="text"
                     placeholder="Título de tu publicación..."
                     value={nuevoTitulo}
@@ -499,6 +501,8 @@ function MuroComunitarioApp() {
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                   <textarea
+                    id="nuevoContenido"
+                    name="nuevoContenido"
                     rows="3"
                     placeholder="Escribe tu vivencia, consejo o mensaje para la comunidad..."
                     value={nuevoContenido}
@@ -747,10 +751,12 @@ function MuroComunitarioApp() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 block uppercase tracking-wider">
+              <label htmlFor="rolSeleccionado" className="text-xs font-bold text-slate-700 block uppercase tracking-wider">
                 ¿Cuál es tu rol en la comunidad?
               </label>
               <select
+                id="rolSeleccionado"
+                name="rolSeleccionado"
                 value={rolSeleccionado}
                 onChange={(e) => setRolSeleccionado(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 bg-slate-50"
