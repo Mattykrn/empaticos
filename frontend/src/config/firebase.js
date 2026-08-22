@@ -2,34 +2,37 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Cargo las credenciales desde las variables de entorno de Vite
+// Verificar si se proporcionaron credenciales reales de Firebase en las variables de entorno de Vite
 const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+const esApiKeyValida = apiKey && apiKey !== 'undefined' && apiKey.length > 20 && !apiKey.includes('DemoKey');
 
-const firebaseConfig = {
-  apiKey: apiKey && apiKey !== 'undefined' ? apiKey : 'AIzaSyDemoKeyForSafeClientInitialization12345',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'empaticos-demo.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'empaticos-demo',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'empaticos-demo.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789012',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:123456789012:web:demo123456'
-};
+let app = null;
+let auth = null;
+let googleProvider = null;
+let db = null;
 
-let app;
-let auth;
-let googleProvider;
-let db;
+if (esApiKeyValida) {
+  try {
+    const firebaseConfig = {
+      apiKey: apiKey,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID
+    };
 
-try {
-  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  googleProvider = new GoogleAuthProvider();
-  db = getFirestore(app);
-} catch (error) {
-  console.warn('[Firebase Client] Inicializando cliente con fallback seguro para evitar crash:', error.message);
-  app = null;
-  auth = null;
-  googleProvider = null;
-  db = null;
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    db = getFirestore(app);
+  } catch (error) {
+    console.warn('[Firebase Config] Error al inicializar cliente de Firebase:', error.message);
+    app = null;
+    auth = null;
+    googleProvider = null;
+    db = null;
+  }
 }
 
 export { app, auth, googleProvider, db };

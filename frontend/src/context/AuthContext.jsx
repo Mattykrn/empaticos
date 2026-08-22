@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación de Firebase en tiempo real con verificación segura
+  // Escucho el estado de autenticación de Firebase en tiempo real sólo si auth está inicializado
   useEffect(() => {
     if (!auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -76,8 +76,9 @@ export const AuthProvider = ({ children }) => {
 
   // Función para iniciar sesión o registrarse con la ventana emergente de Google
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    try {
-      if (auth && googleProvider) {
+    // Si la autenticación de Firebase está activa con credenciales válidas
+    if (auth && googleProvider) {
+      try {
         const resultado = await signInWithPopup(auth, googleProvider);
         const user = resultado.user;
 
@@ -98,29 +99,29 @@ export const AuthProvider = ({ children }) => {
             }
             await setDoc(docRef, datosUsuario, { merge: true });
           } catch (e) {
-            console.warn('Aviso guardando en Firestore:', e.message);
+            console.warn('Aviso guardando perfil en Firestore:', e.message);
           }
         }
 
         setUsuario(datosUsuario);
         setModalAbierto(false);
         return datosUsuario;
+      } catch (error) {
+        console.warn('Google Auth popup no disponible o cancelado:', error.message);
       }
-
-      throw new Error('Instancia de Firebase Auth no disponible. Usando usuario demo.');
-    } catch (error) {
-      console.warn('Inicio de sesión usando perfil demo seguro:', error.message);
-      const mockUser = {
-        uid: `user-demo-${Date.now()}`,
-        nombre: 'Usuario Empáticos',
-        email: 'comunidad@empaticos.org',
-        fotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-        rol: rolSeleccionado
-      };
-      setUsuario(mockUser);
-      setModalAbierto(false);
-      return mockUser;
     }
+
+    // Modo local / perfil demo sin realizar peticiones fallidas a Google APIs
+    const mockUser = {
+      uid: `user-empatico-${Date.now()}`,
+      nombre: 'Usuario Empáticos',
+      email: 'comunidad@empaticos.org',
+      fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+      rol: rolSeleccionado
+    };
+    setUsuario(mockUser);
+    setModalAbierto(false);
+    return mockUser;
   };
 
   // Función para cerrar la sesión activa
