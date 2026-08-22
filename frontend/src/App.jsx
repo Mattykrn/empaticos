@@ -451,6 +451,8 @@ function MuroComunitarioApp() {
                   className="w-full h-full"
                   src="https://www.youtube.com/embed/gbkrlXuzodU"
                   title="¿Qué es la Esclerosis Múltiple? - Video Explicativo"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
