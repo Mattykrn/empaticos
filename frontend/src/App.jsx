@@ -68,31 +68,46 @@ const NOTICIAS_ORIGINALES = [
 
 const HISTORIAS_BACKUP = [
   {
+    _id: 'story-admin-matias-2026',
+    author: 'Matías Torres (Administrador y Creador)',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+    titulo: 'Mi historia con la EM: El camino de nunca bajar los brazos',
+    content: `Holaa, mis buenos deseos para quien esté leyendo este comentario ya sea paciente, familiar o simplemente alguien curioso :D
+
+Soy el administrador y diseñador de la página. Convivo con esclerosis múltiple desde el año 2013 (tenía 15 años), hoy en día tengo 28...
+La verdad que el diagnóstico temprano me ha ayudado mucho a contener los brotes y todo lo que esta enfermedad conlleva. Cambios de paradigmas tuvo toda mi vida desde el momento del diagnóstico, pero nunca bajé los brazos.
+
+Mi sueño en aquella época (2013) era ser mecánico de automotores. Dado el diagnóstico temprano, me vi a la fuerza en la necesidad de alejarme de los motores, del TC Pista, TC 2000, F1, Superbike y demás. En ese momento en que manipulé un torno con una leve pérdida de equilibrio me llevé un susto. Doy las gracias a la escuela que nos capacitó bien para no tocar las máquinas en momentos en que no nos sentimos bien; eso me dio respeto y me vi obligado a cambiar de rumbos.
+
+Me cambié a informática, me enamoré de lo que es la programación y me seguí capacitando bajo el sueño de ser desarrollador de software, que claramente no acaba simplemente con esto.
+
+Todo fue cambiando. Por el 2013 internet era mucho más áspero y sin filtro, recuerdo desconocer lo que era la enfermedad y cometí el error de googlearlo y fue para peor jaja, muchos de los que ya llevan años sabrán a qué me refiero. Pero con contención profesional y buenas palabras de amigos, psicólogos y psiquiatras llegué a no bajar los brazos y no darme por vencido por más dolores que tenga en el cuerpo. ¡Disfruté mi adolescencia y coseché las mejores amistades que se pueden pedir!
+
+Aprendí que amar a un amigo no es algo mal visto y que no solo se ama a quien duerme con vos, se ama y aprecia a quien estuvo siempre a tu lado. Todo es parte de crecer.
+
+Dejo un mensaje que a mí me abrió la cabeza: "No podés pelear contra lo invencible, es mejor llevar a tu rival de la mano como si fuese una amistad", tirar contra ella solo nos perjudicará :)
+
+Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva este consejo y bueno, ¡que esta comunidad crezca, lleguemos a todos lados y que ningún otro paciente se sienta solo nunca más!`,
+    rolAutor: 'paciente',
+    createdAt: new Date().toISOString(),
+    reacciones: [
+      { uid: 'u1', tipo: 'fuerza' },
+      { uid: 'u2', tipo: 'abrazo' },
+      { uid: 'u3', tipo: 'gracias' }
+    ]
+  },
+  {
     _id: 'story-em-101',
     author: 'María Celeste A.',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
     titulo: 'Mi camino de superación tras 3 años del diagnóstico de EM',
     content: 'Al principio sentí mucha incertidumbre tras el diagnóstico de Esclerosis Múltiple, pero con el tratamiento adecuado y el apoyo de mi familia aprendí que la fortaleza se construye día a día.',
     rolAutor: 'paciente',
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
     reacciones: [
       { uid: 'u1', tipo: 'fuerza' },
       { uid: 'u2', tipo: 'fuerza' },
-      { uid: 'u3', tipo: 'abrazo' },
-      { uid: 'u4', tipo: 'gracias' }
-    ]
-  },
-  {
-    _id: 'story-em-102',
-    author: 'Lucas V.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    titulo: 'Acompañando a mi hermana en su proceso',
-    content: 'Como familiar entendí que lo más importante es estar presentes, escuchar sin juzgar y motivarnos mutuamente en los momentos de fatiga.',
-    rolAutor: 'familiar',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    reacciones: [
-      { uid: 'u5', tipo: 'fuerza' },
-      { uid: 'u6', tipo: 'abrazo' }
+      { uid: 'u3', tipo: 'abrazo' }
     ]
   }
 ];
