@@ -2,38 +2,46 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Configuración oficial de Firebase con fallback a proyecto de Google Auth
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB_EMPATICOS_GOOGLE_AUTH_KEY_2026",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "empaticos-2026.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "empaticos-2026",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "empaticos-2026.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "102938475612",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:102938475612:web:a1b2c3d4e5f6"
-};
+// Verificar si existe una API Key REAL de Firebase proporcionada en las variables de entorno de Vite/Vercel
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
-let app;
-let auth;
-let googleProvider;
-let db;
+export const esApiKeyValida = Boolean(
+  apiKey &&
+  apiKey !== 'undefined' &&
+  apiKey.startsWith('AIzaSy') &&
+  !apiKey.includes('EMPATICOS') &&
+  !apiKey.includes('MOCK') &&
+  !apiKey.includes('DemoKey')
+);
 
-try {
-  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  googleProvider = new GoogleAuthProvider();
-  
-  // Forzar a Google a mostrar el selector de cuentas al hacer clic en el botón
-  googleProvider.setCustomParameters({
-    prompt: 'select_account'
-  });
+let app = null;
+let auth = null;
+let googleProvider = null;
+let db = null;
 
-  db = getFirestore(app);
-} catch (error) {
-  console.warn('[Firebase SDK] Error al iniciar instancias:', error.message);
-  app = null;
-  auth = null;
-  googleProvider = null;
-  db = null;
+if (esApiKeyValida) {
+  try {
+    const firebaseConfig = {
+      apiKey: apiKey,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID
+    };
+
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+    db = getFirestore(app);
+  } catch (error) {
+    console.warn('[Firebase Config] Error al inicializar cliente real:', error.message);
+    app = null;
+    auth = null;
+    googleProvider = null;
+    db = null;
+  }
 }
 
 export { app, auth, googleProvider, db };

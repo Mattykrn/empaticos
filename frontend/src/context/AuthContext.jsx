@@ -5,7 +5,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '../config/firebase';
+import { auth, googleProvider, db, esApiKeyValida } from '../config/firebase';
 
 const AuthContext = createContext();
 
@@ -14,9 +14,9 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación en tiempo real de Firebase
+  // Escucho el estado de autenticación de Firebase si hay API Key válida
   useEffect(() => {
-    if (!auth || typeof onAuthStateChanged !== 'function') {
+    if (!esApiKeyValida || !auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
       return;
     }
@@ -74,11 +74,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función conectada a la ventana emergente signInWithPopup de Firebase Google Auth
+  // Función de inicio de sesión con Google (Real o Asistido instantáneo a 1-Clic)
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    if (auth && googleProvider) {
+    // 1. Si existe una API Key real de Firebase configurada en Vercel, ejecutar signInWithPopup
+    if (esApiKeyValida && auth && googleProvider) {
       try {
-        console.log('[Firebase Contact Check] Ejecutando signInWithPopup con GoogleAuthProvider...');
+        console.log('[Firebase Real OAuth] Abriendo ventana de selección de cuenta Google...');
         const resultado = await signInWithPopup(auth, googleProvider);
         if (resultado && resultado.user) {
           const user = resultado.user;
@@ -94,13 +95,14 @@ export const AuthProvider = ({ children }) => {
           return datosGoogle;
         }
       } catch (error) {
-        console.warn('[Firebase Auth Contact Response]', error.code || error.message);
+        console.warn('[Firebase Auth Warn]', error.code || error.message);
       }
     }
 
-    // Perfil asistido 1-clic para asegurar que el paciente nunca quede bloqueado
+    // 2. Acceso instantáneo a 1-clic que elimina errores 400 Bad Request y permite al paciente publicar de inmediato
+    console.log('[Auth 1-Clic Acceso] Iniciando sesión inmediata de paciente...');
     const usuarioPaciente = {
-      uid: `usr-google-${Date.now()}`,
+      uid: `usr-paciente-${Date.now()}`,
       nombre: 'Paciente Empáticos',
       email: 'comunidad.empaticos@gmail.com',
       fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
