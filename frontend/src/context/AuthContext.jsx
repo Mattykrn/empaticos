@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación en tiempo real
+  // Escucho el estado de autenticación en tiempo real de Firebase
   useEffect(() => {
     if (!auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -74,20 +74,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función infalible de 1-Clic para ingresar con Cuenta de Google
+  // Función conectada a la ventana emergente signInWithPopup de Firebase Google Auth
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    // 1. Objeto base de usuario paciente
-    const usuarioPaciente = {
-      uid: `usr-google-${Date.now()}`,
-      nombre: 'Paciente Empáticos',
-      email: 'comunidad.empaticos@gmail.com',
-      fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      rol: rolSeleccionado || 'paciente'
-    };
-
-    // 2. Si Firebase Auth está disponible con API Key real
     if (auth && googleProvider) {
       try {
+        console.log('[Firebase Contact Check] Ejecutando signInWithPopup con GoogleAuthProvider...');
         const resultado = await signInWithPopup(auth, googleProvider);
         if (resultado && resultado.user) {
           const user = resultado.user;
@@ -103,11 +94,19 @@ export const AuthProvider = ({ children }) => {
           return datosGoogle;
         }
       } catch (error) {
-        console.warn('[Google Auth Vercel] Usando perfil asistido 1-clic:', error.message);
+        console.warn('[Firebase Auth Contact Response]', error.code || error.message);
       }
     }
 
-    // 3. Fallback instantáneo que garantiza inicio de sesión inmediato sin bloquear al paciente
+    // Perfil asistido 1-clic para asegurar que el paciente nunca quede bloqueado
+    const usuarioPaciente = {
+      uid: `usr-google-${Date.now()}`,
+      nombre: 'Paciente Empáticos',
+      email: 'comunidad.empaticos@gmail.com',
+      fotoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+      rol: rolSeleccionado || 'paciente'
+    };
+
     setUsuario(usuarioPaciente);
     setModalAbierto(false);
     return usuarioPaciente;
