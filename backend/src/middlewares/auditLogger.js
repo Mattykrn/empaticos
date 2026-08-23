@@ -1,13 +1,21 @@
 /**
- * Middleware propio de auditoría / logger.
- * Registra el método HTTP, la ruta solicitada, el timestamp exacto y calcula el tiempo de respuesta en milisegundos.
+ * ARCHIVO: backend/src/middlewares/auditLogger.js
+ * RESPONSABILIDAD EN LA ARQUITECTURA:
+ * En este middleware propio intercepto todas las peticiones entrantes para auditoría y monitoreo de rendimiento.
+ * Registro en consola la dirección IP del cliente, verbo HTTP, ruta accedida, código de estado y el tiempo exacto de respuesta en milisegundos.
  */
+
+
+
+
+
+// En esta función middleware calculo el tiempo de ejecución y audito cada petición HTTP
 export const auditLogger = (req, res, next) => {
   const start = Date.now();
   const timestamp = new Date().toISOString();
   const { method, originalUrl, ip } = req;
 
-  // Intercepto la finalización de la petición HTTP para calcular la duración total
+  // Escucho el evento finish de la respuesta Express para registrar el estado y la duración
   res.on('finish', () => {
     const duration = Date.now() - start;
     console.log(`[AUDITORÍA ${timestamp}] ${method} ${originalUrl} | Status: ${res.statusCode} | IP: ${ip} | Duración: ${duration}ms`);
@@ -15,5 +23,9 @@ export const auditLogger = (req, res, next) => {
 
   next();
 };
+
+
+
+
 
 export default auditLogger;

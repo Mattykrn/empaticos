@@ -1,6 +1,17 @@
+/**
+ * ARCHIVO: backend/src/models/Reaction.js
+ * RESPONSABILIDAD EN LA ARQUITECTURA:
+ * En este modelo Mongoose gestiono las reacciones comunitarias (fuerza, abrazo, gracias, apoyo).
+ * Creo un índice compuesto único { targetId: 1, userId: 1 } para lograr un toggle inteligente que evita duplicados por usuario.
+ */
+
 import mongoose from 'mongoose';
 
-// En este modelo defino la estructura para persistir reacciones con un índice único { targetId: 1, userId: 1 }
+
+
+
+
+// En este esquema Mongoose defino los campos para registrar cada reacción de la comunidad
 const reactionSchema = new mongoose.Schema(
   {
     targetId: {
@@ -25,8 +36,18 @@ const reactionSchema = new mongoose.Schema(
   }
 );
 
-// Creo un índice único compuesto para permitir el toggle inteligente de reacciones por usuario y publicación
+
+
+
+
+// Acá establezco mi índice compuesto único para permitir reaccionar o des-reaccionar sin duplicar entradas
 reactionSchema.index({ targetId: 1, userId: 1 }, { unique: true });
 
+
+
+
+
+// Compilo y exporto mi modelo Reaction para operar sobre MongoDB Atlas
 const Reaction = mongoose.model('Reaction', reactionSchema);
+
 export default Reaction;

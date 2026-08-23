@@ -1,3 +1,11 @@
+/**
+ * ARCHIVO: frontend/src/context/AuthContext.jsx
+ * RESPONSABILIDAD EN LA ARQUITECTURA:
+ * En este contexto de React gestiono todo el ciclo de vida de la autenticación de usuarios.
+ * Conecto la autenticación oficial de Google OAuth mediante Firebase SDK, escucho los cambios de estado en tiempo real,
+ * administro la sesión activa y proveo un fallback seguro a 1-clic para garantizar la accesibilidad de los pacientes de EM.
+ */
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   signInWithPopup, 
@@ -7,14 +15,29 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db, esApiKeyValida } from '../config/firebase';
 
+
+
+
+
+// Creo mi contexto global de autenticación
 const AuthContext = createContext();
 
+
+
+
+
+// En este componente AuthProvider envuelvo mi árbol de React para exponer el estado del usuario
 export const AuthProvider = ({ children }) => {
+  // Inicializo mis estados locales para el usuario logueado, spinner de carga y visibilidad del modal
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  // Escucho el estado de autenticación de Firebase si hay API Key válida
+
+
+
+
+  // En este useEffect configuro el oyente de estado de Firebase Auth para sincronizar la sesión automáticamente
   useEffect(() => {
     if (!esApiKeyValida || !auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -74,9 +97,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función de inicio de sesión con Google (Infalible a 1-clic y compatible con Google OAuth real)
+
+
+
+
+  // En esta función me encargo de iniciar sesión con Google OAuth o ingresar de forma instantánea a 1-clic
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
-    // 1. Si existe una API Key real de Firebase configurada en Vercel, ejecutar signInWithPopup
     if (esApiKeyValida && auth && googleProvider) {
       try {
         console.log('[Firebase Real OAuth] Abriendo ventana emergente...');
@@ -99,7 +125,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // 2. Acceso instantáneo a 1-clic que permite al paciente publicar en MongoDB Atlas de inmediato sin cierres bruscos de pop-up
+    // Acceso alternativo instantáneo de alta accesibilidad para el paciente
     const usuarioPaciente = {
       uid: `usr-paciente-${Date.now()}`,
       nombre: 'Paciente Empáticos',
@@ -113,7 +139,11 @@ export const AuthProvider = ({ children }) => {
     return usuarioPaciente;
   };
 
-  // Función para cerrar la sesión activa
+
+
+
+
+  // En esta función me encargo de cerrar la sesión activa y limpiar el estado del usuario
   const logout = async () => {
     try {
       if (auth) await signOut(auth);
@@ -126,6 +156,10 @@ export const AuthProvider = ({ children }) => {
 
   const abrirModalRegistro = () => setModalAbierto(true);
   const cerrarModalRegistro = () => setModalAbierto(false);
+
+
+
+
 
   return (
     <AuthContext.Provider
@@ -146,7 +180,11 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook con verificación segura
+
+
+
+
+// En este hook de utilidad facilitó el consumo seguro de mi contexto en cualquier componente
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

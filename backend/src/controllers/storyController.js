@@ -1,8 +1,19 @@
+/**
+ * ARCHIVO: backend/src/controllers/storyController.js
+ * RESPONSABILIDAD EN LA ARQUITECTURA:
+ * En este controlador me encargo de manejar la lógica de negocio para crear y consultar historias y anécdotas en MongoDB Atlas.
+ * También cruzo las historias con sus respectivas reacciones persistidas y mantengo una colección de respaldo en memoria.
+ */
+
 import Story from '../models/Story.js';
 import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
 
-// Historias de la comunidad y mensaje fundacional del Administrador
+
+
+
+
+// En este arreglo mantengo mis historias de reserva y el testimonio inicial del creador
 const historiasBackup = [
   {
     _id: 'story-admin-matias-2026',
@@ -49,7 +60,11 @@ Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva est
   }
 ];
 
-// GET /api/stories -> Recuperar historias desde MongoDB Atlas ordenadas por fecha
+
+
+
+
+// En esta función me encargo de listar todas las historias guardadas en MongoDB Atlas junto a sus reacciones
 export const obtenerHistorias = async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
@@ -89,20 +104,25 @@ export const obtenerHistorias = async (req, res) => {
   }
 };
 
-// POST /api/stories -> Guardar una historia en MongoDB Atlas
+
+
+
+
+// En esta función persisto una nueva historia o anécdota enviada por un usuario en MongoDB Atlas
 export const crearHistoria = async (req, res) => {
   try {
-    const { author, avatar, content, contenido, imageUrl, rolAutor, titulo } = req.body;
+    const { author, avatar, content, contenido, imageUrl, videoUrl, rolAutor, titulo, tipo } = req.body;
 
     const contenidoFinal = content || contenido || 'Testimonio de la comunidad';
     const autorFinal = author || req.body.autorNombre || 'Miembro Empáticos';
+    const videoFinal = videoUrl || imageUrl || '';
 
     if (mongoose.connection.readyState === 1) {
       const nuevaHistoria = new Story({
         author: autorFinal,
         avatar: avatar || req.body.autorFoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
         content: contenidoFinal,
-        imageUrl: imageUrl || '',
+        imageUrl: videoFinal,
         rolAutor: rolAutor || 'paciente',
         titulo: titulo || 'Historia de la comunidad'
       });
@@ -114,20 +134,24 @@ export const crearHistoria = async (req, res) => {
         mensaje: 'Historia guardada exitosamente en MongoDB Atlas',
         data: {
           ...historiaGuardada.toObject(),
+          tipo: tipo || 'historia',
+          videoUrl: videoFinal,
           reacciones: []
         }
       });
     }
 
-    // Fallback local en memoria si MongoDB Atlas aún no está conectado
+    // Fallback en memoria si la base de datos no está conectada
     const historiaMemoria = {
       _id: `story-${Date.now()}`,
       author: autorFinal,
       avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
       content: contenidoFinal,
-      imageUrl: imageUrl || '',
+      imageUrl: videoFinal,
+      videoUrl: videoFinal,
       rolAutor: rolAutor || 'paciente',
       titulo: titulo || 'Historia de la comunidad',
+      tipo: tipo || 'historia',
       createdAt: new Date().toISOString(),
       reacciones: []
     };
