@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { conectarDB } from './config/db.js';
 import auditLogger from './middlewares/auditLogger.js';
 
-// Importación de enrutadores del backend
+// En este bloque importo todos mis enrutadores del backend
 import publicationRoutes from './routes/publicationRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
 import reactionRoutes from './routes/reactionRoutes.js';
@@ -13,16 +13,32 @@ import historiaRoutes from './routes/historia.routes.js';
 import noticiaRoutes from './routes/noticia.routes.js';
 import externaRoutes from './routes/externa.routes.js';
 
-// Cargar variables de entorno
+
+
+
+
+// En esta línea me encargo de cargar mis variables de entorno almacenadas en el archivo .env
 dotenv.config();
 
-// Inicializar Express (CONSIGNA 2: Servidor Node con rutas y métodos HTTP)
+
+
+
+
+// Aquí inicializo mi aplicación del servidor de Express (CONSIGNA 2: Servidor Node que utiliza rutas con verbos HTTP)
 const app = express();
 
-// CONSIGNA 1: Conexión a base de datos propia y cuenta en Mongo Atlas
+
+
+
+
+// Aquí invoco la conexión a mi base de datos propia alojada en MongoDB Atlas (CONSIGNA 1)
 conectarDB();
 
-// Middlewares globales
+
+
+
+
+// En esta sección configuro mis middlewares globales de CORS y parseo de peticiones JSON
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -30,23 +46,35 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// CONSIGNA 5: Middleware propio de auditoría y trazabilidad HTTP
+
+
+
+
+// Aquí conecto mi middleware propio de auditoría y registro de peticiones HTTP en tiempo real (CONSIGNA 5)
 app.use(auditLogger);
 
-// CONSIGNA 2 & CONSIGNA 3: Enrutadores principales con Esquemas propios y métodos HTTP
+
+
+
+
+// En este bloque vinculo mis enrutadores principales respaldados por mis Esquemas Mongoose propios (CONSIGNA 2 y CONSIGNA 3)
 app.use('/api/publications', publicationRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/reactions', reactionRoutes);
 
-// CONSIGNA 6: Ruta que comunica con una API externa (GET /api/external/quote)
+// En esta ruta me conecto con una API externa para obtener contenido en español (CONSIGNA 6)
 app.use('/api/external', externalRoutes);
 
-// Enrutadores de respaldo y retrocompatibilidad
+// Enrutadores adicionales de compatibilidad
 app.use('/api/historias', historiaRoutes);
 app.use('/api/noticias', noticiaRoutes);
 app.use('/api/externa', externaRoutes);
 
-// Ruta raíz de verificación
+
+
+
+
+// En esta ruta raíz muestro el estado de salud de mi servidor y la verificación de las consignas del Examen Final Global
 app.get('/', (req, res) => {
   res.status(200).json({
     ok: true,
@@ -69,7 +97,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// Manejador 404 para rutas no existentes
+
+
+
+
+// En este bloque capturo cualquier ruta no existente y retorno una respuesta semántica HTTP 404
 app.use((req, res) => {
   res.status(404).json({
     ok: false,
@@ -77,7 +109,11 @@ app.use((req, res) => {
   });
 });
 
-// Manejador de errores globales 500
+
+
+
+
+// En este manejador global capturo cualquier excepción imprevista del servidor para responder con HTTP 500
 app.use((err, req, res, next) => {
   console.error(`[Error Global de Servidor] ${err.stack || err.message}`);
   res.status(500).json({
@@ -87,9 +123,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Arranque del servidor
+
+
+
+
+// En esta constante defino el puerto de escucha de mi aplicación
 const PORT = process.env.PORT || 5000;
 
+// Aquí inicio mi servidor de Express
 const server = app.listen(PORT, () => {
   console.log(`==================================================`);
   console.log(`🚀 Servidor Empáticos corriendo en el puerto: ${PORT}`);
