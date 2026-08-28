@@ -1,11 +1,3 @@
-/**
- * ARCHIVO: frontend/src/context/AuthContext.jsx
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este contexto de React gestiono todo el ciclo de vida de la autenticación de usuarios.
- * Conecto la autenticación oficial de Google OAuth mediante Firebase SDK, escucho los cambios de estado en tiempo real,
- * administro la sesión activa y proveo un fallback seguro a 1-clic para garantizar la accesibilidad de los pacientes de EM.
- */
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   signInWithPopup, 
@@ -15,29 +7,17 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db, esApiKeyValida } from '../config/firebase';
 
-
-
-
-
-// Creo mi contexto global de autenticación
+// Contexto
 const AuthContext = createContext();
 
-
-
-
-
-// En este componente AuthProvider envuelvo mi árbol de React para exponer el estado del usuario
+// AuthProvider
 export const AuthProvider = ({ children }) => {
-  // Inicializo mis estados locales para el usuario logueado, spinner de carga y visibilidad del modal
+  // Estados
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
 
-
-
-
-
-  // En este useEffect configuro el oyente de estado de Firebase Auth para sincronizar la sesión automáticamente
+  // Listener Firebase
   useEffect(() => {
     if (!esApiKeyValida || !auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -97,11 +77,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-
-
-
-
-  // En esta función me encargo de iniciar sesión con Google OAuth o ingresar de forma instantánea a 1-clic
+  // Función para loguearse con Google
   const loginConGoogle = async (rolSeleccionado = 'paciente') => {
     if (esApiKeyValida && auth && googleProvider) {
       try {
@@ -125,7 +101,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // Acceso alternativo instantáneo de alta accesibilidad para el paciente
+    // Login alternativo
     const usuarioPaciente = {
       uid: `usr-paciente-${Date.now()}`,
       nombre: 'Paciente Empáticos',
@@ -139,11 +115,7 @@ export const AuthProvider = ({ children }) => {
     return usuarioPaciente;
   };
 
-
-
-
-
-  // En esta función me encargo de cerrar la sesión activa y limpiar el estado del usuario
+  // Función para desloguearse
   const logout = async () => {
     try {
       if (auth) await signOut(auth);
@@ -156,10 +128,6 @@ export const AuthProvider = ({ children }) => {
 
   const abrirModalRegistro = () => setModalAbierto(true);
   const cerrarModalRegistro = () => setModalAbierto(false);
-
-
-
-
 
   return (
     <AuthContext.Provider
@@ -180,11 +148,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
-
-
-
-// En este hook de utilidad facilitó el consumo seguro de mi contexto en cualquier componente
+// Hook useAuth
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

@@ -1,20 +1,20 @@
 // Middleware personalizado de auditoría, trazabilidad y registro de peticiones HTTP
-// En este middleware propio registro cada petición entrante con su timestamp, método, IP y URL, e inyecto una cabecera personalizada de trazabilidad.
+// Middleware propio registro cada petición entrante con su timestamp, método, IP y URL, e inyecto una cabecera personalizada de trazabilidad.
 
 export const auditoriaMiddleware = (req, res, next) => {
-  // Aquí capturo la fecha y hora exacta en formato ISO
+  // Capturo la fecha y hora exacta en formato ISO
   const timestamp = new Date().toISOString();
 
-  // En esta línea obtengo el método HTTP (GET, POST, PUT, DELETE) y la URL requerida
+  // Obtener método HTTP y URL
   const { method, originalUrl } = req;
 
-  // En estas líneas determino la IP del cliente realizando la petición
+  // Determino la IP del cliente realizando la petición
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 
-  // Aquí inserto mi cabecera de trazabilidad personalizada exigida en las consignas
+  // Inserto mi cabecera de trazabilidad personalizada exigida en las consignas
   res.setHeader('X-Powered-By-Empaticos', 'backend-v1');
 
-  // En este log muestro por consola los detalles de la auditoría en tiempo real
+  // Log muestro por consola los detalles de la auditoría en tiempo real
   console.log(`[AUDITORÍA ${timestamp}] ${method} ${originalUrl} - IP: ${ip}`);
 
   // Finalmente doy paso al siguiente middleware o controlador en la cadena

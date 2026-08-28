@@ -1,5 +1,5 @@
 // Controlador para la comunicación e integración con API pública externa
-// En este controlador consumo una API externa mediante el cliente HTTP fetch nativo de Node.js para obtener y formatear frases de apoyo emocional.
+// Controlador consumo una API externa mediante el cliente HTTP fetch nativo de Node.js para obtener y formatear frases de apoyo emocional.
 
 /**
  * GET /api/externa/frase-apoyo
@@ -7,7 +7,7 @@
  */
 export const obtenerFraseApoyo = async (req, res) => {
   try {
-    // En este bloque realizo la petición HTTP GET a la API externa de frases inspiradoras
+    // Realizo la petición HTTP GET a la API externa de frases inspiradoras
     // Utilizo fetch nativo incorporado desde Node.js v18+
     const respuesta = await fetch('https://dummyjson.com/quotes/random');
 
@@ -15,10 +15,10 @@ export const obtenerFraseApoyo = async (req, res) => {
       throw new Error(`La API externa devolvió un estatus HTTP: ${respuesta.status}`);
     }
 
-    // Aquí transformo el cuerpo de la respuesta a un objeto JSON
+    // Transformo el cuerpo de la respuesta a un objeto JSON
     const datos = await respuesta.json();
 
-    // En esta sección formateo mi respuesta propia agregando valor y contención emocional
+    // Formateo mi respuesta propia agregando valor y contención emocional
     const fraseFormateada = {
       frase: datos.quote || 'Cada paso en tu proceso cuenta, no estás solo en este camino.',
       autor: datos.author || 'Equipo Empáticos',
@@ -39,7 +39,7 @@ export const obtenerFraseApoyo = async (req, res) => {
       data: fraseFormateada
     });
   } catch (error) {
-    // En este bloque proveo un fallback seguro de contención en caso de falla de conectividad externa
+    // Proveo un fallback seguro de contención en caso de falla de conectividad externa
     console.error(`[Error API Externa] Falló el consumo con fetch: ${error.message}`);
     
     res.status(200).json({

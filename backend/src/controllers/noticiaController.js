@@ -1,5 +1,5 @@
 // Controlador para administrar las Noticias del portal
-// En este archivo implemento mi lógica de negocio (CRUD) para interactuar con la colección de Noticias en MongoDB.
+// Archivo implemento mi lógica de negocio (CRUD) para interactuar con la colección de Noticias en MongoDB.
 
 import Noticia from '../models/Noticia.js';
 
@@ -9,7 +9,7 @@ import Noticia from '../models/Noticia.js';
  */
 export const obtenerNoticias = async (req, res) => {
   try {
-    // Aquí realizo la búsqueda de noticias ordenándolas por fecha decreciente
+    // Realizo la búsqueda de noticias ordenándolas por fecha decreciente
     const noticias = await Noticia.find().sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -35,7 +35,7 @@ export const obtenerNoticiaPorId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Aquí utilizo el modelo Noticia para consultar por su identificador único
+    // Utilizo el modelo Noticia para consultar por su identificador único
     const noticia = await Noticia.findById(id);
 
     if (!noticia) {
@@ -67,7 +67,7 @@ export const crearNoticia = async (req, res) => {
   try {
     const { titulo, categoria, resumen, imagen, autor } = req.body;
 
-    // En esta línea instancio una nueva Noticia con los datos validados del req.body
+    // Instanciar noticia
     const nuevaNoticia = new Noticia({
       titulo,
       categoria,
@@ -103,7 +103,7 @@ export const actualizarNoticia = async (req, res) => {
     const { id } = req.params;
     const { titulo, categoria, resumen, imagen, autor } = req.body;
 
-    // En este paso efectúo la actualización en MongoDB Atlas
+    // Paso efectúo la actualización en MongoDB Atlas
     const noticiaActualizada = await Noticia.findByIdAndUpdate(
       id,
       { titulo, categoria, resumen, imagen, autor },
@@ -140,7 +140,7 @@ export const eliminarNoticia = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Aquí elimino el documento especificado por el ID
+    // Elimino el documento especificado por el ID
     const noticiaEliminada = await Noticia.findByIdAndDelete(id);
 
     if (!noticiaEliminada) {

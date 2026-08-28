@@ -1,18 +1,6 @@
-/**
- * ARCHIVO: backend/src/config/db.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este módulo me encargo de gestionar la conexión principal a mi base de datos MongoDB Atlas usando Mongoose.
- * Configuro oyentes de eventos y un timeout seguro de 3 segundos para garantizar que, ante cualquier problema de red,
- * el servidor Express siga funcionando sin colapsar.
- */
-
 import mongoose from 'mongoose';
 
-
-
-
-
-// En esta función asíncrona inicio la conexión con mi cluster de MongoDB Atlas
+// Asíncrona inicio la conexión con mi cluster de MongoDB Atlas
 export const conectarDB = async () => {
   try {
     // Acá recupero la cadena de conexión desde mi variable de entorno MONGO_URI
@@ -43,9 +31,5 @@ export const conectarDB = async () => {
     console.warn(`[Base de Datos] El servidor Express seguirá activo respondiendo solicitudes.`);
   }
 };
-
-
-
-
 
 export default conectarDB;

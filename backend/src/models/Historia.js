@@ -1,9 +1,9 @@
 // Modelo de Mongoose para la colección de Historias y Testimonios
-// En este archivo defino mi esquema de Mongoose para representar historias de vida, experiencias y testimonios en Empáticos.
+// Archivo defino mi esquema de Mongoose para representar historias de vida, experiencias y testimonios en Empáticos.
 
 import mongoose from 'mongoose';
 
-// Aquí defino la estructura de los objetos de reacciones comunitarias
+// La estructura de los objetos de reacciones comunitarias
 const reaccionSchema = new mongoose.Schema(
   {
     uid: {
@@ -19,7 +19,7 @@ const reaccionSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// En este bloque construyo el esquema principal de la Historia
+// Construyo el esquema principal de la Historia
 const historiaSchema = new mongoose.Schema(
   {
     titulo: {
@@ -58,10 +58,10 @@ const historiaSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true // Aquí activo los campos automáticos createdAt y updatedAt
+    timestamps: true // Activo los campos automáticos createdAt y updatedAt
   }
 );
 
-// En esta línea exporto mi modelo compilado para utilizarlo en los controladores
+// Exportar modelo
 const Historia = mongoose.model('Historia', historiaSchema);
 export default Historia;

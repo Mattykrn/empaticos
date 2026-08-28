@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from './services/api';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-
-
-
-
-// En esta función auxiliar me encargo de procesar enlaces de YouTube para generar la URL embed oficial
+// Procesar URLs de YouTube
 const obtenerEmbedYoutube = (url) => {
   if (!url || typeof url !== 'string') return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -14,11 +10,7 @@ const obtenerEmbedYoutube = (url) => {
   return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
 };
 
-
-
-
-
-// Aquí defino mi colección inicial de noticias científicas especializadas en Esclerosis Múltiple
+// Noticias
 const NOTICIAS_ORIGINALES = [
   {
     id: 1,
@@ -82,11 +74,7 @@ const NOTICIAS_ORIGINALES = [
   }
 ];
 
-
-
-
-
-// Aquí defino mis historias y anécdotas iniciales de reserva para el Muro Comunitario
+// Historias locales (backup)
 const HISTORIAS_BACKUP = [
   {
     _id: 'story-admin-matias-2026',
@@ -152,38 +140,30 @@ Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva est
   }
 ];
 
-
-
-
-
-// Aquí defino mi componente principal del Muro Comunitario
+// Componente Muro
 function MuroComunitarioApp() {
-  // En este hook consumo mi contexto personalizado de autenticación
+  // AuthContext
   const { usuario, loginConGoogle, logout, modalAbierto, setModalAbierto, abrirModalRegistro } = useAuth();
   
-  // Aquí inicializo mis estados principales para la navegación, roles e historias
+  // Estados principales
   const [seccionActiva, setSeccionActiva] = useState('inicio');
   const [rolSeleccionado, setRolSeleccionado] = useState('paciente');
   const [historias, setHistorias] = useState([]);
   const [cargandoHistorias, setCargandoHistorias] = useState(true);
   const [errorHistorias, setErrorHistorias] = useState(null);
   
-  // Aquí defino los estados de mi formulario de publicaciones y anécdotas
+  // Estados del formulario
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevoContenido, setNuevoContenido] = useState('');
   const [nuevoVideoUrl, setNuevoVideoUrl] = useState('');
   const [nuevoTipo, setNuevoTipo] = useState('historia');
   const [guardandoHistoria, setGuardandoHistoria] = useState(false);
 
-  // Aquí manejo el estado de la frase motivacional obtenida desde mi API externa
+  // Estado de la frase
   const [fraseInspiradora, setFraseInspiradora] = useState(null);
   const [cargandoFrase, setCargandoFrase] = useState(true);
 
-
-
-
-
-  // En este useEffect realizo la petición GET /api/stories a mi backend para cargar las historias guardadas en MongoDB Atlas
+  // Cargar historias de MongoDB
   useEffect(() => {
     const cargarHistoriasAPI = async () => {
       setCargandoHistorias(true);
@@ -209,11 +189,7 @@ function MuroComunitarioApp() {
     cargarHistoriasAPI();
   }, []);
 
-
-
-
-
-  // En este useEffect realizo mi llamada a la API externa GET /api/external/quote para obtener frases inspiradoras en español
+  // Cargar frase inspiradora
   useEffect(() => {
     const cargarFraseExterna = async () => {
       setCargandoFrase(true);
@@ -236,11 +212,7 @@ function MuroComunitarioApp() {
     cargarFraseExterna();
   }, []);
 
-
-
-
-
-  // En esta función envío mi petición POST /api/stories para publicar historias o anécdotas divertidas en MongoDB Atlas
+  // Crear nueva historia
   const handlePublicar = async (e) => {
     e.preventDefault();
     if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
@@ -299,11 +271,7 @@ function MuroComunitarioApp() {
     }
   };
 
-
-
-
-
-  // En esta función manejo las reacciones comunitarias (fuerza, abrazo, gracias) enviando POST /api/reactions
+  // Nueva reacción
   const handleReaccionar = async (storyId, tipoReaccion) => {
     let usuarioActual = usuario;
     if (!usuarioActual) {
@@ -360,11 +328,7 @@ function MuroComunitarioApp() {
     }
   };
 
-
-
-
-
-  // En esta función calculo el conteo total de reacciones por cada tipo de emoji
+  // Contar reacciones
   const obtenerConteo = (reaccionesList, tipoTarget) => {
     if (!reaccionesList) return 0;
     if (Array.isArray(reaccionesList)) {
@@ -376,21 +340,13 @@ function MuroComunitarioApp() {
     return 0;
   };
 
-
-
-
-
-  // En este filtro separo las historias solemnes de las anécdotas divertidas
+  // Filtrar anécdotas
   const historiasFiltradas = historias.filter(h => {
     if (seccionActiva === 'anecdotas') {
       return h.tipo === 'anecdota' || (h.titulo && h.titulo.toLowerCase().includes('anécdota')) || (h.titulo && h.titulo.includes('😂')) || (h.titulo && h.titulo.includes('😄'));
     }
     return true;
   });
-
-
-
-
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col justify-between">
@@ -473,10 +429,6 @@ function MuroComunitarioApp() {
           </div>
         </header>
 
-
-
-
-
         {/* En este banner muestro la frase motivacional obtenida desde mi API externa */}
         {fraseInspiradora && (
           <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-inner transition-all border-b border-orange-700">
@@ -488,10 +440,6 @@ function MuroComunitarioApp() {
             </div>
           </div>
         )}
-
-
-
-
 
         {/* En esta sección Hero muestro mi mensaje principal de bienvenida y llamado a la acción */}
         {seccionActiva === 'inicio' && (
@@ -523,10 +471,6 @@ function MuroComunitarioApp() {
             </div>
           </section>
         )}
-
-
-
-
 
         {/* En este contenedor principal renderizo mis secciones activas segun la pestaña elegida */}
         <main className="max-w-6xl mx-auto px-4 py-8 space-y-16">
@@ -576,10 +520,6 @@ function MuroComunitarioApp() {
               </div>
             </section>
           )}
-
-
-
-
 
           {/* En esta sección renderizo el muro comunitario con el formulario para publicar historias y anécdotas divertidas */}
           {(seccionActiva === 'inicio' || seccionActiva === 'historias' || seccionActiva === 'anecdotas') && (
@@ -799,10 +739,6 @@ function MuroComunitarioApp() {
             </section>
           )}
 
-
-
-
-
           {/* En esta sección renderizo las noticias científicas y avances médicos sobre Esclerosis Múltiple */}
           {(seccionActiva === 'inicio' || seccionActiva === 'noticias') && (
             <section className="space-y-8">
@@ -863,10 +799,6 @@ function MuroComunitarioApp() {
             </section>
           )}
 
-
-
-
-
           {/* En esta sección muestro la tarjeta explicativa sobre el propósito de mi plataforma Empáticos */}
           {seccionActiva === 'nosotros' && (
             <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
@@ -910,10 +842,6 @@ function MuroComunitarioApp() {
           )}
         </main>
       </div>
-
-
-
-
 
       {/* En este modal muestro mi ventana flotante de autenticación accesible con Google */}
       {modalAbierto && (
@@ -970,10 +898,6 @@ function MuroComunitarioApp() {
         </div>
       )}
 
-
-
-
-
       {/* En este footer renderizo mi pie de página naranja con la autoría de Matías Torres y el enlace a Instagram */}
       <footer className="border-t border-orange-600 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 py-8 text-center text-xs text-orange-100 shadow-inner">
         <div className="max-w-6xl mx-auto px-4 space-y-3">
@@ -1001,10 +925,6 @@ function MuroComunitarioApp() {
     </div>
   );
 }
-
-
-
-
 
 export default function App() {
   return (

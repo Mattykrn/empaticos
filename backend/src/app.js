@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { conectarDB } from './config/db.js';
 import auditLogger from './middlewares/auditLogger.js';
 
-// En este bloque importo todos mis enrutadores del backend
+// Enrutadores
 import publicationRoutes from './routes/publicationRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
 import reactionRoutes from './routes/reactionRoutes.js';
@@ -13,32 +13,16 @@ import historiaRoutes from './routes/historia.routes.js';
 import noticiaRoutes from './routes/noticia.routes.js';
 import externaRoutes from './routes/externa.routes.js';
 
-
-
-
-
-// En esta línea me encargo de cargar mis variables de entorno almacenadas en el archivo .env
+// Variables de entorno
 dotenv.config();
 
-
-
-
-
-// Aquí inicializo mi aplicación del servidor de Express (CONSIGNA 2: Servidor Node que utiliza rutas con verbos HTTP)
+// Iniciar Express
 const app = express();
 
-
-
-
-
-// Aquí invoco la conexión a mi base de datos propia alojada en MongoDB Atlas (CONSIGNA 1)
+// Conexión a MongoDB
 conectarDB();
 
-
-
-
-
-// En esta sección configuro mis middlewares globales de CORS y parseo de peticiones JSON
+// Middlewares globales
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -46,23 +30,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
-
-
-
-
-// Aquí conecto mi middleware propio de auditoría y registro de peticiones HTTP en tiempo real (CONSIGNA 5)
+// Middleware de auditoría
 app.use(auditLogger);
 
-
-
-
-
-// En este bloque vinculo mis enrutadores principales respaldados por mis Esquemas Mongoose propios (CONSIGNA 2 y CONSIGNA 3)
+// Rutas
 app.use('/api/publications', publicationRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/reactions', reactionRoutes);
 
-// En esta ruta me conecto con una API externa para obtener contenido en español (CONSIGNA 6)
+// API externa
 app.use('/api/external', externalRoutes);
 
 // Enrutadores adicionales de compatibilidad
@@ -70,11 +46,7 @@ app.use('/api/historias', historiaRoutes);
 app.use('/api/noticias', noticiaRoutes);
 app.use('/api/externa', externaRoutes);
 
-
-
-
-
-// En esta ruta raíz muestro el estado de salud de mi servidor y la verificación de las consignas del Examen Final Global
+// Healthcheck
 app.get('/', (req, res) => {
   res.status(200).json({
     ok: true,
@@ -97,11 +69,7 @@ app.get('/', (req, res) => {
   });
 });
 
-
-
-
-
-// En este bloque capturo cualquier ruta no existente y retorno una respuesta semántica HTTP 404
+// Error 404
 app.use((req, res) => {
   res.status(404).json({
     ok: false,
@@ -109,11 +77,7 @@ app.use((req, res) => {
   });
 });
 
-
-
-
-
-// En este manejador global capturo cualquier excepción imprevista del servidor para responder con HTTP 500
+// Error 500
 app.use((err, req, res, next) => {
   console.error(`[Error Global de Servidor] ${err.stack || err.message}`);
   res.status(500).json({
@@ -123,14 +87,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-
-
-
-
-// En esta constante defino el puerto de escucha de mi aplicación
+// Puerto
 const PORT = process.env.PORT || 5000;
 
-// Aquí inicio mi servidor de Express
+// Levantar servidor
 const server = app.listen(PORT, () => {
   console.log(`==================================================`);
   console.log(`🚀 Servidor Empáticos corriendo en el puerto: ${PORT}`);

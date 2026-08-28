@@ -1,17 +1,6 @@
-/**
- * ARCHIVO: backend/src/models/Story.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este modelo Mongoose defino el esquema de datos para persistir historias y anécdotas en mi base de datos MongoDB Atlas.
- * Configuro validaciones para el autor, contenido, roles comunitarios y marcas de tiempo automáticas.
- */
-
 import mongoose from 'mongoose';
 
-
-
-
-
-// En este esquema Mongoose especifico todos los campos necesarios para mis historias comunitarias
+// Esquema Mongoose especifico todos los campos necesarios para mis historias comunitarias
 const storySchema = new mongoose.Schema(
   {
     author: {
@@ -47,10 +36,6 @@ const storySchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-
-
-
 
 // Acá compilo mi modelo Story para interactuar con la colección 'stories' de MongoDB Atlas
 const Story = mongoose.model('Story', storySchema);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 
-// En este componente Navbar presento la barra de navegación con el estado de sesión de Firebase Auth
+// Navbar
 export const Navbar = () => {
   const { usuario, estaAutenticado, logout, abrirModalRegistro } = useAuth();
 

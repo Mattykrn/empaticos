@@ -1,17 +1,6 @@
-/**
- * ARCHIVO: backend/src/controllers/externalController.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este controlador consumo e integro contenido de inspiración y apoyo en español.
- * Garantizo que la aplicación siempre retorne mensajes motivacionales 100% traducidos al español para los usuarios de la comunidad.
- */
-
 import axios from 'axios';
 
-
-
-
-
-// En este arreglo defino mi colección de frases inspiradoras en español sobre superación y salud
+// Arreglo defino mi colección de frases inspiradoras en español sobre superación y salud
 const FRASES_EN_ESPANOL = [
   {
     frase: "No estás solo en este camino. Cada pequeño paso cuenta y la comunidad está aquí para sostenerte.",
@@ -35,11 +24,7 @@ const FRASES_EN_ESPANOL = [
   }
 ];
 
-
-
-
-
-// En esta función respondo las peticiones GET /api/external/quote con frases motivacionales en español
+// Respondo las peticiones GET /api/external/quote con frases motivacionales en español
 export const getExternalQuote = async (req, res) => {
   try {
     const seleccion = FRASES_EN_ESPANOL[Math.floor(Math.random() * FRASES_EN_ESPANOL.length)];

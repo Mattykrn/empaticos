@@ -94,7 +94,7 @@ const publicacionSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
-    // En estos arreglos guardo las reacciones y comentarios persistentes en la BD
+    // Arrays de reacciones y comentarios
     reacciones: [reaccionSchema],
     comentarios: [comentarioSchema]
   },

@@ -6,7 +6,7 @@ import { validateRequest } from '../middlewares/validator.js';
  * Incluye validación de parámetros de URL (param) con isMongoId() y del cuerpo (body).
  */
 
-// Validación de parámetro de URL ID Mongo
+// Validar ID Mongo
 export const validatePublicationId = [
   param('id')
     .notEmpty().withMessage('El ID de publicación es obligatorio en los parámetros de la URL')
@@ -14,7 +14,7 @@ export const validatePublicationId = [
   validateRequest
 ];
 
-// Validación de creación de publicación / historia
+// Validar creación
 export const validateCreatePublication = [
   body('titulo')
     .optional()
@@ -31,7 +31,7 @@ export const validateCreatePublication = [
   validateRequest
 ];
 
-// Validación de actualización de publicación por ID
+// Validar actualización
 export const validateUpdatePublication = [
   param('id')
     .notEmpty().withMessage('El ID de la publicación es obligatorio')

@@ -1,25 +1,10 @@
-/**
- * ARCHIVO: backend/src/controllers/reactionController.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este controlador me encargo de procesar las reacciones de apoyo (fuerza, abrazo, gracias) enviadas por los usuarios.
- * Implemento un toggle inteligente que añade, modifica o elimina la reacción en MongoDB Atlas y retorna el conteo actualizado.
- */
-
 import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
 
-
-
-
-
-// En este Map almaceno las reacciones de contingencia si la base de datos se desconecta temporalmente
+// Map almaceno las reacciones de contingencia si la base de datos se desconecta temporalmente
 const reaccionesMemoriaLocal = new Map();
 
-
-
-
-
-// En esta función ejecuto el registro o toggle de reacción enviado mediante POST /api/reactions
+// Ejecuto el registro o toggle de reacción enviado mediante POST /api/reactions
 export const toggleReaccion = async (req, res) => {
   try {
     const { targetId, userId, uid, type, tipo } = req.body;
@@ -120,11 +105,7 @@ export const toggleReaccion = async (req, res) => {
   }
 };
 
-
-
-
-
-// En esta función consulto el desglose de reacciones para un post o historia específico en GET /api/reactions/:targetId
+// Consulto el desglose de reacciones para un post o historia específico en GET /api/reactions/:targetId
 export const obtenerReacciones = async (req, res) => {
   try {
     const { targetId } = req.params;

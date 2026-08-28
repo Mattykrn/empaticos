@@ -1,15 +1,4 @@
-/**
- * ARCHIVO: backend/src/middlewares/auditLogger.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este middleware propio intercepto todas las peticiones entrantes para auditoría y monitoreo de rendimiento.
- * Registro en consola la dirección IP del cliente, verbo HTTP, ruta accedida, código de estado y el tiempo exacto de respuesta en milisegundos.
- */
-
-
-
-
-
-// En esta función middleware calculo el tiempo de ejecución y audito cada petición HTTP
+// Middleware calculo el tiempo de ejecución y audito cada petición HTTP
 export const auditLogger = (req, res, next) => {
   const start = Date.now();
   const timestamp = new Date().toISOString();
@@ -23,9 +12,5 @@ export const auditLogger = (req, res, next) => {
 
   next();
 };
-
-
-
-
 
 export default auditLogger;

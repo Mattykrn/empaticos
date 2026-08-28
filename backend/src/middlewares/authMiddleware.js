@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import Usuario from '../models/Usuario.model.js';
 
-// En este middleware verifico que la petición contenga un token JWT válido
+// Middleware verifico que la petición contenga un token JWT válido
 export const verificarAutenticacion = async (req, res, next) => {
   try {
     let token;

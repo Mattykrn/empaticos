@@ -1,5 +1,5 @@
 // Rutas para la integración con servicios y APIs públicas externas
-// En este archivo de rutas defino el endpoint para la consulta de frases diarias de contención emocional.
+// Archivo de rutas defino el endpoint para la consulta de frases diarias de contención emocional.
 
 import { Router } from 'express';
 import { obtenerFraseApoyo } from '../controllers/externaController.js';

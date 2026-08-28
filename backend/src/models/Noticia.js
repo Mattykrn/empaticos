@@ -1,9 +1,9 @@
 // Modelo de Mongoose para la colección de Noticias e Informes
-// En este archivo defino mi esquema de Mongoose para administrar noticias del sector de salud y contención emocional.
+// Archivo defino mi esquema de Mongoose para administrar noticias del sector de salud y contención emocional.
 
 import mongoose from 'mongoose';
 
-// En este bloque construyo el esquema principal de Noticias
+// Construyo el esquema principal de Noticias
 const noticiaSchema = new mongoose.Schema(
   {
     titulo: {
@@ -35,10 +35,10 @@ const noticiaSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true // Aquí habilito las marcas de tiempo automáticas createdAt y updatedAt
+    timestamps: true // Habilito las marcas de tiempo automáticas createdAt y updatedAt
   }
 );
 
-// En esta línea exporto mi modelo Noticia para interactuar con la colección en MongoDB
+// Exportar modelo
 const Noticia = mongoose.model('Noticia', noticiaSchema);
 export default Noticia;

@@ -1,37 +1,33 @@
-// Servidor principal de Node.js con Express para la plataforma Empáticos
-// En este archivo configuro mi servidor web Express, integro middlewares globales, inicio la base de datos y defino el puerto de escucha.
-
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { conectarDB } from './config/db.js';
 import auditoriaMiddleware from './middlewares/auditoriaMiddleware.js';
 
-// Importación de enrutadores del sistema
 import historiaRoutes from './routes/historia.routes.js';
 import noticiaRoutes from './routes/noticia.routes.js';
 import externaRoutes from './routes/externa.routes.js';
 
-// Cargo mis variables de entorno almacenadas en el archivo .env
+// Variables de entorno
 dotenv.config();
 
-// Inicializo mi aplicación Express
+// Iniciar Express
 const app = express();
 
-// Conecto mi aplicación con la base de datos MongoDB Atlas
+// Conexión a MongoDB
 conectarDB();
 
-// En este bloque configuro mis middlewares globales principales
+// Middlewares
 app.use(cors()); // Habilito CORS para peticiones desde clientes como Vite/React
 app.use(express.json()); // Habilito el parseo automático de cuerpos en formato JSON
 app.use(auditoriaMiddleware); // Aplico mi middleware propio de trazabilidad y registro de logs
 
-// En estas líneas monto mis módulos de rutas con el prefijo /api
+// Rutas API
 app.use('/api/historias', historiaRoutes);
 app.use('/api/noticias', noticiaRoutes);
 app.use('/api/externa', externaRoutes);
 
-// Ruta base de bienvenida y chequeo de estado de la API
+// Bienvenida
 app.get('/', (req, res) => {
   res.status(200).json({
     ok: true,
@@ -41,7 +37,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// En este middleware capturo cualquier ruta no encontrada (Error 404)
+// Error 404
 app.use((req, res) => {
   res.status(404).json({
     ok: false,
@@ -49,7 +45,7 @@ app.use((req, res) => {
   });
 });
 
-// En este middleware global manejo cualquier error no controlado del servidor (Error 500)
+// Error 500
 app.use((err, req, res, next) => {
   console.error(`[Error de Servidor] Unhandled exception: ${err.message}`);
   res.status(500).json({
@@ -59,10 +55,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// En este bloque obtengo el puerto configurado o utilizo 5000 por defecto
+// Puerto
 const PORT = process.env.PORT || 5000;
 
-// Aquí pongo a escuchar mi servidor Express en el puerto asignado
+// Levantar servidor
 app.listen(PORT, () => {
   console.log(`==================================================`);
   console.log(`🚀 Servidor Empáticos listo y corriendo en el puerto: ${PORT}`);

@@ -1,19 +1,8 @@
-/**
- * ARCHIVO: backend/src/controllers/storyController.js
- * RESPONSABILIDAD EN LA ARQUITECTURA:
- * En este controlador me encargo de manejar la lógica de negocio para crear y consultar historias y anécdotas en MongoDB Atlas.
- * También cruzo las historias con sus respectivas reacciones persistidas y mantengo una colección de respaldo en memoria.
- */
-
 import Story from '../models/Story.js';
 import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
 
-
-
-
-
-// En este arreglo mantengo mis historias de reserva y el testimonio inicial del creador
+// Arreglo mantengo mis historias de reserva y el testimonio inicial del creador
 const historiasBackup = [
   {
     _id: 'story-admin-matias-2026',
@@ -60,11 +49,7 @@ Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva est
   }
 ];
 
-
-
-
-
-// En esta función me encargo de listar todas las historias guardadas en MongoDB Atlas junto a sus reacciones
+// Listar todas las historias guardadas en MongoDB Atlas junto a sus reacciones
 export const obtenerHistorias = async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
@@ -104,11 +89,7 @@ export const obtenerHistorias = async (req, res) => {
   }
 };
 
-
-
-
-
-// En esta función persisto una nueva historia o anécdota enviada por un usuario en MongoDB Atlas
+// Persisto una nueva historia o anécdota enviada por un usuario en MongoDB Atlas
 export const crearHistoria = async (req, res) => {
   try {
     const { author, avatar, content, contenido, imageUrl, videoUrl, rolAutor, titulo, tipo } = req.body;

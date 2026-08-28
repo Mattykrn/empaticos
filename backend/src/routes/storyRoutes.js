@@ -4,10 +4,10 @@ import { validarHistoria } from '../validators/storyValidator.js';
 
 const router = Router();
 
-// GET /api/stories -> Listar historias en MongoDB Atlas
+// GET /$1
 router.get('/', obtenerHistorias);
 
-// POST /api/stories -> Guardar una historia con validaciones
+// POST /$1
 router.post('/', validarHistoria, crearHistoria);
 
 export default router;

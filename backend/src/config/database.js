@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// En esta función asíncrona establezco y administro mi conexión hacia MongoDB Atlas
+// Asíncrona establezco y administro mi conexión hacia MongoDB Atlas
 export const conectarBaseDeDatos = async () => {
   try {
     if (!process.env.MONGO_URI) {

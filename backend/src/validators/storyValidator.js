@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-// Middleware auxiliar para verificar los resultados de express-validator
+// Checker de validación
 export const validarCampos = (req, res, next) => {
   const errores = validationResult(req);
   if (!errores.isEmpty()) {
@@ -13,7 +13,7 @@ export const validarCampos = (req, res, next) => {
   next();
 };
 
-// Reglas de validación para la creación de Historias
+// Validar creación
 export const validarHistoria = [
   body('author')
     .optional()
