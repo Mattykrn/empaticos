@@ -362,7 +362,7 @@ function MuroComunitarioApp() {
                 🧡
               </div>
               <div>
-                <span className="text-2xl font-black tracking-tight text-white block leading-tight">Empáticos</span>
+                <span className="text-2xl font-black font-montserrat text-outline-black uppercase tracking-tight text-white block leading-tight">Empáticos</span>
                 <span className="text-[10px] font-bold tracking-widest text-orange-100 uppercase block">Comunidad & Apoyo EM</span>
               </div>
             </div>
@@ -420,7 +420,7 @@ function MuroComunitarioApp() {
               ) : (
                 <button
                   onClick={() => setModalAbierto ? setModalAbierto(true) : abrirModalRegistro && abrirModalRegistro()}
-                  className="bg-white hover:bg-orange-50 text-orange-600 px-6 py-2.5 rounded-full text-sm font-black shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
+                  className="bg-white hover:bg-orange-50 text-orange-600 px-6 py-2.5 rounded-full text-sm font-black font-montserrat uppercase shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
                 >
                   Unirme
                 </button>
@@ -448,7 +448,7 @@ function MuroComunitarioApp() {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100/70 border border-orange-200/60 text-orange-800 text-xs font-semibold">
                 ✨ Red Comunitaria de Esclerosis Múltiple
               </div>
-              <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-4xl md:text-6xl font-black font-montserrat text-white text-outline-black uppercase tracking-tight leading-tight">
                 Nadie camina solo en este proceso.
               </h1>
               <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -457,13 +457,13 @@ function MuroComunitarioApp() {
               <div className="pt-4 flex flex-wrap justify-center gap-4">
                 <button
                   onClick={() => setSeccionActiva('historias')}
-                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
+                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
                 >
                   Ver Muro de Historias
                 </button>
                 <button
                   onClick={() => setSeccionActiva('anecdotas')}
-                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
+                  className="bg-amber-500 hover:bg-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
                 >
                   😄 Anécdotas Divertidas
                 </button>
@@ -481,7 +481,7 @@ function MuroComunitarioApp() {
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
                   🎬 Video Educativo & Concientización
                 </span>
-                <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl md:text-4xl font-black font-montserrat text-white text-outline-black uppercase tracking-tight">
                   ¿Qué es la Esclerosis Múltiple?
                 </h2>
                 <p className="text-sm md:text-base text-slate-600 leading-relaxed">
@@ -526,7 +526,7 @@ function MuroComunitarioApp() {
             <section className="space-y-8">
               <div className="flex justify-between items-end border-b border-orange-100 pb-4">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">
+                  <h2 className="text-2xl md:text-3xl font-black font-montserrat text-white text-outline-black uppercase">
                     {seccionActiva === 'anecdotas' ? '😄 Anecdotario & Humor Comunitario' : 'Muro de la Comunidad'}
                   </h2>
                   <p className="text-sm text-slate-500">
@@ -744,7 +744,7 @@ function MuroComunitarioApp() {
             <section className="space-y-8">
               <div className="flex justify-between items-end border-b border-orange-100 pb-4">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">Noticias & Avances Científicos</h2>
+                  <h2 className="text-2xl md:text-3xl font-black font-montserrat text-white text-outline-black uppercase">Noticias & Avances Científicos</h2>
                   <p className="text-sm text-slate-500">Estudios clínicos y nuevos tratamientos sobre Esclerosis Múltiple</p>
                 </div>
               </div>
@@ -803,7 +803,7 @@ function MuroComunitarioApp() {
           {seccionActiva === 'nosotros' && (
             <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
               <span className="text-4xl">🧡</span>
-              <h2 className="text-3xl font-black text-slate-900">Sobre la Plataforma Empáticos</h2>
+              <h2 className="text-3xl font-black font-montserrat text-white text-outline-black uppercase">Sobre la Plataforma Empáticos</h2>
               <p className="text-slate-600 leading-relaxed text-sm">
                 Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real, anécdotas con humor y divulgación científica de fuentes médicas oficiales.
               </p>
@@ -858,7 +858,7 @@ function MuroComunitarioApp() {
               <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-2xl">
                 🤝
               </div>
-              <h3 className="text-xl font-black text-slate-900">Únete a Empáticos</h3>
+              <h3 className="text-xl font-black font-montserrat text-white text-outline-black uppercase">Únete a Empáticos</h3>
               <p className="text-xs text-slate-500">
                 Conéctate con tu cuenta de Google para compartir tu historia en la comunidad.
               </p>

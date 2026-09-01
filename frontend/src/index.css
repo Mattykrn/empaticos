@@ -1,8 +1,23 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
+
+@theme {
+  --font-montserrat: 'Montserrat', sans-serif;
+}
 
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #faf8f5;
   color: #1f2937;
+}
+
+.text-outline-black {
+  -webkit-text-stroke: 1.5px #000000;
+  text-shadow: 
+    3px 3px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
