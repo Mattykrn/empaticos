@@ -21,3 +21,13 @@ body {
     -1px 1px 0 #000,
     1px 1px 0 #000;
 }
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

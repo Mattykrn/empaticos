@@ -3,8 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { conectarDB } from './config/db.js';
 import auditLogger from './middlewares/auditLogger.js';
+import requestLogger from './middlewares/requestLogger.js';
 
 // Enrutadores
+import authRoutes from './routes/auth.routes.js';
+import itemRoutes from './routes/itemRoutes.js';
 import publicationRoutes from './routes/publicationRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
 import reactionRoutes from './routes/reactionRoutes.js';
@@ -30,10 +33,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Middleware de auditoría
+// Middleware de auditoría y log
 app.use(auditLogger);
+app.use(requestLogger);
 
 // Rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/items', itemRoutes);
 app.use('/api/publications', publicationRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/reactions', reactionRoutes);

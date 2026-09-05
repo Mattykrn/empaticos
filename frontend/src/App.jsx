@@ -353,21 +353,21 @@ function MuroComunitarioApp() {
       <div>
         {/* En este header renderizo mi barra de navegación naranja energético con mi enlace oficial a Instagram */}
         <header className="sticky top-0 z-40 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md border-b border-orange-600">
-          <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+          <div className="max-w-6xl mx-auto px-3 md:px-4 h-16 md:h-20 flex items-center justify-between gap-2">
             <div 
               onClick={() => setSeccionActiva('inicio')}
-              className="flex items-center gap-3 cursor-pointer select-none group"
+              className="flex items-center gap-2 md:gap-3 cursor-pointer select-none group shrink-0"
             >
-              <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl shadow-inner border border-white/30 group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl md:text-2xl shadow-inner border border-white/30 group-hover:scale-105 transition-transform">
                 🧡
               </div>
               <div>
-                <span className="text-2xl font-black font-montserrat text-outline-black uppercase tracking-tight text-white block leading-tight">Empáticos</span>
-                <span className="text-[10px] font-bold tracking-widest text-orange-100 uppercase block">Comunidad & Apoyo EM</span>
+                <span className="text-lg md:text-2xl font-black font-montserrat text-outline-black uppercase tracking-tight text-white block leading-tight">Empáticos</span>
+                <span className="text-[8px] md:text-[10px] font-bold tracking-widest text-orange-100 uppercase block">Comunidad & Apoyo</span>
               </div>
             </div>
 
-            <nav className="hidden md:flex items-center gap-1.5 bg-orange-600/40 p-1.5 rounded-full border border-orange-400/50 backdrop-blur-md">
+            <nav className="hidden lg:flex items-center gap-1.5 bg-orange-600/40 p-1.5 rounded-full border border-orange-400/50 backdrop-blur-md">
               {['inicio', 'historias', 'anecdotas', 'noticias', 'nosotros'].map((tab) => (
                 <button
                   key={tab}
@@ -383,16 +383,16 @@ function MuroComunitarioApp() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3 shrink-0">
               {/* Botón de Instagram con su ícono SVG oficial */}
               <a
                 href="https://www.instagram.com/em.paticos2026/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border border-white/30 backdrop-blur-md transition-all hover:scale-110 shadow-sm"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 text-white hidden sm:flex items-center justify-center border border-white/30 backdrop-blur-md transition-all hover:scale-110 shadow-sm"
                 title="Síguenos en Instagram @em.paticos2026"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -400,11 +400,11 @@ function MuroComunitarioApp() {
               </a>
 
               {usuario ? (
-                <div className="flex items-center gap-3 bg-orange-600/50 p-1.5 pr-4 rounded-full border border-orange-400 text-white backdrop-blur-md">
+                <div className="flex items-center gap-2 md:gap-3 bg-orange-600/50 p-1 md:p-1.5 md:pr-4 pr-2 rounded-full border border-orange-400 text-white backdrop-blur-md">
                   <img 
                     src={usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
                     alt={usuario.nombre} 
-                    className="w-8 h-8 rounded-full object-cover border border-white/60"
+                    className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-white/60"
                   />
                   <div className="text-left hidden sm:block">
                     <p className="text-xs font-bold text-white leading-tight">{usuario.nombre}</p>
@@ -412,7 +412,7 @@ function MuroComunitarioApp() {
                   </div>
                   <button
                     onClick={logout}
-                    className="ml-2 text-xs font-bold text-orange-200 hover:text-white transition-colors"
+                    className="ml-1 md:ml-2 text-[10px] md:text-xs font-bold text-orange-200 hover:text-white transition-colors"
                   >
                     Salir
                   </button>
@@ -420,12 +420,31 @@ function MuroComunitarioApp() {
               ) : (
                 <button
                   onClick={() => setModalAbierto ? setModalAbierto(true) : abrirModalRegistro && abrirModalRegistro()}
-                  className="bg-white hover:bg-orange-50 text-orange-600 px-6 py-2.5 rounded-full text-sm font-black font-montserrat uppercase shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
+                  className="bg-white hover:bg-orange-50 text-orange-600 px-4 py-2 md:px-6 md:py-2.5 rounded-full text-xs md:text-sm font-black font-montserrat uppercase shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
                 >
                   Unirme
                 </button>
               )}
             </div>
+          </div>
+          
+          {/* Mobile Navigation (Scrollable horizontally) */}
+          <div className="lg:hidden px-3 pb-3 pt-1 overflow-x-auto scrollbar-hide">
+            <nav className="flex items-center gap-2 min-w-max">
+              {['inicio', 'historias', 'anecdotas', 'noticias', 'nosotros'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSeccionActiva(tab)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold capitalize transition-all duration-200 border ${
+                    seccionActiva === tab
+                      ? 'bg-white text-orange-600 shadow-sm border-white'
+                      : 'bg-white/10 text-orange-50 hover:bg-white/20 border-white/20'
+                  }`}
+                >
+                  {tab === 'anecdotas' ? '😄 Anécdotas' : tab}
+                </button>
+              ))}
+            </nav>
           </div>
         </header>
 
@@ -454,16 +473,16 @@ function MuroComunitarioApp() {
               <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
                 Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, anécdotas divertidas con humor, encontrar contención y acceder a novedades científicas sobre EM.
               </p>
-              <div className="pt-4 flex flex-wrap justify-center gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row flex-wrap justify-center gap-4">
                 <button
                   onClick={() => setSeccionActiva('historias')}
-                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
                 >
                   Ver Muro de Historias
                 </button>
                 <button
                   onClick={() => setSeccionActiva('anecdotas')}
-                  className="bg-amber-500 hover:bg-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
+                  className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
                 >
                   😄 Anécdotas Divertidas
                 </button>
@@ -539,11 +558,11 @@ function MuroComunitarioApp() {
 
               {/* Formulario de publicación con selector dual y campo opcional para video */}
               <div className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-                    ✍️ Publicar una Historia o Anécdota Divertida
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                  <h3 className="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                    ✍️ Publicar una Historia o Anécdota
                   </h3>
-                  <div className="flex gap-2 text-xs">
+                  <div className="flex gap-2 text-xs w-full sm:w-auto overflow-x-auto scrollbar-hide pb-1 sm:pb-0">
                     <button
                       type="button"
                       onClick={() => setNuevoTipo('historia')}
@@ -605,19 +624,19 @@ function MuroComunitarioApp() {
                     />
                   </div>
 
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xs text-slate-400">
+                  <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3 pt-2">
+                    <span className="text-[10px] md:text-xs text-slate-400 text-center sm:text-left">
                       {usuario ? `Publicando como ${usuario.nombre}` : 'Inicia sesión con Google para publicar'}
                     </span>
                     <button
                       type="submit"
                       disabled={guardandoHistoria}
-                      className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
+                      className="w-full sm:w-auto justify-center bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
                     >
                       {guardandoHistoria && (
                         <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                       )}
-                      <span>{guardandoHistoria ? 'Guardando en BD...' : nuevoTipo === 'anecdota' ? 'Publicar Anécdota' : 'Publicar Historia'}</span>
+                      <span>{guardandoHistoria ? 'Guardando...' : nuevoTipo === 'anecdota' ? 'Publicar Anécdota' : 'Publicar Historia'}</span>
                     </button>
                   </div>
                 </form>
@@ -710,7 +729,7 @@ function MuroComunitarioApp() {
                             ) : null}
                           </div>
 
-                          <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
                             <button
                               onClick={() => handleReaccionar(idUnico, 'fuerza')}
                               className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
@@ -824,7 +843,7 @@ function MuroComunitarioApp() {
                 </a>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
                 <div className="p-3 bg-orange-50/50 rounded-2xl">
                   <span className="text-xl block">🤝</span>
                   <p className="font-bold text-slate-800 text-xs mt-1">Apoyo Mutuo</p>

@@ -1,6 +1,13 @@
 import Story from '../models/Story.js';
 import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_FILE = path.join(__dirname, '../data/historias.json');
 
 // Arreglo mantengo mis historias de reserva y el testimonio inicial del creador
 const historiasBackup = [
@@ -54,7 +61,7 @@ export const obtenerHistorias = async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
       const historiasBD = await Story.find().sort({ createdAt: -1 });
-      const listaOriginal = historiasBD.length > 0 ? historiasBD : historiasBackup;
+      const listaOriginal = historiasBD.length > 0 ? historiasBD : (fs.existsSync(DATA_FILE) ? JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8')) : historiasBackup);
 
       const historiasConReacciones = await Promise.all(
         listaOriginal.map(async (h) => {
@@ -75,16 +82,28 @@ export const obtenerHistorias = async (req, res) => {
       });
     }
 
+    // Modo Local
+    let historiasActuales = historiasBackup;
+    if (fs.existsSync(DATA_FILE)) {
+      historiasActuales = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    } else {
+      fs.writeFileSync(DATA_FILE, JSON.stringify(historiasBackup, null, 2), 'utf-8');
+    }
+
     return res.status(200).json({
       ok: true,
-      total: historiasBackup.length,
-      data: historiasBackup
+      total: historiasActuales.length,
+      data: historiasActuales
     });
   } catch (error) {
+    let fallback = historiasBackup;
+    if (fs.existsSync(DATA_FILE)) {
+      fallback = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    }
     return res.status(200).json({
       ok: true,
-      total: historiasBackup.length,
-      data: historiasBackup
+      total: fallback.length,
+      data: fallback
     });
   }
 };
@@ -122,7 +141,7 @@ export const crearHistoria = async (req, res) => {
       });
     }
 
-    // Fallback en memoria si la base de datos no está conectada
+    // Fallback en memoria y archivo si la base de datos no está conectada
     const historiaMemoria = {
       _id: `story-${Date.now()}`,
       author: autorFinal,
@@ -136,11 +155,18 @@ export const crearHistoria = async (req, res) => {
       createdAt: new Date().toISOString(),
       reacciones: []
     };
-    historiasBackup.unshift(historiaMemoria);
+
+    let historiasActuales = historiasBackup;
+    if (fs.existsSync(DATA_FILE)) {
+      historiasActuales = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    }
+    
+    historiasActuales.unshift(historiaMemoria);
+    fs.writeFileSync(DATA_FILE, JSON.stringify(historiasActuales, null, 2), 'utf-8');
 
     return res.status(201).json({
       ok: true,
-      mensaje: 'Historia publicada correctamente (modo local)',
+      mensaje: 'Historia publicada correctamente (modo local persistente)',
       data: historiaMemoria
     });
   } catch (error) {

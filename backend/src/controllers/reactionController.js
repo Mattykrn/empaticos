@@ -1,8 +1,34 @@
 import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const REACCIONES_FILE = path.join(__dirname, '../data/reacciones.json');
+
+// Helper para cargar reacciones desde archivo local o inicializar Map vacío
+const cargarReaccionesLocales = () => {
+  if (fs.existsSync(REACCIONES_FILE)) {
+    try {
+      const data = fs.readFileSync(REACCIONES_FILE, 'utf-8');
+      const json = JSON.parse(data);
+      return new Map(Object.entries(json));
+    } catch (e) {
+      return new Map();
+    }
+  }
+  return new Map();
+};
+
+const guardarReaccionesLocales = (mapa) => {
+  const obj = Object.fromEntries(mapa);
+  fs.writeFileSync(REACCIONES_FILE, JSON.stringify(obj, null, 2), 'utf-8');
+};
 
 // Map almaceno las reacciones de contingencia si la base de datos se desconecta temporalmente
-const reaccionesMemoriaLocal = new Map();
+let reaccionesMemoriaLocal = cargarReaccionesLocales();
 
 // Ejecuto el registro o toggle de reacción enviado mediante POST /api/reactions
 export const toggleReaccion = async (req, res) => {
@@ -65,6 +91,7 @@ export const toggleReaccion = async (req, res) => {
     }
 
     // Fallback local en memoria si MongoDB Atlas no está conectado
+    reaccionesMemoriaLocal = cargarReaccionesLocales(); // Asegurar tener los últimos datos
     let listaLocal = reaccionesMemoriaLocal.get(targetIdFinal) || [];
     const idx = listaLocal.findIndex(r => r.userId === userIdFinal);
 
@@ -79,6 +106,7 @@ export const toggleReaccion = async (req, res) => {
       listaLocal.push({ uid: userIdFinal, userId: userIdFinal, tipo: tipoFinal, type: tipoFinal });
     }
     reaccionesMemoriaLocal.set(targetIdFinal, listaLocal);
+    guardarReaccionesLocales(reaccionesMemoriaLocal); // Guardar cambios
 
     const conteo = listaLocal.reduce((acc, r) => {
       acc[r.type] = (acc[r.type] || 0) + 1;
@@ -133,6 +161,7 @@ export const obtenerReacciones = async (req, res) => {
       });
     }
 
+    reaccionesMemoriaLocal = cargarReaccionesLocales(); // Asegurar tener los últimos datos
     const listaLocal = reaccionesMemoriaLocal.get(targetId) || [];
     const conteo = listaLocal.reduce((acc, r) => {
       acc[r.type] = (acc[r.type] || 0) + 1;
