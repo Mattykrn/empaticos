@@ -1,20 +1,42 @@
+// ==========================================
+// IMPORTACIONES Y DEPENDENCIAS
+// ==========================================
 import mongoose from 'mongoose';
 
-// Creo un sub-esquema para mis comentarios persistentes
-const comentarioSchema = new mongoose.Schema(
+
+
+
+
+// ==========================================
+// SUBESQUEMAS AUXILIARES (REACCIONES Y COMENTARIOS)
+// ==========================================
+// Acá defino un subesquema chiquito para guardar las reacciones de los usuarios
+const reaccionSubSchema = new mongoose.Schema(
   {
     usuario: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Usuario',
-      required: true
+      type: String,
+      default: 'anonimo'
     },
+    tipo: {
+      type: String,
+      enum: ['fuerza', 'abrazo', 'gracias', 'corazon', 'me_inspira', 'apoyo'],
+      default: 'fuerza'
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  },
+  { _id: false }
+);
+
+// Y este subesquema es para los comentarios que la gente deja en cada publicación
+const comentarioSubSchema = new mongoose.Schema(
+  {
     autorNombre: {
       type: String,
-      required: true
-    },
-    autorFoto: {
-      type: String,
-      default: ''
+      default: 'Compañero Empático',
+      trim: true
     },
     rolAutor: {
       type: String,
@@ -22,7 +44,7 @@ const comentarioSchema = new mongoose.Schema(
     },
     texto: {
       type: String,
-      required: [true, 'El texto del comentario no puede estar vacío'],
+      required: [true, 'El comentario no puede estar vacío'],
       trim: true
     },
     createdAt: {
@@ -32,75 +54,117 @@ const comentarioSchema = new mongoose.Schema(
   }
 );
 
-// Creo un sub-esquema para registrar qué usuario reaccionó y con qué tipo de reacción
-const reaccionSchema = new mongoose.Schema(
-  {
-    usuario: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Usuario',
-      required: true
-    },
-    tipo: {
-      type: String,
-      enum: ['fuerza', 'abrazo', 'gracias', 'corazon'],
-      required: true
-    }
-  },
-  { _id: false }
-);
 
-// Defino mi esquema principal de historias / publicaciones
+
+
+
+// ==========================================
+// ESQUEMA PROPIO DE MONGOOSE (PUBLICACION)
+// ==========================================
+// Este es el modelo principal de mi proyecto para publicaciones y testimonios comunitarios
 const publicacionSchema = new mongoose.Schema(
   {
-    autor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Usuario',
-      required: [true, 'Toda publicación debe pertenecer a un usuario registrado']
-    },
-    autorNombre: {
-      type: String,
-      required: true
-    },
-    autorFoto: {
-      type: String,
-      default: ''
-    },
-    rolAutor: {
-      type: String,
-      enum: ['paciente', 'familiar', 'acompanante', 'profesional'],
-      required: true
-    },
+    // Título obligatorio de la publicación
     titulo: {
       type: String,
-      required: [true, 'El título de la historia es obligatorio'],
-      trim: true
+      required: [true, 'El título de la publicación es obligatorio'],
+      trim: true,
+      minlength: [3, 'El título debe tener al menos 3 caracteres']
     },
+
+    // Contenido o relato de la historia (obligatorio)
     contenido: {
       type: String,
-      required: [true, 'El contenido de la historia es obligatorio'],
-      trim: true
+      required: [true, 'El contenido de la publicación es obligatorio'],
+      trim: true,
+      minlength: [5, 'El contenido debe tener al menos 5 caracteres']
     },
+
+    // Nombre del autor que publica
+    autorNombre: {
+      type: String,
+      trim: true,
+      default: 'Anónimo'
+    },
+
+    // Rol del autor dentro de la plataforma (con enum de opciones válidas)
+    rolAutor: {
+      type: String,
+      enum: {
+        values: ['paciente', 'familiar', 'acompanante', 'profesional', 'voluntario'],
+        message: '{VALUE} no es un rol válido'
+      },
+      default: 'paciente'
+    },
+
+    // Categoría temática de la publicación
+    categoria: {
+      type: String,
+      trim: true,
+      default: 'apoyo_emocional'
+    },
+
+    // Tipo de relato
+    tipo: {
+      type: String,
+      trim: true,
+      default: 'testimonio'
+    },
+
     tipoPublicacion: {
       type: String,
-      enum: ['experiencia', 'mensaje_apoyo', 'debate'],
-      default: 'experiencia'
+      default: 'experiencia',
+      trim: true
     },
-    tipoMultimedia: {
+
+    // Estado para moderación
+    status: {
       type: String,
-      enum: ['texto', 'video', 'audio'],
-      default: 'texto'
+      enum: ['pending', 'approved', 'rejected', 'archivado'],
+      default: 'approved'
     },
-    mediaUrl: {
+
+    estado: {
       type: String,
-      default: ''
+      enum: ['pendiente', 'aprobado', 'archivado'],
+      default: 'aprobado'
     },
-    // Arrays de reacciones y comentarios
-    reacciones: [reaccionSchema],
-    comentarios: [comentarioSchema]
+
+    // Conteo de votos útiles recibidos
+    votosUtiles: {
+      type: Number,
+      default: 0,
+      min: [0, 'Los votos no pueden ser negativos']
+    },
+
+    // Opción para publicar de forma anónima
+    esAnonimo: {
+      type: Boolean,
+      default: false
+    },
+
+    // Etiquetas descriptivas
+    etiquetas: {
+      type: [String],
+      default: []
+    },
+
+    // Arreglos con los subdocumentos definidos arriba
+    reacciones: [reaccionSubSchema],
+    comentarios: [comentarioSubSchema]
   },
   {
+    // Activo timestamps para que mongoose agregue createdAt y updatedAt solo
     timestamps: true
   }
 );
 
-export default mongoose.model('Publicacion', publicacionSchema);
+
+
+
+
+// ==========================================
+// COMPILACION Y EXPORTACION DEL MODELO
+// ==========================================
+const Publicacion = mongoose.models.Publicacion || mongoose.model('Publicacion', publicacionSchema);
+export default Publicacion;

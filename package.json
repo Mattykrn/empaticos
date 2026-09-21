@@ -2,11 +2,11 @@
   "name": "empaticos-monorepo",
   "version": "1.0.0",
   "type": "module",
-  "main": "backend/src/app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node backend/src/app.js",
-    "dev": "node --watch backend/src/app.js",
-    "build": "cd frontend && npm install && npm run build",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "node test-api.js",
     "backend:dev": "cd backend && npm run dev",
     "backend:start": "cd backend && npm start",
     "frontend:dev": "cd frontend && npm run dev",
@@ -18,9 +18,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.1.0",
-    "google-auth-library": "^11.0.2",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^8.4.1",
-    "morgan": "^1.11.0"
+    "mongoose": "^8.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

@@ -1,27 +1,47 @@
-// Middleware de validación centralizado para express-validator
-// Middleware propio valido la estructura de la petición evaluando los errores recolectados por las reglas de express-validator.
-
+// ==========================================
+// IMPORTACIONES Y DEPENDENCIAS
+// ==========================================
 import { validationResult } from 'express-validator';
 
+
+
+
+
+// ==========================================
+// MIDDLEWARE PARA ATRAPAR ERRORES DE VALIDACION
+// ==========================================
+// En este middleware reviso si express-validator encontró algún error en la petición.
+// Si hay problemas, corto acá nomás y respondo con código 400 y el listado de fallos.
 export const validarCampos = (req, res, next) => {
-  // Resultados de validación
   const errores = validationResult(req);
 
-  // Verifico si existen fallos de validación acumulados
+  // Si el arreglo de errores no está vacío, armo la respuesta de error
   if (!errores.isEmpty()) {
-    // Si encuentro errores, retorno una respuesta estructurada con código HTTP 400 Bad Request
+    const detalleErrores = errores.array().map((err) => ({
+      campo: err.path || err.param,
+      mensaje: err.msg,
+      field: err.path || err.param,
+      message: err.msg
+    }));
+
     return res.status(400).json({
       ok: false,
+      success: false,
       mensaje: 'La petición contiene datos inválidos o incompletos',
-      errores: errores.array().map(err => ({
-        campo: err.path || err.param,
-        mensaje: err.msg
-      }))
+      errores: detalleErrores,
+      errors: detalleErrores
     });
   }
 
-  // Si todas las validaciones fueron superadas exitosamente, continúo hacia el controlador
+  // Si todo vino bien, sigo adelante con la ejecución
   next();
 };
 
+
+
+
+
+// ==========================================
+// EXPORTACION DEL MIDDLEWARE
+// ==========================================
 export default validarCampos;

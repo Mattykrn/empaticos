@@ -52,7 +52,47 @@
 
 ## 🛠️ Instalación y Ejecución Local
 
-### 1. Clonar el repositorio
+### 1. Clonar el repositorio y acceder a la carpeta
 ```bash
-git clone [https://github.com/Mattykrn/empaticos.git](https://github.com/Mattykrn/empaticos.git)
-cd empaticos
+git clone https://github.com/Mattykrn/empaticos.git
+cd empaticos-master
+```
+
+### 2. Instalar dependencias
+```bash
+npm install
+```
+
+### 3. Configurar variables de entorno
+Copiar el archivo `.env.example` a `.env`:
+```bash
+cp .env.example .env
+```
+Ajustar las variables en `.env`:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/empaticos_db?retryWrites=true&w=majority
+```
+
+### 4. Ejecutar el servidor
+
+- **Modo Desarrollo (con Nodemon y auto-recarga):**
+  ```bash
+  npm run dev
+  ```
+
+- **Modo Producción:**
+  ```bash
+  npm start
+  ```
+
+### 5. Ejecutar la Suite de Pruebas Automatizadas (Auditoría)
+Con el servidor ejecutándose en segundo plano o en otra terminal:
+```bash
+npm test
+```
+o
+```bash
+node test-api.js
+```
+Esto correrá los 8 tests de integración verificando el 100% de los requisitos del examen.

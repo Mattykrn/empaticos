@@ -1,35 +1,64 @@
+// ==========================================
+// IMPORTACIONES Y DEPENDENCIAS
+// ==========================================
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-// Asíncrona inicio la conexión con mi cluster de MongoDB Atlas
+// Cargo mis variables de entorno desde el archivo .env
+dotenv.config();
+
+
+
+
+
+// ==========================================
+// CONEXION A MONGO ATLAS CON MONGOOSE
+// ==========================================
 export const conectarDB = async () => {
   try {
-    // Acá recupero la cadena de conexión desde mi variable de entorno MONGO_URI
-    const uri = process.env.MONGO_URI;
+    // Tomo la URI guardada en el archivo .env
+    const mongoUri = process.env.MONGO_URI;
 
-    if (!uri) {
-      console.warn('[MongoDB Atlas] MONGO_URI no configurada. Servidor funcionando en modo local.');
+    if (!mongoUri) {
+      console.warn('⚠️ [MongoDB Atlas] No se encontró MONGO_URI en el archivo .env.');
+      console.warn('ℹ️ El servidor va a arrancar en modo local con respaldo en memoria.');
       return;
     }
 
-    // Configuro el oyente para cuando la conexión con la base de datos se establece felizmente
+    // Escucho cuando la conexión se establece correctamente
     mongoose.connection.on('connected', () => {
-      console.log('[MongoDB Atlas] Evento: Conexión establecida con éxito');
+      console.log('✅ [MongoDB Atlas] Conexión establecida con éxito al clúster.');
     });
 
-    // Escucho posibles advertencias o interrupciones de conexión
+    // Escucho posibles errores de la base de datos
     mongoose.connection.on('error', (err) => {
-      console.warn(`[MongoDB Atlas] Evento Aviso: ${err.message}`);
+      console.warn(`⚠️ [MongoDB Atlas] Error en la conexión: ${err.message}`);
     });
 
-    // Acá disparo la conexión a MongoDB Atlas con un límite de espera de 3 segundos
-    const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 3000
+    // Escucho si se llega a desconectar
+    mongoose.connection.on('disconnected', () => {
+      console.warn('ℹ️ [MongoDB Atlas] Desconectado de la base de datos.');
     });
-    console.log(`[Base de Datos] MongoDB Atlas conectado exitosamente en: ${conn.connection.host}`);
+
+    // Me conecto a MongoDB Atlas con un límite de tiempo para no trabar el servidor
+    const conexion = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 3500,
+      connectTimeoutMS: 3500
+    });
+
+    console.log(`🚀 [Base de Datos] Conectado a MongoDB Atlas en: ${conexion.connection.host}`);
   } catch (error) {
-    console.warn(`[Base de Datos] No se pudo conectar a MongoDB Atlas (${error.message}).`);
-    console.warn(`[Base de Datos] El servidor Express seguirá activo respondiendo solicitudes.`);
+    // Si no hay internet o las credenciales no son válidas, sigo adelante sin voltear la app
+    console.warn(`⚠️ [Base de Datos] No se pudo conectar a Atlas (${error.message}).`);
+    console.warn('ℹ️ El servidor Express sigue funcionando en modo seguro local.');
   }
 };
 
+
+
+
+
+// ==========================================
+// EXPORTACION DEL MODULO
+// ==========================================
 export default conectarDB;
