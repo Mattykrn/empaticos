@@ -152,70 +152,105 @@ function MuroComunitarioApp() {
   const [cargandoHistorias, setCargandoHistorias] = useState(true);
   const [errorHistorias, setErrorHistorias] = useState(null);
   
-  // Estados del formulario
+  // Estados del formulario de nueva historia
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevoContenido, setNuevoContenido] = useState('');
   const [nuevoVideoUrl, setNuevoVideoUrl] = useState('');
   const [nuevoTipo, setNuevoTipo] = useState('historia');
   const [guardandoHistoria, setGuardandoHistoria] = useState(false);
 
-  // Estado de la frase
+  // Estados para feedback al usuario (éxito / error)
+  const [mensajeFeedback, setMensajeFeedback] = useState(null);
+
+  // Estados para edición de publicación (PUT)
+  const [historiaEnEdicion, setHistoriaEnEdicion] = useState(null);
+  const [edicionTitulo, setEdicionTitulo] = useState('');
+  const [edicionContenido, setEdicionContenido] = useState('');
+  const [guardandoEdicion, setGuardandoEdicion] = useState(false);
+
+  // Estado para eliminación de publicación (DELETE)
+  const [eliminandoId, setEliminandoId] = useState(null);
+
+  // Estado de la frase externa
   const [fraseInspiradora, setFraseInspiradora] = useState(null);
   const [cargandoFrase, setCargandoFrase] = useState(true);
 
-  // Cargar historias de MongoDB
-  useEffect(() => {
-    const cargarHistoriasAPI = async () => {
-      setCargandoHistorias(true);
-      setErrorHistorias(null);
-      try {
-        const response = await api.get('/stories');
-        if (response.data && response.data.ok && Array.isArray(response.data.data)) {
-          setHistorias(response.data.data.length > 0 ? response.data.data : HISTORIAS_BACKUP);
-        } else if (Array.isArray(response.data)) {
-          setHistorias(response.data.length > 0 ? response.data : HISTORIAS_BACKUP);
-        } else {
-          setHistorias(HISTORIAS_BACKUP);
-        }
-      } catch (err) {
-        console.warn('Conexión backend (usando backup seguro local):', err.message);
-        setErrorHistorias('No se pudo conectar con el servidor backend. Mostrando contenido local de reserva.');
-        setHistorias(HISTORIAS_BACKUP);
-      } finally {
-        setCargandoHistorias(false);
-      }
-    };
+  // Helper para mostrar mensajes de feedback temporales
+  const mostrarFeedback = (texto, tipo = 'exito') => {
+    setMensajeFeedback({ texto, tipo });
+    setTimeout(() => {
+      setMensajeFeedback((actual) => (actual?.texto === texto ? null : actual));
+    }, 4500);
+  };
 
+  // Cargar historias de MongoDB
+  const cargarHistoriasAPI = async () => {
+    setCargandoHistorias(true);
+    setErrorHistorias(null);
+    try {
+      const response = await api.get('/stories');
+      if (response.data && response.data.ok && Array.isArray(response.data.data)) {
+        setHistorias(response.data.data.length > 0 ? response.data.data : HISTORIAS_BACKUP);
+      } else if (Array.isArray(response.data)) {
+        setHistorias(response.data.length > 0 ? response.data : HISTORIAS_BACKUP);
+      } else {
+        setHistorias(HISTORIAS_BACKUP);
+      }
+    } catch (err) {
+      console.warn('Conexión backend (usando backup seguro local):', err.message);
+      setErrorHistorias('No se pudo conectar con el servidor backend. Mostrando contenido local de reserva.');
+      setHistorias(HISTORIAS_BACKUP);
+    } finally {
+      setCargandoHistorias(false);
+    }
+  };
+
+  useEffect(() => {
     cargarHistoriasAPI();
   }, []);
 
-  // Cargar frase inspiradora
-  useEffect(() => {
-    const cargarFraseExterna = async () => {
-      setCargandoFrase(true);
-      try {
-        const response = await api.get('/external/quote');
-        if (response.data && response.data.ok && response.data.data) {
-          setFraseInspiradora(response.data.data);
-        }
-      } catch (err) {
-        console.warn('Error al cargar frase inspiradora:', err.message);
-        setFraseInspiradora({
-          frase: 'No estás solo en este camino. Cada pequeño paso cuenta y la comunidad está aquí para sostenerte.',
-          autor: 'Comunidad Empáticos'
-        });
-      } finally {
-        setCargandoFrase(false);
+  // Cargar frase inspiradora desde API externa pública
+  const cargarFraseExterna = async () => {
+    setCargandoFrase(true);
+    try {
+      const response = await api.get('/external/quote');
+      if (response.data && response.data.ok && response.data.data) {
+        setFraseInspiradora(response.data.data);
       }
-    };
+    } catch (err) {
+      console.warn('Error al cargar frase inspiradora:', err.message);
+      setFraseInspiradora({
+        frase: 'No estás solo en este camino. Cada pequeño paso cuenta y la comunidad está aquí para sostenerte.',
+        autor: 'Comunidad Empáticos'
+      });
+    } finally {
+      setCargandoFrase(false);
+    }
+  };
 
+  useEffect(() => {
     cargarFraseExterna();
   }, []);
 
-  // Crear nueva historia
+  // Crear nueva historia (POST /api/stories)
   const handlePublicar = async (e) => {
     e.preventDefault();
-    if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
+    if (!nuevoTitulo.trim()) {
+      mostrarFeedback('El título de la publicación es obligatorio.', 'error');
+      return;
+    }
+    if (nuevoTitulo.trim().length < 3) {
+      mostrarFeedback('El título debe contener al menos 3 caracteres.', 'error');
+      return;
+    }
+    if (!nuevoContenido.trim()) {
+      mostrarFeedback('El contenido de la historia no puede estar vacío.', 'error');
+      return;
+    }
+    if (nuevoContenido.trim().length < 5) {
+      mostrarFeedback('El contenido debe tener al menos 5 caracteres.', 'error');
+      return;
+    }
 
     let usuarioActual = usuario;
     if (!usuarioActual) {
@@ -226,6 +261,7 @@ function MuroComunitarioApp() {
     try {
       const payload = {
         author: usuarioActual.nombre || 'Paciente Empáticos',
+        autorNombre: usuarioActual.nombre || 'Paciente Empáticos',
         avatar: usuarioActual.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
         content: nuevoContenido.trim(),
         contenido: nuevoContenido.trim(),
@@ -248,26 +284,93 @@ function MuroComunitarioApp() {
       setNuevoTitulo('');
       setNuevoContenido('');
       setNuevoVideoUrl('');
+      mostrarFeedback('¡Publicación creada y guardada con éxito en la base de datos! (POST 201)', 'exito');
     } catch (err) {
-      console.error('Error al guardar en MongoDB Atlas:', err.message);
-      const historiaLocal = {
-        _id: Date.now().toString(),
-        author: usuarioActual?.nombre || 'Paciente Empáticos',
-        avatar: usuarioActual?.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
-        titulo: nuevoTitulo.trim(),
-        content: nuevoContenido.trim(),
-        rolAutor: usuarioActual?.rol || 'paciente',
-        tipo: nuevoTipo,
-        videoUrl: nuevoVideoUrl.trim(),
-        createdAt: new Date().toISOString(),
-        reacciones: []
-      };
-      setHistorias(prev => [historiaLocal, ...prev]);
-      setNuevoTitulo('');
-      setNuevoContenido('');
-      setNuevoVideoUrl('');
+      console.error('Error al guardar en MongoDB Atlas:', err);
+      const msg = err.response?.data?.errores?.[0]?.mensaje || err.response?.data?.mensaje || 'Error al guardar la publicación';
+      mostrarFeedback(msg, 'error');
     } finally {
       setGuardandoHistoria(false);
+    }
+  };
+
+  // Iniciar edición de una publicación
+  const iniciarEdicion = (historia) => {
+    setHistoriaEnEdicion({
+      id: (historia._id || historia.id).toString(),
+      titulo: historia.titulo || '',
+      contenido: historia.contenido || historia.content || ''
+    });
+    setEdicionTitulo(historia.titulo || '');
+    setEdicionContenido(historia.contenido || historia.content || '');
+  };
+
+  // Guardar cambios de edición (PUT /api/stories/:id)
+  const handleGuardarEdicion = async (e) => {
+    e.preventDefault();
+    if (!edicionTitulo.trim() || edicionTitulo.trim().length < 3) {
+      mostrarFeedback('El título debe tener al menos 3 caracteres.', 'error');
+      return;
+    }
+    if (!edicionContenido.trim() || edicionContenido.trim().length < 5) {
+      mostrarFeedback('El contenido debe tener al menos 5 caracteres.', 'error');
+      return;
+    }
+
+    setGuardandoEdicion(true);
+    try {
+      const id = historiaEnEdicion.id;
+      const res = await api.put(`/stories/${id}`, {
+        titulo: edicionTitulo.trim(),
+        contenido: edicionContenido.trim()
+      });
+
+      if (res.status === 200 || res.data?.ok) {
+        setHistorias(prev =>
+          prev.map(h => {
+            if ((h._id || h.id).toString() === id) {
+              return {
+                ...h,
+                titulo: edicionTitulo.trim(),
+                contenido: edicionContenido.trim(),
+                content: edicionContenido.trim(),
+                updatedAt: new Date().toISOString()
+              };
+            }
+            return h;
+          })
+        );
+        setHistoriaEnEdicion(null);
+        mostrarFeedback('¡Publicación actualizada correctamente en la base de datos! (PUT 200)', 'exito');
+      }
+    } catch (err) {
+      console.error('Error al actualizar publicación:', err);
+      const msg = err.response?.data?.errores?.[0]?.mensaje || err.response?.data?.mensaje || 'Error al actualizar la publicación';
+      mostrarFeedback(msg, 'error');
+    } finally {
+      setGuardandoEdicion(false);
+    }
+  };
+
+  // Eliminar una publicación (DELETE /api/stories/:id)
+  const handleEliminar = async (id) => {
+    if (!window.confirm('¿Confirmas que deseas eliminar esta publicación de la base de datos de forma permanente?')) {
+      return;
+    }
+
+    setEliminandoId(id);
+    try {
+      const res = await api.delete(`/stories/${id}`);
+      if (res.status === 200 || res.data?.ok) {
+        setHistorias(prev => prev.filter(h => (h._id || h.id).toString() !== id.toString()));
+        mostrarFeedback('Publicación eliminada correctamente de la base de datos (DELETE 200)', 'exito');
+      }
+    } catch (err) {
+      console.error('Error al eliminar publicación:', err);
+      const msg = err.response?.data?.mensaje || 'No se pudo eliminar la publicación de la base de datos';
+      mostrarFeedback(msg, 'error');
+    } finally {
+      setEliminandoId(null);
     }
   };
 
@@ -451,11 +554,48 @@ function MuroComunitarioApp() {
         {/* En este banner muestro la frase motivacional obtenida desde mi API externa */}
         {fraseInspiradora && (
           <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-inner transition-all border-b border-orange-700">
-            <div className="max-w-4xl mx-auto px-4 py-2.5 text-center flex items-center justify-center gap-2">
+            <div className="max-w-4xl mx-auto px-4 py-2.5 text-center flex flex-wrap items-center justify-center gap-2">
               <span className="text-sm">💡</span>
               <p className="text-xs md:text-sm font-medium italic">
                 "{fraseInspiradora.frase}" — <span className="font-bold">{fraseInspiradora.autor}</span>
               </p>
+              <button
+                onClick={cargarFraseExterna}
+                disabled={cargandoFrase}
+                title="Consultar otra frase de la API externa (Axios)"
+                className="ml-2 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-[11px] font-semibold transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+              >
+                {cargandoFrase ? (
+                  <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  <span>🔄</span>
+                )}
+                <span>Otra frase</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Feedback Alert: Mensajes de éxito o error para formularios y acciones */}
+        {mensajeFeedback && (
+          <div className="max-w-4xl mx-auto px-4 pt-4 animate-in fade-in duration-200">
+            <div
+              className={`p-3.5 sm:p-4 rounded-2xl flex items-center justify-between border shadow-sm transition-all ${
+                mensajeFeedback.tipo === 'exito'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                  : 'bg-rose-50 border-rose-300 text-rose-900'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+                <span className="text-base">{mensajeFeedback.tipo === 'exito' ? '✅' : '⚠️'}</span>
+                <span>{mensajeFeedback.texto}</span>
+              </div>
+              <button
+                onClick={() => setMensajeFeedback(null)}
+                className="text-xs font-bold opacity-60 hover:opacity-100 px-2 py-1 transition-opacity"
+              >
+                ✕
+              </button>
             </div>
           </div>
         )}
@@ -729,25 +869,50 @@ function MuroComunitarioApp() {
                             ) : null}
                           </div>
 
-                          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                            <button
-                              onClick={() => handleReaccionar(idUnico, 'fuerza')}
-                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                            >
-                              💪 Fuerza <span className="font-bold">{fuerzaCount}</span>
-                            </button>
-                            <button
-                              onClick={() => handleReaccionar(idUnico, 'abrazo')}
-                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                            >
-                              🫂 Abrazo <span className="font-bold">{abrazoCount}</span>
-                            </button>
-                            <button
-                              onClick={() => handleReaccionar(idUnico, 'gracias')}
-                              className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
-                            >
-                              🙏 Gracias <span className="font-bold">{graciasCount}</span>
-                            </button>
+                          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'fuerza')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                💪 Fuerza <span className="font-bold">{fuerzaCount}</span>
+                              </button>
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'abrazo')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                🫂 Abrazo <span className="font-bold">{abrazoCount}</span>
+                              </button>
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'gracias')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                🙏 Gracias <span className="font-bold">{graciasCount}</span>
+                              </button>
+                            </div>
+
+                            {/* Acciones CRUD: Editar (PUT) y Eliminar (DELETE) en MongoDB */}
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => iniciarEdicion(historia)}
+                                title="Editar publicación (PUT /api/stories/:id)"
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-amber-100 text-slate-600 hover:text-amber-800 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95"
+                              >
+                                ✏️ <span className="hidden sm:inline">Editar</span>
+                              </button>
+                              <button
+                                onClick={() => handleEliminar(idUnico)}
+                                disabled={eliminandoId === idUnico}
+                                title="Eliminar de la base de datos (DELETE /api/stories/:id)"
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                              >
+                                {eliminandoId === idUnico ? (
+                                  <span className="w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></span>
+                                ) : (
+                                  <>🗑️ <span className="hidden sm:inline">Eliminar</span></>
+                                )}
+                              </button>
+                            </div>
                           </div>
                         </article>
                       );
@@ -913,6 +1078,81 @@ function MuroComunitarioApp() {
               </svg>
               Continuar con Google
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Editar Publicación existente (PUT /api/stories/:id) */}
+      {historiaEnEdicion && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-orange-100 relative">
+            <button
+              onClick={() => setHistoriaEnEdicion(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold p-1 rounded-full hover:bg-slate-100"
+            >
+              ✕
+            </button>
+
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                ✏️ Editar Publicación (PUT)
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Modifica los datos del testimonio. Los cambios se actualizarán de inmediato en la base de datos MongoDB.
+              </p>
+            </div>
+
+            <form onSubmit={handleGuardarEdicion} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Título de la Publicación
+                </label>
+                <input
+                  type="text"
+                  value={edicionTitulo}
+                  onChange={(e) => setEdicionTitulo(e.target.value)}
+                  placeholder="Título (mínimo 3 caracteres)..."
+                  required
+                  minLength={3}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Contenido / Vivencia
+                </label>
+                <textarea
+                  rows={4}
+                  value={edicionContenido}
+                  onChange={(e) => setEdicionContenido(e.target.value)}
+                  placeholder="Contenido (mínimo 5 caracteres)..."
+                  required
+                  minLength={5}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none font-medium"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setHistoriaEnEdicion(null)}
+                  className="px-4 py-2 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardandoEdicion}
+                  className="px-5 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {guardandoEdicion && (
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  )}
+                  <span>{guardandoEdicion ? 'Guardando en BD...' : 'Guardar Cambios (PUT)'}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

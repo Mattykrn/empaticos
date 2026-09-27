@@ -59,10 +59,24 @@ conectarDB();
 // ==========================================
 // MIDDLEWARES
 // ==========================================
-// Habilito CORS para que cualquier cliente pueda comunicarse con la API
+// Configuro CORS permitiendo peticiones desde entorno local (Vite/React) y despliegues en Vercel
+const origenesPermitidos = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: (origin, callback) => {
+    // Si no tiene origen (como curl o Postman), o coincide con local o Vercel, permito la conexión
+    if (!origin || origenesPermitidos.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Audit-Timestamp']
 }));
 
