@@ -1,0 +1,1295 @@
+import React, { useState, useEffect } from 'react';
+import api from './services/api';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { useSpeech } from './context/SpeechContext';
+import AccessibilityToolbar from './components/AccessibilityToolbar';
+
+// Procesar URLs de YouTube
+const obtenerEmbedYoutube = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+};
+
+// Noticias
+const NOTICIAS_ORIGINALES = [
+  {
+    id: 1,
+    titulo: "Inhibidores de BTK: la nueva frontera en el tratamiento de la EM Progresiva",
+    categoria: "Tratamientos",
+    fecha: "20 Agosto 2026",
+    autor: "Redacción Neurología & Investigación",
+    fuente: "European Committee for Treatment and Research in MS (ECTRIMS)",
+    fuenteUrl: "https://www.ectrims.eu",
+    resumen: "Los ensayos clínicos de fase III con inhibidores de la tirosina quinasa de Bruton (BTK) demuestran capacidad para atravesar la barrera hematoencefálica y actuar directamente sobre la neuroinflamación cerebral compartimentada.",
+    imagen: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "5 min de lectura"
+  },
+  {
+    id: 2,
+    titulo: "Avances en terapias de remielinización y reparación del daño axonal",
+    categoria: "Investigación",
+    fecha: "17 Agosto 2026",
+    autor: "Comité Científico Internacional",
+    fuente: "National Multiple Sclerosis Society (NMSS Research)",
+    fuenteUrl: "https://www.nationalmssociety.org/research",
+    resumen: "Nuevos compuestos biológicos en fase experimental estimulan la diferenciación de células precursoras de oligodendrocitos (OPC), buscando reparar la vaina de mielina dañada.",
+    imagen: "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "4 min de lectura"
+  },
+  {
+    id: 3,
+    titulo: "Biomarcadores en sangre: Neurofilamentos de Cadena Ligera (NfL)",
+    categoria: "Investigación",
+    fecha: "12 Agosto 2026",
+    autor: "Servicio de Neuroinmunología Clínica",
+    fuente: "Multiple Sclerosis Journal (SAGE Publishing)",
+    fuenteUrl: "https://journals.sagepub.com/home/msj",
+    resumen: "La medición de NfL mediante análisis de sangre ultrasensibles consolida su uso en la práctica clínica para predecir brotes con meses de anticipación y monitorear la respuesta terapéutica.",
+    imagen: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "4 min de lectura"
+  },
+  {
+    id: 4,
+    titulo: "Trasplante de Células Madre Hematopoyéticas (TCMH): Consenso 2026",
+    categoria: "Tratamientos",
+    fecha: "08 Agosto 2026",
+    autor: "Sociedad de Neurología",
+    fuente: "PubMed Central / National Institutes of Health (NIH)",
+    fuenteUrl: "https://pubmed.ncbi.nlm.nih.gov",
+    resumen: "Protocolos de acondicionamiento de intensidad intermedia confirman una tasa sostenida de ausencia de actividad de la enfermedad (NEDA) en pacientes con EM recurrente activa.",
+    imagen: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "6 min de lectura"
+  },
+  {
+    id: 5,
+    titulo: "El papel del microbioma intestinal y la dieta antiinflamatoria en la EM",
+    categoria: "Bienestar",
+    fecha: "03 Agosto 2026",
+    autor: "Unidad de Nutrición y Neurociencias",
+    fuente: "European Multiple Sclerosis Platform (EMSP)",
+    fuenteUrl: "https://emsp.org",
+    resumen: "Investigaciones recientes revelan cómo los ácidos grasos de cadena corta producidos por la microbiota modulan las células T reguladoras en el sistema nervioso.",
+    imagen: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "3 min de lectura"
+  },
+  {
+    id: 6,
+    titulo: "Redes de apoyo y calidad de vida: el valor de la comunidad en EM",
+    categoria: "Comunidad",
+    fecha: "28 Julio 2026",
+    autor: "Equipo de Recursos Globales",
+    fuente: "Multiple Sclerosis International Federation (MSIF)",
+    fuenteUrl: "https://www.msif.org",
+    resumen: "La federación internacional reúne recursos educativos y de acompañamiento para personas con EM, familias y cuidadores, fortaleciendo el acceso a información clara y apoyo entre pares.",
+    imagen: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
+    tiempoLectura: "3 min de lectura"
+  }
+];
+
+// Historias locales (backup)
+const HISTORIAS_BACKUP = [
+  {
+    _id: 'story-admin-matias-2026',
+    author: 'Matías Torres (Administrador y Creador)',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+    titulo: 'Mi historia con la EM: El camino de nunca bajar los brazos',
+    content: `Holaa, mis buenos deseos para quien esté leyendo este comentario ya sea paciente, familiar o simplemente alguien curioso :D
+
+Soy el administrador y diseñador de la página. Convivo con esclerosis múltiple desde el año 2013 (tenía 15 años), hoy en día tengo 28...
+La verdad que el diagnóstico temprano me ha ayudado mucho a contener los brotes y todo lo que esta enfermedad conlleva. Cambios de paradigmas tuvo toda mi vida desde el momento del diagnóstico, pero nunca bajé los brazos.
+
+Mi sueño en aquella época (2013) era ser mecánico de automotores. Dado el diagnóstico temprano, me vi a la fuerza en la necesidad de alejarme de los motores, del TC Pista, TC 2000, F1, Superbike y demás. En ese momento en que manipulé un torno con una leve pérdida de equilibrio me llevé un susto. Doy las gracias a la escuela que nos capacitó bien para no tocar las máquinas en momentos en que no nos sentimos bien; eso me dio respeto y me vi obligado a cambiar de rumbos.
+
+Me cambié a informática, me enamoré de lo que es la programación y me seguí capacitando bajo el sueño de ser desarrollador de software, que claramente no acaba simplemente con esto.
+
+Todo fue cambiando. Por el 2013 internet era mucho más áspero y sin filtro, recuerdo desconocer lo que era la enfermedad y cometí el error de googlearlo y fue para peor jaja, muchos de los que ya llevan años sabrán a qué me refiero. Pero con contención profesional y buenas palabras de amigos, psicólogos y psiquiatras llegué a no bajar los brazos y no darme por vencido por más dolores que tenga en el cuerpo. ¡Disfruté mi adolescencia y coseché las mejores amistades que se pueden pedir!
+
+Aprendí que amar a un amigo no es algo mal visto y que no solo se ama a quien duerme con vos, se ama y aprecia a quien estuvo siempre a tu lado. Todo es parte de crecer.
+
+Dejo un mensaje que a mí me abrió la cabeza: "No podés pelear contra lo invencible, es mejor llevar a tu rival de la mano como si fuese una amistad", tirar contra ella solo nos perjudicará :)
+
+Por eso siempre hay que hacer caso a los profesionales. Espero que les sirva este consejo y bueno, ¡que esta comunidad crezca, lleguemos a todos lados y que ningún otro paciente se sienta solo nunca más!`,
+    rolAutor: 'paciente',
+    tipo: 'historia',
+    videoUrl: '',
+    createdAt: new Date().toISOString(),
+    reacciones: [
+      { uid: 'u1', tipo: 'fuerza' },
+      { uid: 'u2', tipo: 'abrazo' },
+      { uid: 'u3', tipo: 'gracias' }
+    ]
+  },
+  {
+    _id: 'anecdota-mysterio-101',
+    author: 'Matías Torres (Admin)',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+    titulo: '😂 El misterio del control remoto y la heladera',
+    content: '¡No todo es superación solemne, las anécdotas insólitas sobran! La famosa "niebla mental" de la EM no perdona jaja. El otro día estuve 40 minutos buscando el control remoto del televisor por toda la casa y adivinen dónde estaba: adentro de la heladera junto a la leche. Me reí solo 10 minutos seguidos. ¡A tomar la vida con buen humor!',
+    rolAutor: 'paciente',
+    tipo: 'anecdota',
+    videoUrl: '',
+    createdAt: new Date(Date.now() - 36000000).toISOString(),
+    reacciones: [
+      { uid: 'u10', tipo: 'fuerza' },
+      { uid: 'u11', tipo: 'gracias' }
+    ]
+  },
+  {
+    _id: 'story-em-101',
+    author: 'María Celeste A.',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+    titulo: 'Mi camino de superación tras 3 años del diagnóstico de EM',
+    content: 'Al principio sentí mucha incertidumbre tras el diagnóstico de Esclerosis Múltiple, pero con el tratamiento adecuado y el apoyo de mi familia aprendí que la fortaleza se construye día a día.',
+    rolAutor: 'paciente',
+    tipo: 'historia',
+    videoUrl: 'https://www.youtube.com/watch?v=gbkrlXuzodU',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    reacciones: [
+      { uid: 'u1', tipo: 'fuerza' },
+      { uid: 'u2', tipo: 'fuerza' },
+      { uid: 'u3', tipo: 'abrazo' }
+    ]
+  }
+];
+
+// Componente Muro
+function MuroComunitarioApp() {
+  // AuthContext
+  const { usuario, loginConGoogle, logout, modalAbierto, setModalAbierto, abrirModalRegistro } = useAuth();
+  const { hablar, detener, hablando, textoActual } = useSpeech();
+  
+  // Estados principales
+  const [seccionActiva, setSeccionActiva] = useState('inicio');
+  const [rolSeleccionado, setRolSeleccionado] = useState('paciente');
+  const [historias, setHistorias] = useState([]);
+  const [cargandoHistorias, setCargandoHistorias] = useState(true);
+  const [errorHistorias, setErrorHistorias] = useState(null);
+  
+  // Estados del formulario de nueva historia
+  const [nuevoTitulo, setNuevoTitulo] = useState('');
+  const [nuevoContenido, setNuevoContenido] = useState('');
+  const [nuevoVideoUrl, setNuevoVideoUrl] = useState('');
+  const [nuevoTipo, setNuevoTipo] = useState('historia');
+  const [guardandoHistoria, setGuardandoHistoria] = useState(false);
+
+  // Estados para feedback al usuario (éxito / error)
+  const [mensajeFeedback, setMensajeFeedback] = useState(null);
+
+  // Estados para edición de publicación (PUT)
+  const [historiaEnEdicion, setHistoriaEnEdicion] = useState(null);
+  const [edicionTitulo, setEdicionTitulo] = useState('');
+  const [edicionContenido, setEdicionContenido] = useState('');
+  const [guardandoEdicion, setGuardandoEdicion] = useState(false);
+
+  // Estado para eliminación de publicación (DELETE)
+  const [eliminandoId, setEliminandoId] = useState(null);
+
+  // Estado de la frase externa
+  const [fraseInspiradora, setFraseInspiradora] = useState(null);
+  const [cargandoFrase, setCargandoFrase] = useState(true);
+  const [categoriaNoticia, setCategoriaNoticia] = useState('Todas');
+
+  // Helper para mostrar mensajes de feedback temporales
+  const mostrarFeedback = (texto, tipo = 'exito') => {
+    setMensajeFeedback({ texto, tipo });
+    setTimeout(() => {
+      setMensajeFeedback((actual) => (actual?.texto === texto ? null : actual));
+    }, 4500);
+  };
+
+  // Cargar historias de MongoDB
+  const cargarHistoriasAPI = async () => {
+    setCargandoHistorias(true);
+    setErrorHistorias(null);
+    try {
+      const response = await api.get('/stories');
+      if (response.data && response.data.ok && Array.isArray(response.data.data)) {
+        setHistorias(response.data.data.length > 0 ? response.data.data : HISTORIAS_BACKUP);
+      } else if (Array.isArray(response.data)) {
+        setHistorias(response.data.length > 0 ? response.data : HISTORIAS_BACKUP);
+      } else {
+        setHistorias(HISTORIAS_BACKUP);
+      }
+    } catch (err) {
+      console.warn('Conexión backend (usando backup seguro local):', err.message);
+      setErrorHistorias('No se pudo conectar con el servidor backend. Mostrando contenido local de reserva.');
+      setHistorias(HISTORIAS_BACKUP);
+    } finally {
+      setCargandoHistorias(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarHistoriasAPI();
+  }, []);
+
+  // Cargar frase inspiradora desde API externa pública
+  const cargarFraseExterna = async () => {
+    setCargandoFrase(true);
+    try {
+      const response = await api.get('/external/quote');
+      if (response.data && response.data.ok && response.data.data) {
+        setFraseInspiradora(response.data.data);
+      }
+    } catch (err) {
+      console.warn('Error al cargar frase inspiradora:', err.message);
+      setFraseInspiradora({
+        frase: 'No estás solo en este camino. Cada pequeño paso cuenta y la comunidad está aquí para sostenerte.',
+        autor: 'Comunidad Empáticos'
+      });
+    } finally {
+      setCargandoFrase(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarFraseExterna();
+  }, []);
+
+  useEffect(() => {
+    if (!modalAbierto && !historiaEnEdicion) return undefined;
+    const manejarEscape = (evento) => {
+      if (evento.key !== 'Escape') return;
+      if (modalAbierto) setModalAbierto(false);
+      if (historiaEnEdicion) setHistoriaEnEdicion(null);
+    };
+    window.addEventListener('keydown', manejarEscape);
+    return () => window.removeEventListener('keydown', manejarEscape);
+  }, [historiaEnEdicion, modalAbierto, setModalAbierto]);
+
+  // Crear nueva historia (POST /api/stories)
+  const handlePublicar = async (e) => {
+    e.preventDefault();
+    if (!nuevoTitulo.trim()) {
+      mostrarFeedback('El título de la publicación es obligatorio.', 'error');
+      return;
+    }
+    if (nuevoTitulo.trim().length < 3) {
+      mostrarFeedback('El título debe contener al menos 3 caracteres.', 'error');
+      return;
+    }
+    if (!nuevoContenido.trim()) {
+      mostrarFeedback('El contenido de la historia no puede estar vacío.', 'error');
+      return;
+    }
+    if (nuevoContenido.trim().length < 5) {
+      mostrarFeedback('El contenido debe tener al menos 5 caracteres.', 'error');
+      return;
+    }
+
+    let usuarioActual = usuario;
+    if (!usuarioActual) {
+      usuarioActual = await loginConGoogle(rolSeleccionado || 'paciente');
+    }
+
+    setGuardandoHistoria(true);
+    try {
+      const payload = {
+        author: usuarioActual.nombre || 'Paciente Empáticos',
+        autorNombre: usuarioActual.nombre || 'Paciente Empáticos',
+        avatar: usuarioActual.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+        content: nuevoContenido.trim(),
+        contenido: nuevoContenido.trim(),
+        titulo: nuevoTitulo.trim(),
+        rolAutor: usuarioActual.rol || rolSeleccionado || 'paciente',
+        tipo: nuevoTipo,
+        videoUrl: nuevoVideoUrl.trim(),
+        imageUrl: nuevoVideoUrl.trim()
+      };
+
+      const res = await api.post('/stories', payload);
+      const historiaRespuesta = res.data?.data || res.data || {
+        ...payload,
+        _id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        reacciones: []
+      };
+
+      setHistorias(prev => [historiaRespuesta, ...prev]);
+      setNuevoTitulo('');
+      setNuevoContenido('');
+      setNuevoVideoUrl('');
+      mostrarFeedback('¡Publicación creada y guardada con éxito en la base de datos! (POST 201)', 'exito');
+    } catch (err) {
+      console.error('Error al guardar en MongoDB Atlas:', err);
+      const msg = err.response?.data?.errores?.[0]?.mensaje || err.response?.data?.mensaje || 'Error al guardar la publicación';
+      mostrarFeedback(msg, 'error');
+    } finally {
+      setGuardandoHistoria(false);
+    }
+  };
+
+  // Iniciar edición de una publicación
+  const iniciarEdicion = (historia) => {
+    setHistoriaEnEdicion({
+      id: (historia._id || historia.id).toString(),
+      titulo: historia.titulo || '',
+      contenido: historia.contenido || historia.content || ''
+    });
+    setEdicionTitulo(historia.titulo || '');
+    setEdicionContenido(historia.contenido || historia.content || '');
+  };
+
+  // Guardar cambios de edición (PUT /api/stories/:id)
+  const handleGuardarEdicion = async (e) => {
+    e.preventDefault();
+    if (!edicionTitulo.trim() || edicionTitulo.trim().length < 3) {
+      mostrarFeedback('El título debe tener al menos 3 caracteres.', 'error');
+      return;
+    }
+    if (!edicionContenido.trim() || edicionContenido.trim().length < 5) {
+      mostrarFeedback('El contenido debe tener al menos 5 caracteres.', 'error');
+      return;
+    }
+
+    setGuardandoEdicion(true);
+    try {
+      const id = historiaEnEdicion.id;
+      const res = await api.put(`/stories/${id}`, {
+        titulo: edicionTitulo.trim(),
+        contenido: edicionContenido.trim()
+      });
+
+      if (res.status === 200 || res.data?.ok) {
+        setHistorias(prev =>
+          prev.map(h => {
+            if ((h._id || h.id).toString() === id) {
+              return {
+                ...h,
+                titulo: edicionTitulo.trim(),
+                contenido: edicionContenido.trim(),
+                content: edicionContenido.trim(),
+                updatedAt: new Date().toISOString()
+              };
+            }
+            return h;
+          })
+        );
+        setHistoriaEnEdicion(null);
+        mostrarFeedback('¡Publicación actualizada correctamente en la base de datos! (PUT 200)', 'exito');
+      }
+    } catch (err) {
+      console.error('Error al actualizar publicación:', err);
+      const msg = err.response?.data?.errores?.[0]?.mensaje || err.response?.data?.mensaje || 'Error al actualizar la publicación';
+      mostrarFeedback(msg, 'error');
+    } finally {
+      setGuardandoEdicion(false);
+    }
+  };
+
+  // Eliminar una publicación (DELETE /api/stories/:id)
+  const handleEliminar = async (id) => {
+    if (!window.confirm('¿Confirmas que deseas eliminar esta publicación de la base de datos de forma permanente?')) {
+      return;
+    }
+
+    setEliminandoId(id);
+    try {
+      const res = await api.delete(`/stories/${id}`);
+      if (res.status === 200 || res.data?.ok) {
+        setHistorias(prev => prev.filter(h => (h._id || h.id).toString() !== id.toString()));
+        mostrarFeedback('Publicación eliminada correctamente de la base de datos (DELETE 200)', 'exito');
+      }
+    } catch (err) {
+      console.error('Error al eliminar publicación:', err);
+      const msg = err.response?.data?.mensaje || 'No se pudo eliminar la publicación de la base de datos';
+      mostrarFeedback(msg, 'error');
+    } finally {
+      setEliminandoId(null);
+    }
+  };
+
+  // Nueva reacción
+  const handleReaccionar = async (storyId, tipoReaccion) => {
+    let usuarioActual = usuario;
+    if (!usuarioActual) {
+      usuarioActual = await loginConGoogle(rolSeleccionado || 'paciente');
+    }
+
+    const userId = usuarioActual?.uid || usuarioActual?.id || 'usr-anon';
+
+    setHistorias(prev =>
+      prev.map(h => {
+        const idActual = (h._id || h.id).toString();
+        if (idActual === storyId.toString()) {
+          const reaccionesPrev = Array.isArray(h.reacciones) ? h.reacciones : [];
+          const yaExiste = reaccionesPrev.find(r => (r.uid === userId || r.userId === userId) && (r.tipo === tipoReaccion || r.type === tipoReaccion));
+          
+          let nuevasReacciones;
+          if (yaExiste) {
+            nuevasReacciones = reaccionesPrev.filter(r => !((r.uid === userId || r.userId === userId) && (r.tipo === tipoReaccion || r.type === tipoReaccion)));
+          } else {
+            nuevasReacciones = [
+              ...reaccionesPrev.filter(r => (r.uid !== userId && r.userId !== userId)),
+              { uid: userId, userId: userId, tipo: tipoReaccion, type: tipoReaccion }
+            ];
+          }
+
+          return { ...h, reacciones: nuevasReacciones };
+        }
+        return h;
+      })
+    );
+
+    try {
+      const res = await api.post('/reactions', {
+        targetId: storyId,
+        userId: userId,
+        type: tipoReaccion,
+        tipo: tipoReaccion
+      });
+
+      if (res.data && res.data.ok && res.data.data && Array.isArray(res.data.data.reacciones)) {
+        const reaccionesBackend = res.data.data.reacciones;
+        setHistorias(prev =>
+          prev.map(h => {
+            const idActual = (h._id || h.id).toString();
+            if (idActual === storyId.toString()) {
+              return { ...h, reacciones: reaccionesBackend };
+            }
+            return h;
+          })
+        );
+      }
+    } catch (err) {
+      console.warn('Error al sincronizar reacción con la BD:', err.message);
+    }
+  };
+
+  // Contar reacciones
+  const obtenerConteo = (reaccionesList, tipoTarget) => {
+    if (!reaccionesList) return 0;
+    if (Array.isArray(reaccionesList)) {
+      return reaccionesList.filter(r => r.tipo === tipoTarget || r.type === tipoTarget).length;
+    }
+    if (typeof reaccionesList === 'object') {
+      return reaccionesList[tipoTarget] || 0;
+    }
+    return 0;
+  };
+
+  // Filtrar anécdotas
+  const historiasFiltradas = historias.filter(h => {
+    if (seccionActiva === 'anecdotas') {
+      return h.tipo === 'anecdota' || (h.titulo && h.titulo.toLowerCase().includes('anécdota')) || (h.titulo && h.titulo.includes('😂')) || (h.titulo && h.titulo.includes('😄'));
+    }
+    return true;
+  });
+
+  const noticiasFiltradas = categoriaNoticia === 'Todas'
+    ? NOTICIAS_ORIGINALES
+    : NOTICIAS_ORIGINALES.filter((noticia) => noticia.categoria === categoriaNoticia);
+
+  return (
+    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col justify-between">
+      <div>
+        {/* En este header renderizo mi barra de navegación naranja energético con mi enlace oficial a Instagram */}
+        <header className="sticky top-0 z-40 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md border-b border-orange-600">
+          <div className="max-w-6xl mx-auto px-3 md:px-4 h-16 md:h-20 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => setSeccionActiva('inicio')}
+              aria-label="Volver al inicio de Empáticos"
+              className="flex items-center gap-2 md:gap-3 cursor-pointer select-none group shrink-0 bg-transparent text-left border-0"
+            >
+              <img
+                src="/images/LogoEMpaticos2.png"
+                alt="Logo de Empáticos, comunidad de apoyo en esclerosis múltiple"
+                className="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-white/20 object-contain p-1 shadow-inner border border-white/30 group-hover:scale-105 transition-transform"
+              />
+              <span>
+                <span className="text-lg md:text-2xl font-black font-montserrat text-outline-black uppercase tracking-tight text-white block leading-tight">Empáticos</span>
+                <span className="text-[8px] md:text-[10px] font-bold tracking-widest text-orange-100 uppercase block">Comunidad & Apoyo</span>
+              </span>
+            </button>
+
+            <nav aria-label="Navegación principal" className="hidden lg:flex items-center gap-1.5 bg-orange-600/40 p-1.5 rounded-full border border-orange-400/50 backdrop-blur-md">
+              {['inicio', 'historias', 'anecdotas', 'noticias', 'nosotros'].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setSeccionActiva(tab)}
+                  aria-pressed={seccionActiva === tab}
+                  className={`px-4 py-2 rounded-full text-xs md:text-sm font-bold capitalize transition-all duration-200 ${
+                    seccionActiva === tab
+                      ? 'bg-white text-orange-600 shadow-md scale-105'
+                      : 'text-orange-100 hover:text-white hover:bg-white/20'
+                  }`}
+                >
+                  {tab === 'anecdotas' ? '😄 Anécdotas' : tab}
+                </button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2 md:gap-3 shrink-0">
+              {/* Botón de Instagram con su ícono SVG oficial */}
+              <a
+                href="https://www.instagram.com/em.paticos2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 text-white hidden sm:flex items-center justify-center border border-white/30 backdrop-blur-md transition-all hover:scale-110 shadow-sm"
+                title="Síguenos en Instagram @em.paticos2026"
+                aria-label="Seguir a Empáticos en Instagram"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
+
+              {usuario ? (
+                <div className="flex items-center gap-2 md:gap-3 bg-orange-600/50 p-1 md:p-1.5 md:pr-4 pr-2 rounded-full border border-orange-400 text-white backdrop-blur-md">
+                  <img 
+                    src={usuario.fotoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
+                    alt={`Foto de perfil de ${usuario.nombre}`} 
+                    className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-white/60"
+                  />
+                  <div className="text-left hidden sm:block">
+                    <p className="text-xs font-bold text-white leading-tight">{usuario.nombre}</p>
+                    <p className="text-[10px] text-orange-200 font-semibold capitalize">{usuario.rol || 'paciente'}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    aria-label={`Cerrar sesión de ${usuario.nombre}`}
+                    className="ml-1 md:ml-2 text-[10px] md:text-xs font-bold text-orange-200 hover:text-white transition-colors"
+                  >
+                    Salir
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setModalAbierto ? setModalAbierto(true) : abrirModalRegistro && abrirModalRegistro()}
+                  aria-label="Unirme a la comunidad Empáticos"
+                  className="bg-white hover:bg-orange-50 text-orange-600 px-4 py-2 md:px-6 md:py-2.5 rounded-full text-xs md:text-sm font-black font-montserrat uppercase shadow-md border border-white/80 transition-all hover:scale-105 active:scale-95"
+                >
+                  Unirme
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {/* Mobile Navigation (Scrollable horizontally) */}
+          <div className="lg:hidden px-3 pb-3 pt-1 overflow-x-auto scrollbar-hide">
+            <nav aria-label="Navegación principal en móvil" className="flex items-center gap-2 min-w-max">
+              {['inicio', 'historias', 'anecdotas', 'noticias', 'nosotros'].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setSeccionActiva(tab)}
+                  aria-pressed={seccionActiva === tab}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold capitalize transition-all duration-200 border ${
+                    seccionActiva === tab
+                      ? 'bg-white text-orange-600 shadow-sm border-white'
+                      : 'bg-white/10 text-orange-50 hover:bg-white/20 border-white/20'
+                  }`}
+                >
+                  {tab === 'anecdotas' ? '😄 Anécdotas' : tab}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </header>
+
+        {/* En este banner muestro la frase motivacional obtenida desde mi API externa */}
+        {fraseInspiradora && (
+          <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-inner transition-all border-b border-orange-700">
+            <div className="max-w-4xl mx-auto px-4 py-2.5 text-center flex flex-wrap items-center justify-center gap-2">
+              <span className="text-sm">💡</span>
+              <p className="text-xs md:text-sm font-medium italic">
+                "{fraseInspiradora.frase}" — <span className="font-bold">{fraseInspiradora.autor}</span>
+              </p>
+              <button
+                onClick={cargarFraseExterna}
+                disabled={cargandoFrase}
+                title="Consultar otra frase de la API externa (Axios)"
+                className="ml-2 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-[11px] font-semibold transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+              >
+                {cargandoFrase ? (
+                  <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  <span>🔄</span>
+                )}
+                <span>Otra frase</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Feedback Alert: Mensajes de éxito o error para formularios y acciones */}
+        {mensajeFeedback && (
+          <div className="max-w-4xl mx-auto px-4 pt-4 animate-in fade-in duration-200">
+          <div
+            role="status"
+            aria-live="polite"
+            className={`p-3.5 sm:p-4 rounded-2xl flex items-center justify-between border shadow-sm transition-all ${
+
+                mensajeFeedback.tipo === 'exito'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                  : 'bg-rose-50 border-rose-300 text-rose-900'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+                <span className="text-base">{mensajeFeedback.tipo === 'exito' ? '✅' : '⚠️'}</span>
+                <span>{mensajeFeedback.texto}</span>
+              </div>
+              <button
+                onClick={() => setMensajeFeedback(null)}
+                className="text-xs font-bold opacity-60 hover:opacity-100 px-2 py-1 transition-opacity"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* En esta sección Hero muestro mi mensaje principal de bienvenida y llamado a la acción */}
+        {seccionActiva === 'inicio' && (
+          <section className="relative overflow-hidden py-16 px-4">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100/70 border border-orange-200/60 text-orange-800 text-xs font-semibold">
+                ✨ Red Comunitaria de Esclerosis Múltiple
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black font-montserrat text-white text-outline-black uppercase tracking-tight leading-tight">
+                Nadie camina solo en este proceso.
+              </h1>
+              <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Un espacio seguro creado para que pacientes, familiares y acompañantes puedan compartir testimonios reales, anécdotas divertidas con humor, encontrar contención y acceder a novedades científicas sobre EM.
+              </p>
+              <div className="pt-4 flex flex-col sm:flex-row flex-wrap justify-center gap-4">
+                <button
+                  onClick={() => setSeccionActiva('historias')}
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-lg shadow-orange-500/25 transition-transform hover:scale-105"
+                >
+                  Ver Muro de Historias
+                </button>
+                <button
+                  onClick={() => setSeccionActiva('anecdotas')}
+                  className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-black font-montserrat text-outline-black uppercase px-8 py-3.5 rounded-full shadow-md transition-transform hover:scale-105"
+                >
+                  😄 Anécdotas Divertidas
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* En este contenedor principal renderizo mis secciones activas segun la pestaña elegida */}
+        <main id="main-content" tabIndex={-1} className="max-w-6xl mx-auto px-4 py-8 space-y-16">
+          {/* En este apartado presento el video explicativo de YouTube sobre Esclerosis Múltiple */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'nosotros') && (
+            <section className="bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-orange-100/30 p-6 md:p-10 rounded-3xl border border-orange-200/80 shadow-sm space-y-6">
+              <div className="max-w-3xl mx-auto text-center space-y-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
+                  🎬 Video Educativo & Concientización
+                </span>
+                <h2 className="text-2xl md:text-4xl font-black font-montserrat text-white text-outline-black uppercase tracking-tight">
+                  ¿Qué es la Esclerosis Múltiple?
+                </h2>
+                <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                  Un recurso audiovisual claro e informativo para comprender cómo afecta la EM al sistema nervioso central, visibilizar sus síntomas y empatizar con quienes convivimos con esta condición.
+                </p>
+              </div>
+
+              <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-black aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/gbkrlXuzodU"
+                  title="¿Qué es la Esclerosis Múltiple? - Video Explicativo"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-center text-xs">
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🧠</span>
+                  <p className="font-bold text-slate-800 mt-1">Enfermedad Autoinmune</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">El sistema inmune afecta el sistema nervioso central</p>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🛡️</span>
+                  <p className="font-bold text-slate-800 mt-1">La Vaina de Mielina</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">Capa protectora de las neuronas que transmite impulsos</p>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+                  <span className="text-2xl block">🤝</span>
+                  <p className="font-bold text-slate-800 mt-1">Apoyo & Empatía</p>
+                  <p className="text-slate-500 text-[11px] mt-0.5">Comprender los síntomas invisibles nos conecta a todos</p>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* En esta sección renderizo el muro comunitario con el formulario para publicar historias y anécdotas divertidas */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'historias' || seccionActiva === 'anecdotas') && (
+            <section className="space-y-8">
+              <div className="flex justify-between items-end border-b border-orange-100 pb-4">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black font-montserrat text-white text-outline-black uppercase">
+                    {seccionActiva === 'anecdotas' ? '😄 Anecdotario & Humor Comunitario' : 'Muro de la Comunidad'}
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    {seccionActiva === 'anecdotas'
+                      ? 'No todo es superación solemne: ¡nos reímos de los despistes, ocurrencias y momentos insólitos!'
+                      : 'Experiencias, videos y testimonios persistidos en MongoDB Atlas'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Formulario de publicación con selector dual y campo opcional para video */}
+              <div className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                  <h3 className="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                    ✍️ Publicar una Historia o Anécdota
+                  </h3>
+                  <div className="flex gap-2 text-xs w-full sm:w-auto overflow-x-auto scrollbar-hide pb-1 sm:pb-0">
+                    <button
+                      type="button"
+                      onClick={() => setNuevoTipo('historia')}
+                      className={`px-3 py-1 rounded-full font-bold transition-all ${
+                        nuevoTipo === 'historia'
+                          ? 'bg-orange-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      📖 Historia
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNuevoTipo('anecdota')}
+                      className={`px-3 py-1 rounded-full font-bold transition-all ${
+                        nuevoTipo === 'anecdota'
+                          ? 'bg-amber-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      😄 Anécdota
+                    </button>
+                  </div>
+                </div>
+
+                <form onSubmit={handlePublicar} className="space-y-3">
+                  <input
+                    id="nuevoTitulo"
+                    name="nuevoTitulo"
+                    type="text"
+                    placeholder={nuevoTipo === 'anecdota' ? 'Título divertido (ej: El día que dejé el teléfono en la heladera)...' : 'Título de tu publicación...'}
+                    value={nuevoTitulo}
+                    onChange={(e) => setNuevoTitulo(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <textarea
+                    id="nuevoContenido"
+                    name="nuevoContenido"
+                    rows="3"
+                    placeholder={nuevoTipo === 'anecdota' ? 'Contá esa situación insólita o cómica que te pasó conviviendo con la EM...' : 'Escribe tu vivencia, consejo o mensaje para la comunidad...'}
+                    value={nuevoContenido}
+                    onChange={(e) => setNuevoContenido(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                  />
+                  
+                  {/* Campo de video opcional */}
+                  <div className="pt-1">
+                    <label htmlFor="nuevoVideoUrl" className="text-xs font-bold text-slate-600 block mb-1">
+                      🎬 Link de Video (Opcional - Enlace de YouTube o MP4)
+                    </label>
+                    <input
+                      id="nuevoVideoUrl"
+                      name="nuevoVideoUrl"
+                      type="url"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={nuevoVideoUrl}
+                      onChange={(e) => setNuevoVideoUrl(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 bg-slate-50"
+                    />
+                  </div>
+
+                  <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3 pt-2">
+                    <span className="text-[10px] md:text-xs text-slate-400 text-center sm:text-left">
+                      {usuario ? `Publicando como ${usuario.nombre}` : 'Inicia sesión con Google para publicar'}
+                    </span>
+                    <button
+                      type="submit"
+                      disabled={guardandoHistoria}
+                      className="w-full sm:w-auto justify-center bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {guardandoHistoria && (
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      )}
+                      <span>{guardandoHistoria ? 'Guardando...' : nuevoTipo === 'anecdota' ? 'Publicar Anécdota' : 'Publicar Historia'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Renderizado dinámico de tarjetas con reproductor de video */}
+              {cargandoHistorias ? (
+                <div className="space-y-4">
+                  <div className="p-6 bg-white rounded-3xl border border-orange-100 shadow-sm animate-pulse space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+                        <div className="h-3 bg-slate-100 rounded w-1/6"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-slate-100 rounded w-full"></div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {errorHistorias && (
+                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-2xl flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>{errorHistorias}</span>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {historiasFiltradas.map((historia) => {
+                      const idUnico = (historia._id || historia.id).toString();
+                      const fuerzaCount = obtenerConteo(historia.reacciones, 'fuerza');
+                      const abrazoCount = obtenerConteo(historia.reacciones, 'abrazo');
+                      const graciasCount = obtenerConteo(historia.reacciones, 'gracias');
+                      const nombreAutor = historia.author || historia.autorNombre || 'Anónimo';
+                      const avatarAutor = historia.avatar || historia.autorFoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+                      const textoContenido = historia.content || historia.contenido;
+                      const videoTarget = historia.videoUrl || historia.imageUrl || '';
+                      const embedYoutube = obtenerEmbedYoutube(videoTarget);
+
+                      return (
+                        <article key={idUnico} className="bg-white p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow relative">
+                          {historia.tipo === 'anecdota' && (
+                            <span className="absolute top-4 right-4 bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                              😄 Anécdota
+                            </span>
+                          )}
+
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src={avatarAutor} 
+                                alt={`Avatar de ${nombreAutor}`} 
+                                className="w-10 h-10 rounded-full object-cover border border-orange-200" 
+                              />
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 leading-tight">{nombreAutor}</h4>
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="text-orange-600 font-semibold capitalize">{historia.rolAutor || 'paciente'}</span>
+                                  <span className="text-slate-300">•</span>
+                                  <span className="text-slate-400">
+                                    {historia.createdAt ? new Date(historia.createdAt).toLocaleDateString() : historia.fecha || 'Reciente'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <h5 className="font-bold text-slate-800 text-base">{historia.titulo || 'Publicación comunitaria'}</h5>
+                            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{textoContenido}</p>
+
+                            {/* Reproductor embebido de video si la publicación cuenta con un enlace */}
+                            {embedYoutube ? (
+                              <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 aspect-video bg-black mt-2">
+                                <iframe
+                                  className="w-full h-full"
+                                  src={embedYoutube}
+                                  title={historia.titulo}
+                                  loading="lazy"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                ></iframe>
+                              </div>
+                            ) : (videoTarget && videoTarget.endsWith('.mp4')) ? (
+                              <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 aspect-video bg-black mt-2">
+                                <video controls className="w-full h-full">
+                                  <source src={videoTarget} type="video/mp4" />
+                                  Tu navegador no soporta reproducción de video.
+                                </video>
+                              </div>
+                            ) : null}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'fuerza')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                💪 Fuerza <span className="font-bold">{fuerzaCount}</span>
+                              </button>
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'abrazo')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                🫂 Abrazo <span className="font-bold">{abrazoCount}</span>
+                              </button>
+                              <button
+                                onClick={() => handleReaccionar(idUnico, 'gracias')}
+                                className="px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-50 hover:bg-orange-50 text-xs font-medium text-slate-600 hover:text-orange-600 border border-slate-100 transition-colors flex items-center gap-1.5"
+                              >
+                                🙏 Gracias <span className="font-bold">{graciasCount}</span>
+                              </button>
+                            </div>
+
+                            {/* Acciones CRUD: Editar (PUT) y Eliminar (DELETE) en MongoDB */}
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => iniciarEdicion(historia)}
+                                title="Editar publicación (PUT /api/stories/:id)"
+                                aria-label={`Editar publicación de ${nombreAutor}`}
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-amber-100 text-slate-600 hover:text-amber-800 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95"
+                              >
+                                ✏️ <span className="hidden sm:inline">Editar</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleEliminar(idUnico)}
+                                disabled={eliminandoId === idUnico}
+                                title="Eliminar de la base de datos (DELETE /api/stories/:id)"
+                                aria-label={`Eliminar publicación de ${nombreAutor}`}
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                              >
+                                {eliminandoId === idUnico ? (
+                                  <span className="w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></span>
+                                ) : (
+                                  <>🗑️ <span className="hidden sm:inline">Eliminar</span></>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* En esta sección renderizo las noticias científicas y avances médicos sobre Esclerosis Múltiple */}
+          {(seccionActiva === 'inicio' || seccionActiva === 'noticias') && (
+            <section className="space-y-8" aria-labelledby="titulo-noticias">
+              <div className="flex flex-col gap-4 border-b border-orange-100 pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 id="titulo-noticias" className="text-2xl md:text-3xl font-black font-montserrat text-white text-outline-black uppercase">Noticias y Avances Globales en EM</h2>
+                  <p className="text-sm text-slate-500">Estudios, tratamientos y recursos de fuentes médicas oficiales</p>
+                </div>
+                <div role="group" aria-label="Filtrar noticias por categoría" className="flex flex-wrap gap-2">
+                  {['Todas', 'Investigación', 'Tratamientos', 'Bienestar', 'Comunidad'].map((categoria) => (
+                    <button
+                      key={categoria}
+                      type="button"
+                      aria-pressed={categoriaNoticia === categoria}
+                      onClick={() => setCategoriaNoticia(categoria)}
+                      className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${
+                        categoriaNoticia === categoria
+                          ? 'bg-orange-500 text-white shadow-sm'
+                          : 'bg-white text-slate-600 border border-orange-100 hover:bg-orange-50'
+                      }`}
+                    >
+                      {categoria}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {noticiasFiltradas.length === 0 ? (
+                <p className="rounded-3xl border border-orange-100 bg-white p-6 text-center text-sm text-slate-500">
+                  No hay noticias disponibles en esta categoría.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {noticiasFiltradas.map((noticia) => {
+                    const textoVoz = `${noticia.titulo}. ${noticia.resumen}. Tiempo de lectura: ${noticia.tiempoLectura}. Fuente: ${noticia.fuente}.`;
+                    const reproduciendo = hablando && textoActual === textoVoz;
+
+                    return (
+                      <article key={noticia.id} className="bg-white rounded-3xl border border-orange-100 overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+                        <div>
+                          <div className="h-44 overflow-hidden relative">
+                            <img
+                              src={noticia.imagen}
+                              alt={`Imagen ilustrativa de ${noticia.categoria.toLowerCase()}: ${noticia.titulo}`}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <span className="absolute top-3 left-3 bg-orange-600/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                              {noticia.categoria}
+                            </span>
+                          </div>
+
+                          <div className="p-5 space-y-2.5">
+                            <div className="flex justify-between text-xs text-slate-400">
+                              <span>{noticia.fecha}</span>
+                              <span aria-label={`Tiempo de lectura: ${noticia.tiempoLectura}`}>⏱️ {noticia.tiempoLectura}</span>
+                            </div>
+                            <h3 className="font-black text-slate-900 text-base leading-snug group-hover:text-orange-600 transition-colors">
+                              {noticia.titulo}
+                            </h3>
+                            <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                              {noticia.resumen}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="p-5 pt-0">
+                          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <cite className="not-italic text-slate-500 truncate max-w-[170px]" title={noticia.fuente}>
+                              {noticia.fuente}
+                            </cite>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => (reproduciendo ? detener() : hablar(textoVoz))}
+                                aria-pressed={reproduciendo}
+                                aria-label={`${reproduciendo ? 'Detener lectura de' : 'Escuchar'} ${noticia.titulo}`}
+                                className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-4 py-2 font-bold text-amber-800 hover:bg-amber-100"
+                              >
+                                <span aria-hidden="true">{reproduciendo ? '⏹' : '🔊'}</span>
+                                <span>{reproduciendo ? 'Detener' : 'Escuchar'}</span>
+                              </button>
+                              <a
+                                href={noticia.fuenteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Abrir fuente oficial: ${noticia.fuente}`}
+                                className="text-orange-600 font-bold hover:text-orange-700 inline-flex items-center gap-1 shrink-0"
+                              >
+                                Fuente oficial ↗
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* En esta sección muestro la tarjeta explicativa sobre el propósito de mi plataforma Empáticos */}
+          {seccionActiva === 'nosotros' && (
+            <section className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6 text-center">
+              <span className="text-4xl">🧡</span>
+              <h2 className="text-3xl font-black font-montserrat text-white text-outline-black uppercase">Sobre la Plataforma Empáticos</h2>
+              <p className="text-slate-600 leading-relaxed text-sm">
+                Empáticos es un proyecto desarrollado como plataforma de apoyo comunitario para personas que conviven con Esclerosis Múltiple, familiares y cuidadores. Integra testimonios en tiempo real, anécdotas con humor y divulgación científica de fuentes médicas oficiales.
+              </p>
+
+              <div className="pt-2">
+                <a
+                  href="https://www.instagram.com/em.paticos2026/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white font-bold text-sm shadow-md hover:scale-105 transition-transform"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  <span>Seguinos en Instagram @em.paticos2026</span>
+                </a>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🤝</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Apoyo Mutuo</p>
+                </div>
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🔬</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Avances en EM</p>
+                </div>
+                <div className="p-3 bg-orange-50/50 rounded-2xl">
+                  <span className="text-xl block">🛡️</span>
+                  <p className="font-bold text-slate-800 text-xs mt-1">Espacio Seguro</p>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
+      </div>
+
+      {/* En este modal muestro mi ventana flotante de autenticación accesible con Google */}
+      {modalAbierto && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+          <div role="dialog" aria-modal="true" aria-labelledby="titulo-unete" className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-5 relative">
+            <button
+              type="button"
+              onClick={() => setModalAbierto(false)}
+              aria-label="Cerrar ventana de acceso"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold p-1 rounded-full hover:bg-slate-100"
+            >
+              ✕
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-2xl">
+                🤝
+              </div>
+              <h3 id="titulo-unete" className="text-xl font-black font-montserrat text-white text-outline-black uppercase">Únete a Empáticos</h3>
+              <p className="text-xs text-slate-500">
+                Conéctate con tu cuenta de Google para compartir tu historia en la comunidad.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="rolSeleccionado" className="text-xs font-bold text-slate-700 block uppercase tracking-wider">
+                ¿Cuál es tu rol en la comunidad?
+              </label>
+              <select
+                id="rolSeleccionado"
+                name="rolSeleccionado"
+                value={rolSeleccionado}
+                onChange={(e) => setRolSeleccionado(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 bg-slate-50"
+              >
+                <option value="paciente">Paciente</option>
+                <option value="familiar">Familiar</option>
+                <option value="acompanante">Acompañante / Amigo</option>
+                <option value="profesional">Profesional de la Salud</option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => loginConGoogle(rolSeleccionado)}
+              aria-label="Continuar con Google para unirme a Empáticos"
+              className="w-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 py-3 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-center gap-3 transition-colors hover:border-slate-300"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              Continuar con Google
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Editar Publicación existente (PUT /api/stories/:id) */}
+      {historiaEnEdicion && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div role="dialog" aria-modal="true" aria-labelledby="titulo-editar" className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-orange-100 relative">
+            <button
+              type="button"
+              onClick={() => setHistoriaEnEdicion(null)}
+              aria-label="Cerrar editor de publicación"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold p-1 rounded-full hover:bg-slate-100"
+            >
+              ✕
+            </button>
+
+            <div className="border-b border-slate-100 pb-3">
+              <h3 id="titulo-editar" className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                ✏️ Editar Publicación (PUT)
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Modifica los datos del testimonio. Los cambios se actualizarán de inmediato en la base de datos MongoDB.
+              </p>
+            </div>
+
+            <form onSubmit={handleGuardarEdicion} className="space-y-4">
+              <div>
+                <label htmlFor="edicionTitulo" className="block text-xs font-bold text-slate-700 mb-1">
+                  Título de la Publicación
+                </label>
+                <input
+                  id="edicionTitulo"
+                  type="text"
+                  value={edicionTitulo}
+                  onChange={(e) => setEdicionTitulo(e.target.value)}
+                  placeholder="Título (mínimo 3 caracteres)..."
+                  required
+                  minLength={3}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="edicionContenido" className="block text-xs font-bold text-slate-700 mb-1">
+                  Contenido / Vivencia
+                </label>
+                <textarea
+                  id="edicionContenido"
+                  rows={4}
+                  value={edicionContenido}
+                  onChange={(e) => setEdicionContenido(e.target.value)}
+                  placeholder="Contenido (mínimo 5 caracteres)..."
+                  required
+                  minLength={5}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none font-medium"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setHistoriaEnEdicion(null)}
+                  className="px-4 py-2 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardandoEdicion}
+                  className="px-5 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {guardandoEdicion && (
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  )}
+                  <span>{guardandoEdicion ? 'Guardando en BD...' : 'Guardar Cambios (PUT)'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* En este footer renderizo mi pie de página naranja con la autoría de Matías Torres y el enlace a Instagram */}
+      <footer className="border-t border-orange-600 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 py-8 text-center text-xs text-orange-100 shadow-inner">
+        <div className="max-w-6xl mx-auto px-4 space-y-3">
+          <div className="flex justify-center items-center gap-2 text-white text-base font-bold">
+            <span>🧡</span> Empáticos
+          </div>
+          <p>© 2026 Empáticos — Desarrollado por Matías Torres. Global Academy.</p>
+          <div className="pt-1">
+            <a 
+              href="https://www.instagram.com/em.paticos2026/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all hover:scale-105"
+            >
+              <svg className="w-4 h-4 text-orange-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              <span>@em.paticos2026 en Instagram</span>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AccessibilityToolbar />
+      <MuroComunitarioApp />
+    </AuthProvider>
+  );
+}

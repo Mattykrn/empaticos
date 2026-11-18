@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #faf8f5;
+  color: #1f2937;
+}
+
+.text-outline-black {
+  -webkit-text-stroke: 1.5px #000000;
+  text-shadow: 
+    3px 3px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 9999px;
+  background-color: #1c2a22;
+  color: #fff4d6;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid #b45309;
+  outline-offset: 3px;
+}
+
+:where(a, button, select, textarea, input, summary, [role="button"]):focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 3px;
+}
+
+:where(button, select, input:not([type="hidden"]), textarea, [role="button"]) {
+  min-height: 48px;
+}
+
+:where(button, [role="button"]) {
+  min-width: 48px;
+}
+
+a:where([class~="inline-flex"], [class~="flex"], [role="button"], .skip-link) {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+:root[data-contraste="alto"] body {
+  background-color: #0f1714;
+  color: #f6ead1;
+}
+
+:root[data-contraste="alto"] :where(header, footer, [class*="bg-gradient-to-r"]) {
+  background-image: none !important;
+  background-color: #1d2c24 !important;
+  color: #fff2d2 !important;
+}
+
+:root[data-contraste="alto"] :where([class*="bg-white"], [class*="bg-slate-50"], [class*="bg-gray-50"], [class*="bg-orange-50"], [class*="bg-amber-50"], [class*="bg-[#FFFDF9]"]) {
+  background-color: #1b2922 !important;
+}
+
+:root[data-contraste="alto"] :where([class*="border-"]) {
+  border-color: #d7b46a !important;
+}
+
+:root[data-contraste="alto"] :where(p, span, h1, h2, h3, h4, h5, li, cite, label, legend) {
+  color: #f6ead1;
+}
+
+:root[data-contraste="alto"] :where(button, [role="button"]) {
+  background-color: #3a2c12 !important;
+  color: #fff2d2 !important;
+  border: 2px solid #ffd166 !important;
+}
+
+:root[data-contraste="alto"] :where(button[aria-pressed="true"], button[aria-expanded="true"]) {
+  background-color: #ffd166 !important;
+  color: #1a1205 !important;
+}
+
+:root[data-contraste="alto"] :where(button:disabled, input:disabled, select:disabled, textarea:disabled) {
+  opacity: 0.7 !important;
+}
+
+:root[data-contraste="alto"] .text-outline-black {
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  color: #fff2d2 !important;
+}
+
+:root[data-espaciado="amplio"] :where(p, li, label, legend, cite, h1, h2, h3, h4, h5, input, textarea, select, button, a) {
+  line-height: 1.9;
+  letter-spacing: 0.035em;
+}
+
+:root[data-espaciado="amplio"] :where(section, article) {
+  margin-block: 1.5rem;
+}
+
+:root[data-movimiento="reducido"] *,
+:root[data-movimiento="reducido"] *::before,
+:root[data-movimiento="reducido"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
