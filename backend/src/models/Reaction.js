@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-// Esquema Mongoose defino los campos para registrar cada reacción de la comunidad
+// Esquema Mongoose para registrar cada reacción de la comunidad
 const reactionSchema = new mongoose.Schema(
   {
     targetId: {
@@ -25,10 +25,9 @@ const reactionSchema = new mongoose.Schema(
   }
 );
 
-// Acá establezco mi índice compuesto único para permitir reaccionar o des-reaccionar sin duplicar entradas
+// Índice compuesto único para permitir reaccionar o des-reaccionar sin duplicar entradas
 reactionSchema.index({ targetId: 1, userId: 1 }, { unique: true });
 
-// Compilo y exporto mi modelo Reaction para operar sobre MongoDB Atlas
-const Reaction = mongoose.model('Reaction', reactionSchema);
+const Reaction = mongoose.models.Reaction || mongoose.model('Reaction', reactionSchema);
 
 export default Reaction;

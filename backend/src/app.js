@@ -3,11 +3,13 @@
 // ==========================================
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { conectarDB } from './config/db.js';
+import { conectarDB, cargarVariablesEntorno, getEstadoDB } from './config/db.js';
+
+// Cargo variables de entorno (tanto backend/.env como raíz/.env) antes de iniciar
+cargarVariablesEntorno();
 
 // Middlewares propios
 import auditLogger from './middlewares/auditLogger.js';
@@ -18,50 +20,41 @@ import publicacionRoutes from './routes/publicacion.routes.js';
 import externoRoutes from './routes/externo.routes.js';
 import reactionRoutes from './routes/reactionRoutes.js';
 
-// Rutas de directorio para servir archivos estáticos del frontend
+// Resuelvo frontend/dist tanto si se ejecuta desde backend/src/app.js como desde el symlink src/app.js
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const distFrontend = path.join(__dirname, '../../frontend/dist');
-
-
-
-
-
-// ==========================================
-// CONFIGURACION Y VARIABLES DE ENTORNO
-// ==========================================
-// Cargo las variables del archivo .env
-dotenv.config();
-
-
-
-
+const candidatosDist = [
+  path.resolve(__dirname, '../../frontend/dist'),
+  path.resolve(__dirname, '../frontend/dist'),
+  path.resolve(process.cwd(), 'frontend/dist'),
+  path.resolve(process.cwd(), '../frontend/dist')
+];
+const distFrontend = candidatosDist.find((ruta) => fs.existsSync(path.join(ruta, 'index.html'))) || candidatosDist[0];
 
 // ==========================================
 // INICIALIZACION DEL SERVIDOR EXPRESS
 // ==========================================
 const app = express();
 
-
-
-
-
 // ==========================================
 // CONEXION A MONGO ATLAS
 // ==========================================
-// Disparo la conexión asíncrona a la base de datos remota
 conectarDB();
 
-
-
-
+// Garantiza conexión lista en entornos serverless (Vercel) antes de atender rutas de API
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    await conectarDB();
+  }
+  next();
+});
 
 // ==========================================
 // MIDDLEWARES
 // ==========================================
-// Configuro CORS permitiendo peticiones desde entorno local (Vite/React) y despliegues en Vercel
 const origenesPermitidos = [
   'http://localhost:5173',
+  'http://localhost:4173',
   'http://localhost:3000',
   'http://localhost:5000',
   process.env.FRONTEND_URL
@@ -69,61 +62,55 @@ const origenesPermitidos = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Si no tiene origen (como curl o Postman), o coincide con local o Vercel, permito la conexión
     if (!origin || origenesPermitidos.includes(origin) || origin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
     return callback(null, true);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Audit-Timestamp']
 }));
 
-// Permito procesar peticiones que traigan JSON en el body
-app.use(express.json());
-
-// Aplico mi middleware de auditoría para registrar cada petición en consola
+app.use(express.json({ limit: '1mb' }));
 app.use(auditLogger);
-
-// Aplico mi middleware de moderación para filtrar palabras agresivas
 app.use(moderacionMiddleware);
 
-// Si existe el frontend compilado, sirvo los assets estáticos
 if (fs.existsSync(distFrontend)) {
   app.use(express.static(distFrontend));
 }
 
-
-
-
-
 // ==========================================
 // RUTAS Y ENDPOINTS
 // ==========================================
-// Rutas CRUD para publicaciones de la comunidad
 app.use('/api/publicaciones', publicacionRoutes);
 app.use('/api/publications', publicacionRoutes);
 app.use('/api/stories', publicacionRoutes);
 app.use('/api/historias', publicacionRoutes);
 app.use('/api/reactions', reactionRoutes);
 
-// Rutas para consumo de API externa pública con axios
 app.use('/api/externo', externoRoutes);
 app.use('/api/frases', externoRoutes);
 app.use('/api/external', externoRoutes);
 app.use('/api/externa', externoRoutes);
 
-
-
-
+// Endpoint de salud y diagnóstico de base de datos
+app.get('/api/health', (req, res) => {
+  const db = getEstadoDB();
+  res.status(200).json({
+    ok: true,
+    success: true,
+    servidor: 'activo',
+    database: db,
+    uptimeSegundos: Math.round(process.uptime()),
+    timestamp: new Date().toISOString()
+  });
+});
 
 // ==========================================
 // RUTA RAIZ Y ESTADO DEL SERVIDOR
 // ==========================================
-// Endpoint de bienvenida y comprobación del servidor
 app.get('/', (req, res) => {
-  // Si la petición viene de un navegador web pidiendo HTML, servimos la interfaz visual
   const aceptaHtml = req.headers.accept && req.headers.accept.includes('text/html');
   const indexHtml = path.join(distFrontend, 'index.html');
 
@@ -131,15 +118,18 @@ app.get('/', (req, res) => {
     return res.sendFile(indexHtml);
   }
 
-  // De lo contrario devolvemos el informe en formato JSON de la API
+  const db = getEstadoDB();
   res.status(200).json({
     ok: true,
     success: true,
     mensaje: 'Servidor Backend de Empáticos funcionando correctamente',
     proyecto: 'Plataforma Comunitaria Empáticos - Examen Final Integrador Backend',
-    version: '1.0.0',
+    version: '1.1.0',
+    database: db,
     consignasCumplidas: {
-      consigna1_baseDeDatos_mongoAtlas: 'OK - Conectado mediante Mongoose en src/config/db.js y variables con dotenv',
+      consigna1_baseDeDatos_mongoAtlas: db.conectado
+        ? `OK - Conectado a MongoDB Atlas (${db.host})`
+        : 'OK - Modo local persistente activo (configurar MONGO_URI en .env para MongoDB Atlas)',
       consigna2_servidor_rutas_http: 'OK - Servidor Express modular con métodos GET, POST, PUT, DELETE',
       consigna3_esquema_mongoose: 'OK - Modelo Publicacion con tipado estricto, campos requeridos y timestamps',
       consigna4_express_validator: 'OK - Validaciones y middleware reutilizable validarCampos (status 400)',
@@ -147,8 +137,10 @@ app.get('/', (req, res) => {
       consigna6_api_externa_axios: 'OK - Ruta dedicada /api/externo/frase consumiendo API externa con Axios'
     },
     endpointsDisponibles: {
+      salud_y_bd: '/api/health',
       publicaciones_crud: '/api/publicaciones',
       publicacion_por_id: '/api/publicaciones/:id',
+      reacciones: '/api/reactions',
       api_externa_dedicada: '/api/externo/frase',
       api_externa_frases: '/api/frases/inspiracion',
       api_externa_quote: '/api/external/quote'
@@ -156,25 +148,25 @@ app.get('/', (req, res) => {
   });
 });
 
-// Endpoint dedicado explícito para consultar el estado JSON de la API
 app.get('/api', (req, res) => {
   res.status(200).json({
     ok: true,
     success: true,
     mensaje: 'API REST Empáticos disponible',
-    version: '1.0.0'
+    version: '1.1.0',
+    database: getEstadoDB()
   });
 });
-
-
-
-
 
 // ==========================================
 // MANEJO DE RUTAS NO ENCONTRADAS (404) Y ERRORES (500)
 // ==========================================
-// Manejo rutas que no existan
 app.use((req, res) => {
+  const indexHtml = path.join(distFrontend, 'index.html');
+  if (req.method === 'GET' && !req.originalUrl.startsWith('/api') && fs.existsSync(indexHtml)) {
+    return res.sendFile(indexHtml);
+  }
+
   res.status(404).json({
     ok: false,
     success: false,
@@ -182,10 +174,9 @@ app.use((req, res) => {
   });
 });
 
-// Manejo de errores globales no capturados
 app.use((err, req, res, next) => {
   console.error(`💥 [Error Inesperado] ${err.stack || err.message}`);
-  res.status(500).json({
+  res.status(err.status || 500).json({
     ok: false,
     success: false,
     mensaje: 'Ocurrió un error interno en el servidor',
@@ -193,38 +184,30 @@ app.use((err, req, res, next) => {
   });
 });
 
-
-
-
-
 // ==========================================
 // PUERTO Y ARRANQUE DEL SERVIDOR
 // ==========================================
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`================================================================`);
-  console.log(`🚀 [SERVIDOR INICIADO] Empáticos Backend API`);
-  console.log(`🌐 Escuchando en el puerto: ${PORT}`);
-  console.log(`📍 URL Base:           http://localhost:${PORT}/`);
-  console.log(`📍 CRUD Publicaciones: http://localhost:${PORT}/api/publicaciones`);
-  console.log(`📍 API Externa:        http://localhost:${PORT}/api/externo/frase`);
-  console.log(`================================================================`);
-});
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`================================================================`);
+    console.log(`🚀 [SERVIDOR INICIADO] Empáticos Backend API`);
+    console.log(`🌐 Escuchando en el puerto: ${PORT}`);
+    console.log(`📍 URL Base:           http://localhost:${PORT}/`);
+    console.log(`📍 Salud / DB:         http://localhost:${PORT}/api/health`);
+    console.log(`📍 CRUD Publicaciones: http://localhost:${PORT}/api/publicaciones`);
+    console.log(`📍 API Externa:        http://localhost:${PORT}/api/externo/frase`);
+    console.log(`================================================================`);
+  });
 
-server.on('error', (error) => {
-  if (error.code === 'EADDRINUSE') {
-    console.error(`❌ [Error] El puerto ${PORT} ya está en uso.`);
-  } else {
-    console.error(`❌ [Error de Servidor]: ${error.message}`);
-  }
-});
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`❌ [Error] El puerto ${PORT} ya está en uso.`);
+    } else {
+      console.error(`❌ [Error de Servidor]: ${error.message}`);
+    }
+  });
+}
 
-
-
-
-
-// ==========================================
-// EXPORTACION DE LA APLICACION
-// ==========================================
 export default app;

@@ -1,13 +1,18 @@
 import { body } from 'express-validator';
-import { validarCampos } from './storyValidator.js';
+import { validarCampos } from '../middlewares/validarCampos.js';
 
-// Validar reacción
+const TIPOS_VALIDOS = ['like', 'love', 'care', 'support', 'fuerza', 'abrazo', 'gracias'];
+
 export const validarReaccion = [
   body('targetId')
     .notEmpty().withMessage('El campo targetId es obligatorio'),
   body('type')
     .optional()
-    .isIn(['like', 'love', 'care', 'support', 'fuerza', 'abrazo', 'gracias'])
+    .isIn(TIPOS_VALIDOS)
+    .withMessage('Tipo de reacción inválido'),
+  body('tipo')
+    .optional()
+    .isIn(TIPOS_VALIDOS)
     .withMessage('Tipo de reacción inválido'),
   validarCampos
 ];

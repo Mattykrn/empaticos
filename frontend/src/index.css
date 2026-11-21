@@ -14,12 +14,27 @@ body {
 
 .text-outline-black {
   -webkit-text-stroke: 1.5px #000000;
-  text-shadow: 
+  text-shadow:
     3px 3px 0 #000,
     -1px -1px 0 #000,
     1px -1px 0 #000,
     -1px 1px 0 #000,
     1px 1px 0 #000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out both;
 }
 
 @layer utilities {
@@ -74,9 +89,11 @@ a:where([class~="inline-flex"], [class~="flex"], [role="button"], .skip-link) {
   min-width: 48px;
 }
 
-:root[data-contraste="alto"] body {
-  background-color: #0f1714;
-  color: #f6ead1;
+/* Alto contraste / cuidado ocular (WCAG AAA) */
+:root[data-contraste="alto"] body,
+:root[data-contraste="alto"] .bg-\[\#FFFDF9\] {
+  background-color: #0f1714 !important;
+  color: #f6ead1 !important;
 }
 
 :root[data-contraste="alto"] :where(header, footer, [class*="bg-gradient-to-r"]) {
@@ -85,7 +102,18 @@ a:where([class~="inline-flex"], [class~="flex"], [role="button"], .skip-link) {
   color: #fff2d2 !important;
 }
 
-:root[data-contraste="alto"] :where([class*="bg-white"], [class*="bg-slate-50"], [class*="bg-gray-50"], [class*="bg-orange-50"], [class*="bg-amber-50"], [class*="bg-[#FFFDF9]"]) {
+:root[data-contraste="alto"] :where(
+  [class*="bg-white"],
+  [class*="bg-slate-50"],
+  [class*="bg-slate-100"],
+  [class*="bg-gray-50"],
+  [class*="bg-orange-50"],
+  [class*="bg-amber-50"],
+  [class*="bg-amber-100"],
+  [class*="bg-orange-100"],
+  [class*="bg-emerald-50"],
+  [class*="bg-rose-50"]
+) {
   background-color: #1b2922 !important;
 }
 
@@ -97,6 +125,27 @@ a:where([class~="inline-flex"], [class~="flex"], [role="button"], .skip-link) {
   color: #f6ead1;
 }
 
+:root[data-contraste="alto"] a {
+  color: #ffd166 !important;
+}
+
+:root[data-contraste="alto"] :where(input, textarea, select) {
+  background-color: #122019 !important;
+  color: #fff2d2 !important;
+  border: 2px solid #d7b46a !important;
+}
+
+:root[data-contraste="alto"] input::placeholder,
+:root[data-contraste="alto"] textarea::placeholder {
+  color: #cbb88a !important;
+  opacity: 1;
+}
+
+:root[data-contraste="alto"] option {
+  background-color: #122019;
+  color: #fff2d2;
+}
+
 :root[data-contraste="alto"] :where(button, [role="button"]) {
   background-color: #3a2c12 !important;
   color: #fff2d2 !important;
@@ -105,6 +154,10 @@ a:where([class~="inline-flex"], [class~="flex"], [role="button"], .skip-link) {
 
 :root[data-contraste="alto"] :where(button[aria-pressed="true"], button[aria-expanded="true"]) {
   background-color: #ffd166 !important;
+  color: #1a1205 !important;
+}
+
+:root[data-contraste="alto"] :where(button[aria-pressed="true"] span, button[aria-expanded="true"] span) {
   color: #1a1205 !important;
 }
 

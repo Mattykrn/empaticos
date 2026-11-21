@@ -1,42 +1,28 @@
-import Reaction from '../models/Reaction.js';
 import mongoose from 'mongoose';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Reaction from '../models/Reaction.js';
+import Publicacion from '../models/Publicacion.model.js';
+import { normalizarReacciones } from './publicacion.controller.js';
+import {
+  cargarPublicacionesLocales,
+  guardarPublicacionesLocales,
+  cargarReaccionesExtra,
+  guardarReaccionesExtra
+} from '../data/localStore.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const REACCIONES_FILE = path.join(__dirname, '../data/reacciones.json');
-
-// Helper para cargar reacciones desde archivo local o inicializar Map vacío
-const cargarReaccionesLocales = () => {
-  if (fs.existsSync(REACCIONES_FILE)) {
-    try {
-      const data = fs.readFileSync(REACCIONES_FILE, 'utf-8');
-      const json = JSON.parse(data);
-      return new Map(Object.entries(json));
-    } catch (e) {
-      return new Map();
-    }
-  }
-  return new Map();
-};
-
-const guardarReaccionesLocales = (mapa) => {
-  const obj = Object.fromEntries(mapa);
-  fs.writeFileSync(REACCIONES_FILE, JSON.stringify(obj, null, 2), 'utf-8');
-};
-
-// Map almaceno las reacciones de contingencia si la base de datos se desconecta temporalmente
-let reaccionesMemoriaLocal = cargarReaccionesLocales();
+const contarReacciones = (lista) =>
+  lista.reduce((acc, r) => {
+    const clave = r.tipo || r.type || 'fuerza';
+    acc[clave] = (acc[clave] || 0) + 1;
+    return acc;
+  }, {});
 
 // Ejecuto el registro o toggle de reacción enviado mediante POST /api/reactions
 export const toggleReaccion = async (req, res) => {
   try {
     const { targetId, userId, uid, type, tipo } = req.body;
 
-    const targetIdFinal = targetId;
-    const userIdFinal = userId || uid || req.ip || 'usr-anonimo';
+    const targetIdFinal = String(targetId || '').trim();
+    const userIdFinal = String(userId || uid || req.ip || 'usr-anonimo');
     const tipoFinal = type || tipo || 'fuerza';
 
     if (!targetIdFinal) {
@@ -68,59 +54,97 @@ export const toggleReaccion = async (req, res) => {
       }
 
       const reaccionesActualizadas = await Reaction.find({ targetId: targetIdFinal });
-      const conteo = reaccionesActualizadas.reduce((acc, r) => {
-        acc[r.type] = (acc[r.type] || 0) + 1;
-        return acc;
-      }, {});
+      let listaFinal = reaccionesActualizadas.map((r) => ({
+        uid: r.userId,
+        userId: r.userId,
+        usuario: r.userId,
+        tipo: r.type,
+        type: r.type
+      }));
+
+      // Sincronizo también dentro del documento Publicacion si existe, manteniendo reacciones previas (semilla)
+      if (mongoose.Types.ObjectId.isValid(targetIdFinal)) {
+        const pub = await Publicacion.findById(targetIdFinal);
+        if (pub) {
+          const base = normalizarReacciones(pub.reacciones).filter((r) => r.uid !== userIdFinal);
+          const actualUsuario = listaFinal.find((r) => r.uid === userIdFinal);
+          listaFinal = normalizarReacciones(actualUsuario ? [...base, actualUsuario] : base);
+          pub.reacciones = listaFinal;
+          await pub.save();
+        }
+      }
 
       return res.status(200).json({
         ok: true,
         mensaje: 'Reacción procesada y guardada en MongoDB Atlas',
         data: {
           targetId: targetIdFinal,
-          total: reaccionesActualizadas.length,
-          conteo,
-          reacciones: reaccionesActualizadas.map(r => ({
-            uid: r.userId,
-            userId: r.userId,
-            tipo: r.type,
-            type: r.type
-          }))
+          total: listaFinal.length,
+          conteo: contarReacciones(listaFinal),
+          reacciones: listaFinal
         }
       });
     }
 
-    // Fallback local en memoria si MongoDB Atlas no está conectado
-    reaccionesMemoriaLocal = cargarReaccionesLocales(); // Asegurar tener los últimos datos
-    let listaLocal = reaccionesMemoriaLocal.get(targetIdFinal) || [];
-    const idx = listaLocal.findIndex(r => r.userId === userIdFinal);
+    // Modo local persistente: si corresponde a una publicación guardada, actualizo directamente en publicaciones.json
+    const locales = cargarPublicacionesLocales();
+    const pubIndex = locales.findIndex((p) => String(p._id) === targetIdFinal);
+
+    if (pubIndex !== -1) {
+      const listaLocal = normalizarReacciones(locales[pubIndex].reacciones);
+      const idx = listaLocal.findIndex((r) => r.uid === userIdFinal);
+
+      if (idx !== -1) {
+        if (listaLocal[idx].tipo === tipoFinal) {
+          listaLocal.splice(idx, 1);
+        } else {
+          listaLocal[idx] = { uid: userIdFinal, userId: userIdFinal, usuario: userIdFinal, tipo: tipoFinal, type: tipoFinal };
+        }
+      } else {
+        listaLocal.push({ uid: userIdFinal, userId: userIdFinal, usuario: userIdFinal, tipo: tipoFinal, type: tipoFinal });
+      }
+
+      locales[pubIndex].reacciones = listaLocal;
+      guardarPublicacionesLocales(locales);
+
+      return res.status(200).json({
+        ok: true,
+        mensaje: 'Reacción registrada (modo local persistente)',
+        data: {
+          targetId: targetIdFinal,
+          total: listaLocal.length,
+          conteo: contarReacciones(listaLocal),
+          reacciones: listaLocal
+        }
+      });
+    }
+
+    // Fallback para targetIds genéricos no asociados a publicaciones
+    const mapaExtra = cargarReaccionesExtra();
+    const listaExtra = normalizarReacciones(mapaExtra.get(targetIdFinal) || []);
+    const idx = listaExtra.findIndex((r) => r.uid === userIdFinal);
 
     if (idx !== -1) {
-      if (listaLocal[idx].type === tipoFinal) {
-        listaLocal.splice(idx, 1);
+      if (listaExtra[idx].tipo === tipoFinal) {
+        listaExtra.splice(idx, 1);
       } else {
-        listaLocal[idx].type = tipoFinal;
-        listaLocal[idx].tipo = tipoFinal;
+        listaExtra[idx] = { uid: userIdFinal, userId: userIdFinal, usuario: userIdFinal, tipo: tipoFinal, type: tipoFinal };
       }
     } else {
-      listaLocal.push({ uid: userIdFinal, userId: userIdFinal, tipo: tipoFinal, type: tipoFinal });
+      listaExtra.push({ uid: userIdFinal, userId: userIdFinal, usuario: userIdFinal, tipo: tipoFinal, type: tipoFinal });
     }
-    reaccionesMemoriaLocal.set(targetIdFinal, listaLocal);
-    guardarReaccionesLocales(reaccionesMemoriaLocal); // Guardar cambios
 
-    const conteo = listaLocal.reduce((acc, r) => {
-      acc[r.type] = (acc[r.type] || 0) + 1;
-      return acc;
-    }, {});
+    mapaExtra.set(targetIdFinal, listaExtra);
+    guardarReaccionesExtra(mapaExtra);
 
     return res.status(200).json({
       ok: true,
-      mensaje: 'Reacción registrada (modo local)',
+      mensaje: 'Reacción registrada (modo local persistente)',
       data: {
         targetId: targetIdFinal,
-        total: listaLocal.length,
-        conteo,
-        reacciones: listaLocal
+        total: listaExtra.length,
+        conteo: contarReacciones(listaExtra),
+        reacciones: listaExtra
       }
     });
   } catch (error) {
@@ -140,40 +164,44 @@ export const obtenerReacciones = async (req, res) => {
 
     if (mongoose.connection.readyState === 1) {
       const reacciones = await Reaction.find({ targetId });
-      const conteo = reacciones.reduce((acc, r) => {
-        acc[r.type] = (acc[r.type] || 0) + 1;
-        return acc;
-      }, {});
+      let lista = reacciones.map((r) => ({
+        uid: r.userId,
+        userId: r.userId,
+        usuario: r.userId,
+        tipo: r.type,
+        type: r.type
+      }));
+
+      if (mongoose.Types.ObjectId.isValid(targetId)) {
+        const pub = await Publicacion.findById(targetId);
+        if (pub && Array.isArray(pub.reacciones)) {
+          lista = normalizarReacciones([...pub.reacciones, ...lista]);
+        }
+      }
 
       return res.status(200).json({
         ok: true,
         data: {
           targetId,
-          total: reacciones.length,
-          conteo,
-          reacciones: reacciones.map(r => ({
-            uid: r.userId,
-            userId: r.userId,
-            tipo: r.type,
-            type: r.type
-          }))
+          total: lista.length,
+          conteo: contarReacciones(lista),
+          reacciones: lista
         }
       });
     }
 
-    reaccionesMemoriaLocal = cargarReaccionesLocales(); // Asegurar tener los últimos datos
-    const listaLocal = reaccionesMemoriaLocal.get(targetId) || [];
-    const conteo = listaLocal.reduce((acc, r) => {
-      acc[r.type] = (acc[r.type] || 0) + 1;
-      return acc;
-    }, {});
+    const locales = cargarPublicacionesLocales();
+    const pub = locales.find((p) => String(p._id) === String(targetId));
+    const listaLocal = pub
+      ? normalizarReacciones(pub.reacciones)
+      : normalizarReacciones(cargarReaccionesExtra().get(targetId) || []);
 
     return res.status(200).json({
       ok: true,
       data: {
         targetId,
         total: listaLocal.length,
-        conteo,
+        conteo: contarReacciones(listaLocal),
         reacciones: listaLocal
       }
     });

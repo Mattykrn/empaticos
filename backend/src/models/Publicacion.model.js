@@ -3,23 +3,31 @@
 // ==========================================
 import mongoose from 'mongoose';
 
-
-
-
-
 // ==========================================
 // SUBESQUEMAS AUXILIARES (REACCIONES Y COMENTARIOS)
 // ==========================================
-// Acá defino un subesquema chiquito para guardar las reacciones de los usuarios
 const reaccionSubSchema = new mongoose.Schema(
   {
+    uid: {
+      type: String,
+      default: 'anonimo'
+    },
+    userId: {
+      type: String,
+      default: 'anonimo'
+    },
     usuario: {
       type: String,
       default: 'anonimo'
     },
     tipo: {
       type: String,
-      enum: ['fuerza', 'abrazo', 'gracias', 'corazon', 'me_inspira', 'apoyo'],
+      enum: ['fuerza', 'abrazo', 'gracias', 'corazon', 'me_inspira', 'apoyo', 'like', 'love', 'care', 'support'],
+      default: 'fuerza'
+    },
+    type: {
+      type: String,
+      enum: ['fuerza', 'abrazo', 'gracias', 'corazon', 'me_inspira', 'apoyo', 'like', 'love', 'care', 'support'],
       default: 'fuerza'
     },
     createdAt: {
@@ -30,12 +38,20 @@ const reaccionSubSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// Y este subesquema es para los comentarios que la gente deja en cada publicación
 const comentarioSubSchema = new mongoose.Schema(
   {
+    uid: {
+      type: String,
+      default: ''
+    },
     autorNombre: {
       type: String,
       default: 'Compañero Empático',
+      trim: true
+    },
+    autorFoto: {
+      type: String,
+      default: '',
       trim: true
     },
     rolAutor: {
@@ -54,17 +70,11 @@ const comentarioSubSchema = new mongoose.Schema(
   }
 );
 
-
-
-
-
 // ==========================================
 // ESQUEMA PROPIO DE MONGOOSE (PUBLICACION)
 // ==========================================
-// Este es el modelo principal de mi proyecto para publicaciones y testimonios comunitarios
 const publicacionSchema = new mongoose.Schema(
   {
-    // Título obligatorio de la publicación
     titulo: {
       type: String,
       required: [true, 'El título de la publicación es obligatorio'],
@@ -72,7 +82,6 @@ const publicacionSchema = new mongoose.Schema(
       minlength: [3, 'El título debe tener al menos 3 caracteres']
     },
 
-    // Contenido o relato de la historia (obligatorio)
     contenido: {
       type: String,
       required: [true, 'El contenido de la publicación es obligatorio'],
@@ -80,14 +89,30 @@ const publicacionSchema = new mongoose.Schema(
       minlength: [5, 'El contenido debe tener al menos 5 caracteres']
     },
 
-    // Nombre del autor que publica
     autorNombre: {
       type: String,
       trim: true,
       default: 'Anónimo'
     },
 
-    // Rol del autor dentro de la plataforma (con enum de opciones válidas)
+    autorUid: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+
+    avatar: {
+      type: String,
+      trim: true,
+      default: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
+    },
+
+    autorFoto: {
+      type: String,
+      trim: true,
+      default: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
+    },
+
     rolAutor: {
       type: String,
       enum: {
@@ -97,18 +122,16 @@ const publicacionSchema = new mongoose.Schema(
       default: 'paciente'
     },
 
-    // Categoría temática de la publicación
     categoria: {
       type: String,
       trim: true,
       default: 'apoyo_emocional'
     },
 
-    // Tipo de relato
     tipo: {
       type: String,
       trim: true,
-      default: 'testimonio'
+      default: 'historia'
     },
 
     tipoPublicacion: {
@@ -117,7 +140,18 @@ const publicacionSchema = new mongoose.Schema(
       trim: true
     },
 
-    // Estado para moderación
+    videoUrl: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+
+    imageUrl: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected', 'archivado'],
@@ -130,38 +164,29 @@ const publicacionSchema = new mongoose.Schema(
       default: 'aprobado'
     },
 
-    // Conteo de votos útiles recibidos
     votosUtiles: {
       type: Number,
       default: 0,
       min: [0, 'Los votos no pueden ser negativos']
     },
 
-    // Opción para publicar de forma anónima
     esAnonimo: {
       type: Boolean,
       default: false
     },
 
-    // Etiquetas descriptivas
     etiquetas: {
       type: [String],
       default: []
     },
 
-    // Arreglos con los subdocumentos definidos arriba
     reacciones: [reaccionSubSchema],
     comentarios: [comentarioSubSchema]
   },
   {
-    // Activo timestamps para que mongoose agregue createdAt y updatedAt solo
     timestamps: true
   }
 );
-
-
-
-
 
 // ==========================================
 // COMPILACION Y EXPORTACION DEL MODELO

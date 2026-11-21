@@ -1,37 +1,33 @@
 // ==========================================
 // PALABRAS PROHIBIDAS PARA LA COMUNIDAD
 // ==========================================
-// Listado sencillo de términos que queremos bloquear para cuidar el respeto en la comunidad
 const PALABRAS_PROHIBIDAS = [
   'estupido',
-  'estúpido',
   'idiota',
   'imbecil',
-  'imbécil',
   'inutil',
-  'inútil',
   'basura'
 ];
 
-
-
-
+const normalizarTexto = (texto) =>
+  String(texto || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
 // ==========================================
 // MIDDLEWARE DE FILTRADO Y MODERACION
 // ==========================================
-// Acá chequeo si mandan palabras agresivas en el título o contenido de las publicaciones
 export const moderacionMiddleware = (req, res, next) => {
-  // Reviso peticiones que lleven body (POST, PUT, PATCH)
   if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.body) {
-    const textoAnalizar = [
+    const textoAnalizar = normalizarTexto([
       req.body.titulo || '',
       req.body.contenido || '',
+      req.body.content || '',
       req.body.texto || '',
       req.body.comentario || ''
-    ].join(' ').toLowerCase();
+    ].join(' '));
 
-    // Me fijo si alguna palabra prohibida coincide
     const palabraDetectada = PALABRAS_PROHIBIDAS.find((palabra) => {
       const regex = new RegExp(`\\b${palabra}\\b`, 'i');
       return regex.test(textoAnalizar);
@@ -51,11 +47,4 @@ export const moderacionMiddleware = (req, res, next) => {
   next();
 };
 
-
-
-
-
-// ==========================================
-// EXPORTACION DEL MIDDLEWARE
-// ==========================================
 export default moderacionMiddleware;

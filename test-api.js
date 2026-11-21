@@ -1,12 +1,33 @@
-import axios from 'axios';
-
-// En este script de auditoría automatizada configuro mi cliente HTTP Axios para conectarme a la API de Empáticos.
-// Utilizo la URL de mi variable de entorno API_URL o por defecto apunto a la instancia local/producción.
+// En este script de auditoría automatizada configuro mi cliente HTTP para conectarme a la API de Empáticos.
+// Utilizo Axios si está disponible en node_modules, o fetch nativo de Node 18+ como respaldo automático.
 const BASE_URL = process.env.API_URL || 'http://localhost:5000';
-const api = axios.create({
-  baseURL: BASE_URL,
-  validateStatus: () => true // Permito capturar respuestas HTTP 4xx y 5xx sin lanzar excepciones para auditarlas directamente
-});
+
+let api;
+try {
+  const { default: axios } = await import('axios');
+  api = axios.create({
+    baseURL: BASE_URL,
+    validateStatus: () => true
+  });
+} catch {
+  const request = async (method, path, body) => {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers: body !== undefined ? { 'Content-Type': 'application/json' } : {},
+      body: body !== undefined ? JSON.stringify(body) : undefined
+    });
+    const text = await res.text();
+    let data = text;
+    try { data = JSON.parse(text); } catch {}
+    return { status: res.status, data };
+  };
+  api = {
+    get: (path) => request('GET', path),
+    post: (path, body) => request('POST', path, body),
+    put: (path, body) => request('PUT', path, body),
+    delete: (path) => request('DELETE', path)
+  };
+}
 
 // Variable global donde almacenaré el _id generado por MongoDB durante la prueba de creación
 let publicacionIdCreada = null;

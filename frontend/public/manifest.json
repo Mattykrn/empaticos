@@ -2,19 +2,19 @@
   "name": "Empáticos – Comunidad Esclerosis Múltiple",
   "short_name": "Empáticos",
   "description": "Plataforma de apoyo comunitario para personas con Esclerosis Múltiple y sus familiares",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0f1714",
   "theme_color": "#b45309",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "images/LogoEMpaticos2.png",
+      "src": "/images/LogoEMpaticos2.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "images/LogoEMpaticos2.png",
+      "src": "/images/LogoEMpaticos2.png",
       "sizes": "512x512",
       "type": "image/png"
     }
