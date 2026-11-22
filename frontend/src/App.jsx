@@ -208,16 +208,25 @@ const FRASES_FALLBACK_FRONTEND = [
 function MuroComunitarioApp() {
   const {
     usuario,
+    esAdmin: esAdminContexto,
     errorAuth,
     loginConGoogle,
     loginLocal,
     logout,
+    obtenerTokenAutenticacion,
     modalAbierto,
-    setModalAbierto,
     abrirModalRegistro,
     cerrarModalRegistro
   } = useAuth();
   const { hablar, detener, hablando, textoActual } = useSpeech();
+
+  // Validación explícita de administrador único para acciones destructivas
+  const emailAdminConfig = import.meta.env.VITE_ADMIN_EMAIL?.toLowerCase().trim() || '';
+  const esAdmin = Boolean(
+    esAdminContexto &&
+    emailAdminConfig &&
+    usuario?.email?.toLowerCase().trim() === emailAdminConfig
+  );
 
   // Estados principales
   const [seccionActiva, setSeccionActiva] = useState('inicio');
@@ -516,11 +525,26 @@ function MuroComunitarioApp() {
     }
   };
 
-  // Eliminar una publicación (DELETE /api/stories/:id)
+  // Eliminar una publicación (DELETE /api/stories/:id - exclusivo administrador)
   const handleEliminar = async (id) => {
+    if (!esAdmin) {
+      mostrarFeedback('Acceso denegado. Solo la cuenta administradora autorizada puede eliminar publicaciones.', 'error');
+      return;
+    }
+
+    const token = await obtenerTokenAutenticacion();
+    if (!token) {
+      mostrarFeedback('Tu sesión de Google expiró. Iniciá sesión nuevamente para eliminar publicaciones.', 'error');
+      return;
+    }
+
     setEliminandoId(id);
     try {
-      const res = await api.delete(`/stories/${id}`);
+      const res = await api.delete(`/stories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if (res.status === 200 || res.data?.ok) {
         setHistorias((prev) => prev.filter((h) => String(h._id || h.id) !== String(id)));
         setConfirmandoEliminarId(null);
@@ -1251,34 +1275,38 @@ function MuroComunitarioApp() {
                                     ✏️ <span>Editar</span>
                                   </button>
 
-                                  {confirmandoEliminarId === idUnico ? (
-                                    <div className="flex items-center gap-1.5">
+                                  {esAdmin && (
+                                    confirmandoEliminarId === idUnico ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleEliminar(idUnico)}
+                                          disabled={eliminandoId === idUnico}
+                                          aria-label={`Confirmar eliminación de la publicación de ${nombreAutor}`}
+                                          className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all flex items-center gap-1 disabled:opacity-50"
+                                        >
+                                          {eliminandoId === idUnico ? 'Borrando...' : 'Confirmar'}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => setConfirmandoEliminarId(null)}
+                                          aria-label="Cancelar eliminación de publicación"
+                                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+                                        >
+                                          Cancelar
+                                        </button>
+                                      </div>
+                                    ) : (
                                       <button
                                         type="button"
-                                        onClick={() => handleEliminar(idUnico)}
-                                        disabled={eliminandoId === idUnico}
-                                        className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all flex items-center gap-1 disabled:opacity-50"
+                                        onClick={() => setConfirmandoEliminarId(idUnico)}
+                                        title="Eliminar publicación (solo administrador)"
+                                        aria-label={`Eliminar publicación de ${nombreAutor}`}
+                                        className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95"
                                       >
-                                        {eliminandoId === idUnico ? 'Borrando...' : 'Confirmar'}
+                                        🗑️ <span>Eliminar</span>
                                       </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => setConfirmandoEliminarId(null)}
-                                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
-                                      >
-                                        Cancelar
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => setConfirmandoEliminarId(idUnico)}
-                                      title="Eliminar publicación"
-                                      aria-label={`Eliminar publicación de ${nombreAutor}`}
-                                      className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-100 text-slate-600 hover:text-rose-700 text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1 active:scale-95"
-                                    >
-                                      🗑️ <span>Eliminar</span>
-                                    </button>
+                                    )
                                   )}
                                 </div>
                               </div>

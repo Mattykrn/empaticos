@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+// ==========================================
+// IMPORTACIONES Y DEPENDENCIAS
+// ==========================================
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   signInWithPopup,
   signOut,
@@ -7,8 +10,16 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, googleProvider, db, esApiKeyValida } from '../config/firebase';
 
+
+
+
+
+// ==========================================
+// CONSTANTES Y PERSISTENCIA DE SESION LOCAL
+// ==========================================
 const CLAVE_SESION_LOCAL = 'empaticos-usuario-v1';
-const AVATAR_DEFAULT = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+const AVATAR_POR_DEFECTO = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+const EMAIL_ADMINISTRADOR = (import.meta.env.VITE_ADMIN_EMAIL || '').toLowerCase().trim();
 
 const leerSesionLocal = () => {
   if (typeof window === 'undefined') return null;
@@ -31,10 +42,17 @@ const guardarSesionLocal = (datos) => {
       window.localStorage.removeItem(CLAVE_SESION_LOCAL);
     }
   } catch {
-    // Ignora cuotas de almacenamiento
+    // Ignora errores de cuota de almacenamiento local
   }
 };
 
+
+
+
+
+// ==========================================
+// CONTEXTO Y PROVEEDOR DE AUTENTICACION
+// ==========================================
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -43,6 +61,7 @@ export const AuthProvider = ({ children }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [errorAuth, setErrorAuth] = useState('');
 
+  // Sincronización con Firebase Authentication
   useEffect(() => {
     if (!esApiKeyValida || !auth || typeof onAuthStateChanged !== 'function') {
       setCargando(false);
@@ -59,7 +78,7 @@ export const AuthProvider = ({ children }) => {
             uid: userFirebase.uid,
             nombre: userFirebase.displayName || 'Paciente Empáticos',
             email: userFirebase.email || '',
-            fotoUrl: userFirebase.photoURL || AVATAR_DEFAULT,
+            fotoUrl: userFirebase.photoURL || AVATAR_POR_DEFECTO,
             rol: rolPreferido || 'paciente',
             proveedor: 'google'
           };
@@ -70,14 +89,16 @@ export const AuthProvider = ({ children }) => {
               const docSnap = await getDoc(docRef);
 
               if (docSnap.exists()) {
-                const datosMerged = {
+                const datosCombinados = {
                   ...baseUsuario,
                   ...docSnap.data(),
                   uid: userFirebase.uid,
+                  email: userFirebase.email || docSnap.data().email || '',
+                  proveedor: 'google',
                   rol: rolPreferido || docSnap.data().rol || 'paciente'
                 };
-                setUsuario(datosMerged);
-                guardarSesionLocal(datosMerged);
+                setUsuario(datosCombinados);
+                guardarSesionLocal(datosCombinados);
               } else {
                 await setDoc(docRef, baseUsuario, { merge: true });
                 setUsuario(baseUsuario);
@@ -93,7 +114,7 @@ export const AuthProvider = ({ children }) => {
             guardarSesionLocal(baseUsuario);
           }
         } else {
-          // Si hay una sesión local activa (sin Google), la mantengo intacta
+          // Mantengo la sesión local si el usuario eligió ingresar solo con su nombre
           const local = leerSesionLocal();
           if (local && local.proveedor === 'local') {
             setUsuario(local);
@@ -112,8 +133,8 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Acceso local inmediato con nombre y rol elegidos (persistido en localStorage)
-  const loginLocal = (nombreIngresado = 'Miembro Empáticos', rolSeleccionado = 'paciente') => {
+  // Acceso local inmediato con nombre y rol (sin privilegios de administrador)
+  const loginLocal = useCallback((nombreIngresado = 'Miembro Empáticos', rolSeleccionado = 'paciente') => {
     setErrorAuth('');
     const sesionPrevia = leerSesionLocal();
     const uidReutilizable = sesionPrevia?.proveedor === 'local' && sesionPrevia.uid
@@ -124,7 +145,7 @@ export const AuthProvider = ({ children }) => {
       uid: uidReutilizable,
       nombre: (nombreIngresado || '').trim() || 'Miembro Empáticos',
       email: '',
-      fotoUrl: AVATAR_DEFAULT,
+      fotoUrl: AVATAR_POR_DEFECTO,
       rol: rolSeleccionado || 'paciente',
       proveedor: 'local'
     };
@@ -133,10 +154,10 @@ export const AuthProvider = ({ children }) => {
     guardarSesionLocal(usuarioLocal);
     setModalAbierto(false);
     return usuarioLocal;
-  };
+  }, []);
 
-  // Acceso con Google vía Firebase Auth (con manejo claro de cancelación o errores de dominio)
-  const loginConGoogle = async (rolSeleccionado = 'paciente') => {
+  // Acceso con cuenta de Google vía Firebase Authentication
+  const loginConGoogle = useCallback(async (rolSeleccionado = 'paciente') => {
     setErrorAuth('');
 
     if (esApiKeyValida && auth && googleProvider) {
@@ -148,7 +169,7 @@ export const AuthProvider = ({ children }) => {
             uid: user.uid,
             nombre: user.displayName || 'Paciente Empáticos',
             email: user.email || '',
-            fotoUrl: user.photoURL || AVATAR_DEFAULT,
+            fotoUrl: user.photoURL || AVATAR_POR_DEFECTO,
             rol: rolSeleccionado || 'paciente',
             proveedor: 'google'
           };
@@ -181,16 +202,16 @@ export const AuthProvider = ({ children }) => {
           return null;
         }
 
-        // Si el dominio no está autorizado o hay error de red, permito ingreso local fluido
         setErrorAuth('');
         return loginLocal('Paciente Empáticos', rolSeleccionado);
       }
     }
 
     return loginLocal('Paciente Empáticos', rolSeleccionado);
-  };
+  }, [loginLocal]);
 
-  const logout = async () => {
+  // Cierre de sesión completo (Firebase + localStorage)
+  const logout = useCallback(async () => {
     setErrorAuth('');
     try {
       if (auth && auth.currentUser) {
@@ -202,22 +223,47 @@ export const AuthProvider = ({ children }) => {
       setUsuario(null);
       guardarSesionLocal(null);
     }
-  };
+  }, []);
 
-  const abrirModalRegistro = () => {
+  // Obtención de token JWT actualizado de Firebase para peticiones protegidas
+  const obtenerTokenAutenticacion = useCallback(async () => {
+    try {
+      if (auth?.currentUser) {
+        return await auth.currentUser.getIdToken();
+      }
+      return null;
+    } catch (error) {
+      console.warn('No se pudo obtener el token de autenticación:', error.message);
+      return null;
+    }
+  }, []);
+
+  // Validación estricta de administrador único por correo electrónico
+  const esAdmin = useMemo(() => {
+    const emailUsuario = usuario?.email?.toLowerCase().trim() || '';
+    return Boolean(
+      EMAIL_ADMINISTRADOR &&
+      usuario?.proveedor === 'google' &&
+      emailUsuario === EMAIL_ADMINISTRADOR
+    );
+  }, [usuario]);
+
+  const abrirModalRegistro = useCallback(() => {
     setErrorAuth('');
     setModalAbierto(true);
-  };
-  const cerrarModalRegistro = () => {
+  }, []);
+
+  const cerrarModalRegistro = useCallback(() => {
     setErrorAuth('');
     setModalAbierto(false);
-  };
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         usuario,
-        estaAutenticado: !!usuario,
+        estaAutenticado: Boolean(usuario),
+        esAdmin,
         cargando,
         errorAuth,
         setErrorAuth,
@@ -226,6 +272,7 @@ export const AuthProvider = ({ children }) => {
         loginConGoogle,
         loginLocal,
         logout,
+        obtenerTokenAutenticacion,
         abrirModalRegistro,
         cerrarModalRegistro
       }}
@@ -235,12 +282,20 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+
+
+
+
+// ==========================================
+// HOOK DE ACCESO AL CONTEXTO DE AUTENTICACION
+// ==========================================
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     return {
       usuario: null,
       estaAutenticado: false,
+      esAdmin: false,
       cargando: false,
       errorAuth: '',
       setErrorAuth: () => {},
@@ -249,6 +304,7 @@ export const useAuth = () => {
       loginConGoogle: async () => null,
       loginLocal: () => null,
       logout: async () => {},
+      obtenerTokenAutenticacion: async () => null,
       abrirModalRegistro: () => {},
       cerrarModalRegistro: () => {}
     };

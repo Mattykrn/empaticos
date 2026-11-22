@@ -1,6 +1,6 @@
-// Definición de las rutas del recurso Historias y Testimonios
-// Archivo de rutas conecto mis endpoints HTTP con sus controladores y middlewares de validación correspondientes.
-
+// ==========================================
+// IMPORTACIONES Y DEPENDENCIAS
+// ==========================================
 import { Router } from 'express';
 import {
   obtenerHistorias,
@@ -12,27 +12,36 @@ import {
 } from '../controllers/historiaController.js';
 import { validarHistoria } from '../validators/historiaValidator.js';
 import { validarCampos } from '../middlewares/validarCampos.js';
+import { soloAdmin } from '../middlewares/soloAdminMiddleware.js';
 
-// Instancio el enrutador propio de Express
+
+
+
+
+// ==========================================
+// INICIALIZACION DEL ENRUTADOR
+// ==========================================
 const router = Router();
 
-// GET /$1
+
+
+
+
+// ==========================================
+// RUTAS CRUD DE HISTORIAS Y REACCIONES
+// ==========================================
 router.get('/', obtenerHistorias);
-
-// GET /$1/:id
 router.get('/:id', obtenerHistoriaPorId);
-
-// POST /$1
 router.post('/', validarHistoria, validarCampos, crearHistoria);
-
-// PUT /$1/:id
 router.put('/:id', validarHistoria, validarCampos, actualizarHistoria);
-
-// DELETE /$1/:id
-router.delete('/:id', eliminarHistoria);
-
-// POST /api/historias/:id/reacciones -> Registrar una reacción emotiva en una historia
+router.delete('/:id', soloAdmin, eliminarHistoria);
 router.post('/:id/reacciones', reaccionarHistoria);
 
-// Exporto mi enrutador para ser montado en el servidor principal Express
+
+
+
+
+// ==========================================
+// EXPORTACION DEL ENRUTADOR
+// ==========================================
 export default router;
