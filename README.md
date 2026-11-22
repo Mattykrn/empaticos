@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/empaticos-banner.png" alt="Empáticos — Comunidad de Apoyo en Esclerosis Múltiple" width="100%" />
+</p>
+
 # Empáticos — Comunidad de Apoyo en Esclerosis Múltiple
 
 Plataforma comunitaria e informativa para personas que conviven con Esclerosis Múltiple (EM), familiares, acompañantes y profesionales de la salud. Empáticos combina testimonios reales, anécdotas, divulgación científica de fuentes oficiales y adaptaciones de accesibilidad pensadas para fatiga visual, neuritis óptica, dificultades motoras y sobrecarga cognitiva.
